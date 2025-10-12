@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-10-11T02:11:16.407Z",
+  "summary": {
+    "totalFixed": 7,
+    "totalErrors": 0,
+    "successRate": 100
+  },
+  "fixedFiles": [
+    {
+      "file": "tools/scripts/automation/security-audit.js",
+      "changes": "Fixed projectRoot path calculation"
+    },
+    {
+      "file": "tools/scripts/automation/code-quality-check.js",
+      "changes": "Fixed projectRoot path calculation"
+    },
+    {
+      "file": "tools/scripts/automation/run-all-checks.js",
+      "changes": "Fixed projectRoot path calculation"
+    },
+    {
+      "file": "tools/scripts/monitoring/performance-test.js",
+      "changes": "Fixed projectRoot path calculation"
+    },
+    {
+      "file": "tools/scripts/monitoring/monitoring-log.js",
+      "changes": "Fixed projectRoot path calculation"
+    },
+    {
+      "file": "tools/scripts/maintenance/maintenance.js",
+      "changes": "Fixed projectRoot path calculation"
+    },
+    {
+      "file": "tools/scripts/database/database-backup.js",
+      "changes": "Fixed projectRoot path calculation"
+    }
+  ],
+  "errors": [],
+  "solution": {
+    "description": "统一所有脚本输出到 docs/generated/ 目录",
+    "changes": [
+      "修复了各个检查脚本的 projectRoot 路径计算",
+      "删除了重复的 tools/scripts/docs/generated/ 目录",
+      "确保所有文档都输出到统一的 docs/generated/ 目录"
+    ]
+  }
+}

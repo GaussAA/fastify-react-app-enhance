@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-10-11T03:47:14.027Z",
+  "summary": {
+    "totalVulnerabilities": 0,
+    "highSeverity": 0,
+    "mediumSeverity": 0,
+    "lowSeverity": 0,
+    "outdatedPackages": 0,
+    "licenseIssues": 0
+  },
+  "details": {
+    "vulnerabilities": [],
+    "outdated": [],
+    "licenses": []
+  }
+}

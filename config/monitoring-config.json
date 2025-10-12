@@ -1,0 +1,21 @@
+{
+  "system": {
+    "cpuThreshold": 80,
+    "memoryThreshold": 85,
+    "diskThreshold": 90
+  },
+  "logs": {
+    "logPaths": ["logs/*.log", "apps/api/logs/*.log", "apps/web/logs/*.log"],
+    "errorKeywords": ["error", "ERROR", "Error", "exception", "Exception"],
+    "warningKeywords": ["warn", "WARN", "warning", "Warning"]
+  },
+  "performance": {
+    "responseTimeThreshold": 1000,
+    "throughputThreshold": 10
+  },
+  "alerts": {
+    "enabled": true,
+    "email": "admin@example.com",
+    "webhook": null
+  }
+}

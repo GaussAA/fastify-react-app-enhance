@@ -1,0 +1,33 @@
+{
+  "api": {
+    "baseUrl": "http://localhost:8001",
+    "timeout": 30000
+  },
+  "tests": {
+    "load": {
+      "duration": "30s",
+      "rate": 10,
+      "users": 50
+    },
+    "stress": {
+      "duration": "60s",
+      "rate": 50,
+      "users": 100
+    },
+    "spike": {
+      "duration": "10s",
+      "rate": 100,
+      "users": 200
+    },
+    "volume": {
+      "duration": "120s",
+      "rate": 5,
+      "users": 20
+    }
+  },
+  "thresholds": {
+    "responseTime": 1000,
+    "errorRate": 5,
+    "throughput": 10
+  }
+}

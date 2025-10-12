@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: eed8bb97c8af15504426ed81daf291a5
+      POSTGRES_DB: fastify_react_app
+    ports:
+      - '5432:5432'
+    volumes:
+      - ../../infrastructure/database/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres_user -d fastify_react_app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'
+    volumes:
+      - ../../infrastructure/database/redis:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ../../apps/api
+      dockerfile: ../../infrastructure/docker/fastify.Dockerfile
+    env_file:
+      - ../../apps/api/.env
+    ports:
+      - '8001:8001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  web:
+    build:
+      context: ../../apps/web
+      dockerfile: ../../infrastructure/docker/web.Dockerfile
+    env_file:
+      - ../../apps/web/.env
+    ports:
+      - '5173:5173'
+    depends_on:
+      - api
+    restart: unless-stopped
+
+# 网络配置
+networks:
+  default:
+    name: fastify-react-network
+    driver: bridge
+
+# 数据持久化已配置为绑定挂载到项目目录
+# volumes:
+#   postgres_data:
+#   redis_data:

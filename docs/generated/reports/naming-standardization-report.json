@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-10-11T02:18:26.805Z",
+  "summary": {
+    "totalRenamed": 4,
+    "totalErrors": 0,
+    "totalSkipped": 0,
+    "successRate": 100
+  },
+  "namingRules": {
+    "case": "kebab-case",
+    "forbiddenChars": {},
+    "descriptive": true,
+    "concise": true
+  },
+  "renamedItems": [
+    {
+      "type": "file",
+      "oldName": "PROJECT_STATUS.md",
+      "newName": "project-status.md",
+      "oldPath": "docs\\PROJECT_STATUS.md",
+      "newPath": "docs\\project-status.md"
+    },
+    {
+      "type": "file",
+      "oldName": "REORGANIZATION_SUMMARY.md",
+      "newName": "reorganization-summary.md",
+      "oldPath": "docs\\REORGANIZATION_SUMMARY.md",
+      "newPath": "docs\\reorganization-summary.md"
+    },
+    {
+      "type": "file",
+      "oldName": "STRUCTURE_REORGANIZATION_PLAN.md",
+      "newName": "structure-reorganization-plan.md",
+      "oldPath": "docs\\STRUCTURE_REORGANIZATION_PLAN.md",
+      "newPath": "docs\\structure-reorganization-plan.md"
+    },
+    {
+      "type": "file",
+      "oldName": "prismaClient.ts",
+      "newName": "prisma-client.ts",
+      "oldPath": "apps\\api\\src\\prismaClient.ts",
+      "newPath": "apps\\api\\src\\prisma-client.ts"
+    }
+  ],
+  "errors": [],
+  "skippedItems": [],
+  "recommendations": {
+    "general": [
+      "使用小写字母和连字符（-）作为分隔符",
+      "避免使用空格和特殊字符",
+      "采用有意义的描述性名称",
+      "保持命名简洁明了"
+    ],
+    "specific": {
+      "components": "组件文件使用 PascalCase，如 UserProfile.component.tsx",
+      "services": "服务文件使用 camelCase，如 user.service.ts",
+      "utils": "工具文件使用 camelCase，如 date.util.ts",
+      "tests": "测试文件使用 kebab-case，如 user.test.ts",
+      "configs": "配置文件使用 kebab-case，如 database.config.ts"
+    }
+  }
+}

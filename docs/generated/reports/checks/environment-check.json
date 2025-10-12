@@ -1,0 +1,242 @@
+{
+  "timestamp": "2025-10-11T08:09:42.424Z",
+  "summary": {
+    "total": 38,
+    "success": 38,
+    "warnings": 0,
+    "errors": 0,
+    "successRate": 100
+  },
+  "checks": [
+    {
+      "icon": "✅",
+      "item": "Node.js 版本",
+      "message": "v22.20.0 (符合要求 >= 22.0.0)",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "pnpm 版本",
+      "message": "10.18.0 (符合要求 >= 10.0.0)",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "npm 版本",
+      "message": "11.6.1 (符合要求 >= 11.0.0)",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Docker",
+      "message": "Docker version 28.5.1, build e180ab8",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Docker 服务",
+      "message": "正在运行",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "目录 apps/api",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "目录 apps/web",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "目录 docs",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "目录 tools/scripts",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "目录 infrastructure/docker",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "文件 package.json",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "文件 pnpm-workspace.yaml",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "文件 apps/api/package.json",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "文件 apps/web/package.json",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "文件 apps/api/prisma/schema.prisma",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "环境文件 .env",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "环境文件 .env",
+      "message": "有内容",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "环境文件 apps/api/.env",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "环境文件 apps/api/.env",
+      "message": "有内容",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "环境文件 apps/web/.env",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "环境文件 apps/web/.env",
+      "message": "有内容",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "模板文件 config/env-templates/root.env",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "模板文件 config/env-templates/api.env",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "模板文件 config/env-templates/web.env",
+      "message": "存在",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "根目录 engines 配置",
+      "message": "已配置",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "根目录依赖",
+      "message": "已安装",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "api 项目依赖",
+      "message": "已安装",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "web 项目依赖",
+      "message": "已安装",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Git",
+      "message": "git version 2.47.1.windows.1",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Git 仓库",
+      "message": "已初始化",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Git Hooks",
+      "message": "已配置 (Husky)",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "ESLint",
+      "message": "v9.37.0",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Prettier",
+      "message": "3.6.2",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "TypeScript",
+      "message": "v^5.7.2 (api 项目)",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Jest",
+      "message": "30.1.2",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Vitest",
+      "message": "vitest/3.2.4 win32-x64 node-v22.20.0",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Commitlint",
+      "message": "@commitlint/cli@20.1.0",
+      "type": "success"
+    },
+    {
+      "icon": "✅",
+      "item": "Changesets",
+      "message": "2.29.7",
+      "type": "success"
+    }
+  ],
+  "warnings": [],
+  "errors": []
+}

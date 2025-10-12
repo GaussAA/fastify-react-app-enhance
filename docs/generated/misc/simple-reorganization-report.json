@@ -1,0 +1,493 @@
+{
+  "timestamp": "2025-10-10T18:11:26.070Z",
+  "operations": [
+    {
+      "type": "create_directory",
+      "path": "config/env-templates/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/automation/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/build/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/database/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/development/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/maintenance/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "tools/scripts/monitoring/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "infrastructure/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "infrastructure/database/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "infrastructure/docker/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "infrastructure/kubernetes/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "services/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "services/grpc/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "services/grpc/proto/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "services/grpc/client/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "services/grpc/server/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "backups/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "logs/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "temp/",
+      "description": "创建目录"
+    },
+    {
+      "type": "create_directory",
+      "path": "cache/",
+      "description": "创建目录"
+    },
+    {
+      "type": "move_file",
+      "source": "eslint.config.js",
+      "target": "config/eslint.config.js",
+      "description": "配置文件"
+    },
+    {
+      "type": "move_file",
+      "source": "monitoring-config.json",
+      "target": "config/monitoring-config.json",
+      "description": "配置文件"
+    },
+    {
+      "type": "move_directory",
+      "source": "env-templates/",
+      "target": "config/env-templates/",
+      "description": "环境模板"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/automation-analysis.js",
+      "target": "tools/scripts/automation/automation-analysis.js",
+      "description": "automation 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/check-environment.js",
+      "target": "tools/scripts/automation/check-environment.js",
+      "description": "automation 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/code-quality-check.js",
+      "target": "tools/scripts/automation/code-quality-check.js",
+      "description": "automation 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/run-all-checks.js",
+      "target": "tools/scripts/automation/run-all-checks.js",
+      "description": "automation 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/security-audit.js",
+      "target": "tools/scripts/automation/security-audit.js",
+      "description": "automation 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/build.sh",
+      "target": "tools/scripts/build/build.sh",
+      "description": "build 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/deploy.sh",
+      "target": "tools/scripts/build/deploy.sh",
+      "description": "build 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/database-backup.js",
+      "target": "tools/scripts/database/database-backup.js",
+      "description": "database 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/migrate.ts",
+      "target": "tools/scripts/database/migrate.ts",
+      "description": "database 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/seed.ts",
+      "target": "tools/scripts/database/seed.ts",
+      "description": "database 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/generate-docs.js",
+      "target": "tools/scripts/development/generate-docs.js",
+      "description": "development 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/generate-all-docs.js",
+      "target": "tools/scripts/development/generate-all-docs.js",
+      "description": "development 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/maintenance.js",
+      "target": "tools/scripts/maintenance/maintenance.js",
+      "description": "maintenance 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/clean.js",
+      "target": "tools/scripts/maintenance/clean.js",
+      "description": "maintenance 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/clean.sh",
+      "target": "tools/scripts/maintenance/clean.sh",
+      "description": "maintenance 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/clean.bat",
+      "target": "tools/scripts/maintenance/clean.bat",
+      "description": "maintenance 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/monitoring-log.js",
+      "target": "tools/scripts/monitoring/monitoring-log.js",
+      "description": "monitoring 脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/performance-test.js",
+      "target": "tools/scripts/monitoring/performance-test.js",
+      "description": "monitoring 脚本"
+    },
+    {
+      "type": "move_directory",
+      "source": "scripts/db/",
+      "target": "tools/scripts/database/",
+      "description": "数据库脚本"
+    },
+    {
+      "type": "move_directory",
+      "source": "scripts/dev/",
+      "target": "tools/scripts/development/",
+      "description": "开发脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/test.sh",
+      "target": "tools/scripts/test.sh",
+      "description": "其他脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "scripts/README.md",
+      "target": "tools/scripts/README.md",
+      "description": "脚本文档"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/base/1/",
+      "target": "infrastructure/database/postgres/base/1/",
+      "description": "数据库配置/postgres/base/1"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/base/16384/",
+      "target": "infrastructure/database/postgres/base/16384/",
+      "description": "数据库配置/postgres/base/16384"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/base/4/",
+      "target": "infrastructure/database/postgres/base/4/",
+      "description": "数据库配置/postgres/base/4"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/base/5/",
+      "target": "infrastructure/database/postgres/base/5/",
+      "description": "数据库配置/postgres/base/5"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/base/",
+      "target": "infrastructure/database/postgres/base/",
+      "description": "数据库配置/postgres/base"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/global/",
+      "target": "infrastructure/database/postgres/global/",
+      "description": "数据库配置/postgres/global"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_commit_ts/",
+      "target": "infrastructure/database/postgres/pg_commit_ts/",
+      "description": "数据库配置/postgres/pg_commit_ts"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_dynshmem/",
+      "target": "infrastructure/database/postgres/pg_dynshmem/",
+      "description": "数据库配置/postgres/pg_dynshmem"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_logical/mappings/",
+      "target": "infrastructure/database/postgres/pg_logical/mappings/",
+      "description": "数据库配置/postgres/pg_logical/mappings"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_logical/snapshots/",
+      "target": "infrastructure/database/postgres/pg_logical/snapshots/",
+      "description": "数据库配置/postgres/pg_logical/snapshots"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_logical/",
+      "target": "infrastructure/database/postgres/pg_logical/",
+      "description": "数据库配置/postgres/pg_logical"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_multixact/members/",
+      "target": "infrastructure/database/postgres/pg_multixact/members/",
+      "description": "数据库配置/postgres/pg_multixact/members"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_multixact/offsets/",
+      "target": "infrastructure/database/postgres/pg_multixact/offsets/",
+      "description": "数据库配置/postgres/pg_multixact/offsets"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_multixact/",
+      "target": "infrastructure/database/postgres/pg_multixact/",
+      "description": "数据库配置/postgres/pg_multixact"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_notify/",
+      "target": "infrastructure/database/postgres/pg_notify/",
+      "description": "数据库配置/postgres/pg_notify"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_replslot/",
+      "target": "infrastructure/database/postgres/pg_replslot/",
+      "description": "数据库配置/postgres/pg_replslot"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_serial/",
+      "target": "infrastructure/database/postgres/pg_serial/",
+      "description": "数据库配置/postgres/pg_serial"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_snapshots/",
+      "target": "infrastructure/database/postgres/pg_snapshots/",
+      "description": "数据库配置/postgres/pg_snapshots"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_stat/",
+      "target": "infrastructure/database/postgres/pg_stat/",
+      "description": "数据库配置/postgres/pg_stat"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_stat_tmp/",
+      "target": "infrastructure/database/postgres/pg_stat_tmp/",
+      "description": "数据库配置/postgres/pg_stat_tmp"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_subtrans/",
+      "target": "infrastructure/database/postgres/pg_subtrans/",
+      "description": "数据库配置/postgres/pg_subtrans"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_tblspc/",
+      "target": "infrastructure/database/postgres/pg_tblspc/",
+      "description": "数据库配置/postgres/pg_tblspc"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_twophase/",
+      "target": "infrastructure/database/postgres/pg_twophase/",
+      "description": "数据库配置/postgres/pg_twophase"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_wal/archive_status/",
+      "target": "infrastructure/database/postgres/pg_wal/archive_status/",
+      "description": "数据库配置/postgres/pg_wal/archive_status"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_wal/",
+      "target": "infrastructure/database/postgres/pg_wal/",
+      "description": "数据库配置/postgres/pg_wal"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/pg_xact/",
+      "target": "infrastructure/database/postgres/pg_xact/",
+      "description": "数据库配置/postgres/pg_xact"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/postgres/",
+      "target": "infrastructure/database/postgres/",
+      "description": "数据库配置/postgres"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/redis/",
+      "target": "infrastructure/database/redis/",
+      "description": "数据库配置/redis"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/database/",
+      "target": "infrastructure/database/",
+      "description": "数据库配置"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/docker/",
+      "target": "infrastructure/docker/",
+      "description": "Docker 配置"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/k8s/",
+      "target": "infrastructure/kubernetes/",
+      "description": "Kubernetes 配置"
+    },
+    {
+      "type": "move_directory",
+      "source": "infra/scripts/",
+      "target": "infrastructure/scripts/",
+      "description": "基础设施脚本"
+    },
+    {
+      "type": "move_file",
+      "source": "infra/README.md",
+      "target": "infrastructure/README.md",
+      "description": "基础设施文档"
+    },
+    {
+      "type": "move_file",
+      "source": "grpc/client.ts",
+      "target": "services/grpc/client/client.ts",
+      "description": "gRPC 客户端"
+    },
+    {
+      "type": "move_file",
+      "source": "grpc/server.ts",
+      "target": "services/grpc/server/server.ts",
+      "description": "gRPC 服务端"
+    },
+    {
+      "type": "move_directory",
+      "source": "grpc/proto/",
+      "target": "services/grpc/proto/",
+      "description": "gRPC 协议文件"
+    },
+    {
+      "type": "move_file",
+      "source": "grpc/README.md",
+      "target": "services/grpc/README.md",
+      "description": "gRPC 文档"
+    }
+  ],
+  "summary": {
+    "totalOperations": 84,
+    "directoriesCreated": 22,
+    "filesMoved": 26,
+    "directoriesMoved": 36
+  }
+}

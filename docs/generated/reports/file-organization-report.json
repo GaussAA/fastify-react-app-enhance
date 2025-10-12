@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-10-11T02:01:59.132Z",
+  "summary": {
+    "totalCategories": 11,
+    "organizedDirectories": ["docs/generated", "tools/scripts/docs/generated"]
+  },
+  "categories": {
+    "reports/checks": {
+      "description": "系统检查报告",
+      "fileCount": 14,
+      "files": [
+        "docs/generated/reports/checks/code-quality.json",
+        "docs/generated/reports/checks/code-quality.md",
+        "docs/generated/reports/checks/comprehensive-check.json",
+        "docs/generated/reports/checks/comprehensive-check.md",
+        "docs/generated/reports/checks/environment-check.json",
+        "docs/generated/reports/checks/security-audit.json",
+        "docs/generated/reports/checks/security-audit.md",
+        "tools/scripts/docs/generated/reports/checks/code-quality.json",
+        "tools/scripts/docs/generated/reports/checks/code-quality.md",
+        "tools/scripts/docs/generated/reports/checks/comprehensive-check.json",
+        "tools/scripts/docs/generated/reports/checks/comprehensive-check.md",
+        "tools/scripts/docs/generated/reports/checks/environment-check.json",
+        "tools/scripts/docs/generated/reports/checks/security-audit.json",
+        "tools/scripts/docs/generated/reports/checks/security-audit.md"
+      ]
+    },
+    "reports/monitoring": {
+      "description": "监控和日志报告",
+      "fileCount": 2,
+      "files": [
+        "docs/generated/reports/monitoring/monitoring-log.json",
+        "docs/generated/reports/monitoring/monitoring-log.md"
+      ]
+    },
+    "analysis/project": {
+      "description": "项目结构分析",
+      "fileCount": 3,
+      "files": [
+        "docs/generated/analysis/project/dependency-analysis.md",
+        "docs/generated/analysis/project/project-health.md",
+        "docs/generated/analysis/project/project-structure.md"
+      ]
+    },
+    "analysis/automation": {
+      "description": "自动化任务分析",
+      "fileCount": 1,
+      "files": ["docs/generated/analysis/automation/automation-analysis.md"]
+    },
+    "config": {
+      "description": "配置文件文档",
+      "fileCount": 2,
+      "files": [
+        "docs/generated/config/docker-config.md",
+        "docs/generated/config/environment-config.md"
+      ]
+    },
+    "database": {
+      "description": "数据库相关文档",
+      "fileCount": 1,
+      "files": ["docs/generated/database/database-design.md"]
+    },
+    "testing": {
+      "description": "测试相关文档",
+      "fileCount": 1,
+      "files": ["docs/generated/testing/test-documentation.md"]
+    },
+    "cicd": {
+      "description": "CI/CD流水线文档",
+      "fileCount": 1,
+      "files": ["docs/generated/cicd/cicd-pipeline.md"]
+    },
+    "changelog": {
+      "description": "项目变更日志",
+      "fileCount": 1,
+      "files": ["docs/generated/changelog/changelog.md"]
+    },
+    "misc": {
+      "description": "其他生成文档",
+      "fileCount": 2,
+      "files": [
+        "docs/generated/misc/README.md",
+        "docs/generated/misc/simple-reorganization-report.json"
+      ]
+    }
+  }
+}

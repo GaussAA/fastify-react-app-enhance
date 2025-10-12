@@ -1,0 +1,85 @@
+{
+  "timestamp": "2025-10-10T18:01:13.817Z",
+  "system": {
+    "cpu": {
+      "usage": 24,
+      "cores": 16,
+      "model": "12th Gen Intel(R) Core(TM) i5-12500H"
+    },
+    "memory": {
+      "total": 16890978304,
+      "used": 12292956160,
+      "free": 4598022144,
+      "usage": 72.77823663469434
+    },
+    "disk": {
+      "total": "200.00GB",
+      "used": "173.44GB",
+      "usage": 86.7175481228872
+    },
+    "network": {
+      "vEthernet (Default Switch)": {
+        "address": "172.18.16.1",
+        "netmask": "255.255.240.0",
+        "mac": "00:15:5d:ad:c6:be"
+      },
+      "vEthernet (WSL)": {
+        "address": "172.17.240.1",
+        "netmask": "255.255.240.0",
+        "mac": "00:15:5d:86:6c:38"
+      },
+      "以太网": {
+        "address": "10.5.131.242",
+        "netmask": "255.255.0.0",
+        "mac": "9c:2d:cd:09:d9:b8"
+      },
+      "VMware Network Adapter VMnet1": {
+        "address": "192.168.198.1",
+        "netmask": "255.255.255.0",
+        "mac": "00:50:56:c0:00:01"
+      },
+      "VMware Network Adapter VMnet8": {
+        "address": "192.168.219.1",
+        "netmask": "255.255.255.0",
+        "mac": "00:50:56:c0:00:08"
+      },
+      "宽带连接": {
+        "address": "10.1.194.81",
+        "netmask": "255.255.255.255",
+        "mac": "00:00:00:00:00:00"
+      },
+      "WLAN": {
+        "address": "192.168.1.104",
+        "netmask": "255.255.255.0",
+        "mac": "70:32:17:43:07:88"
+      }
+    },
+    "processes": []
+  },
+  "logs": {
+    "totalFiles": 0,
+    "totalLines": 0,
+    "errors": 0,
+    "warnings": 0,
+    "errorDetails": [],
+    "warningDetails": []
+  },
+  "performance": {
+    "api": {
+      "status": "stopped",
+      "statusCode": null,
+      "responseTime": null
+    },
+    "database": {
+      "status": "disconnected",
+      "error": "Command failed: npx prisma db pull --preview-feature\nnpm warn Unknown env config \"verify-deps-before-run\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"_jsr-registry\". This will stop working in the next major version of npm.\n\n! unknown or unexpected option: --preview-feature\n\nPull the state from the database to the Prisma schema using introspection\n\nUsage\n\n  $ prisma db pull [flags/options]\n\nFlags\n\n              -h, --help   Display this help message\n                 --force   Ignore current Prisma schema file\n                 --print   Print the introspected Prisma schema to stdout\n\nOptions\n\n                --schema   Custom path to your Prisma schema\n  --composite-type-depth   Specify the depth for introspecting composite types (e.g. Embedded Documents in MongoDB)\n                           Number, default is -1 for infinite depth, 0 = off\n               --schemas   Specify the database schemas to introspect. This overrides the schemas defined in the datasource block of your Prisma schema.\n              --local-d1   Generate a Prisma schema from a local Cloudflare D1 database\nExamples\n\nWith an existing Prisma schema\n  $ prisma db pull\n\nOr specify a Prisma schema path\n  $ prisma db pull --schema=./schema.prisma\n\nInstead of saving the result to the filesystem, you can also print it to stdout\n  $ prisma db pull --print\n\nOverwrite the current schema with the introspected schema instead of enriching it\n  $ prisma db pull --force\n\nSet composite types introspection depth to 2 levels\n  $ prisma db pull --composite-type-depth=2\n\n"
+    },
+    "responseTime": {
+      "average": 0,
+      "min": 0,
+      "max": 0,
+      "samples": 0
+    }
+  },
+  "alerts": []
+}

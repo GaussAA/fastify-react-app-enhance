@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-10-11T02:06:13.609Z",
+  "summary": {
+    "totalUpdates": 3,
+    "totalErrors": 0,
+    "successRate": 100
+  },
+  "updates": [
+    {
+      "type": "script",
+      "file": "tools/scripts/development/generate-all-docs.js",
+      "changes": "Updated document paths to new structure"
+    },
+    {
+      "type": "readme",
+      "file": "tools/scripts/README.md",
+      "changes": "Updated document paths to new structure"
+    },
+    {
+      "type": "package.json",
+      "file": "package.json",
+      "changes": "Updated script paths"
+    }
+  ],
+  "errors": []
+}

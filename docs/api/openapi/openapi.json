@@ -1,0 +1,126 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Fastify React App API",
+    "version": "1.0.0",
+    "description": "Fastify + React 全栈应用 API 文档"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8001",
+      "description": "开发环境"
+    },
+    {
+      "url": "https://api.example.com",
+      "description": "生产环境"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "API 健康检查",
+        "tags": ["General"],
+        "responses": {
+          "200": {
+            "description": "API 运行正常",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建新的resource",
+        "tags": ["General"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "请求体数据",
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "成功创建资源",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误"
+          },
+          "401": {
+            "description": "未授权访问"
+          },
+          "404": {
+            "description": "资源不存在"
+          },
+          "500": {
+            "description": "服务器内部错误"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "statusCode": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

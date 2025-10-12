@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: ['main', 'master']
+  pull_request:
+    branches: ['main', 'master']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.9.0 --activate
+      - name: Install deps
+        run: pnpm install
+      - name: Build API
+        run: pnpm --filter ./apps/api run build
+      - name: Build Web
+        run: pnpm --filter ./apps/web run build
+      - name: Run Prisma Generate
+        run: pnpm --filter ./apps/api exec prisma generate
