@@ -86,8 +86,6 @@ function checkEnvironment() {
 
     const requiredFiles = [
         '.env',
-        'apps/api/.env',
-        'apps/web/.env',
         'infrastructure/docker/docker-compose.yml'
     ];
 
@@ -102,11 +100,22 @@ function checkEnvironment() {
     if (missingFiles.length > 0) {
         log('⚠️ 缺少环境配置文件:', 'yellow');
         missingFiles.forEach(file => log(`  - ${file}`, 'yellow'));
-        log('💡 请运行: pnpm run restore', 'blue');
+        log('💡 请运行: pnpm run setup:env', 'blue');
         return false;
     }
 
     log('✅ 环境配置文件完整', 'green');
+    log('💡 使用根目录 .env 文件进行统一配置管理', 'cyan');
+    
+    // 同步环境变量到子项目
+    log('🔄 同步环境变量到子项目...', 'blue');
+    try {
+        execSync('pnpm run sync:env', { stdio: 'pipe', cwd: projectRoot });
+        log('✅ 环境变量同步完成', 'green');
+    } catch (error) {
+        log('⚠️ 环境变量同步失败，但继续执行', 'yellow');
+    }
+    
     return true;
 }
 
