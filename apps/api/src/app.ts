@@ -8,6 +8,7 @@ import { authRoutes } from './routes/auth.route.js';
 import { roleRoutes } from './routes/role.route.js';
 import { permissionRoutes } from './routes/permission.route.js';
 import { auditRoutes } from './routes/audit.route.js';
+import { llmRoutes } from './routes/llm.route.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
 import rateLimit from '@fastify/rate-limit';
 import helmet from '@fastify/helmet';
@@ -44,6 +45,7 @@ app.register(swagger, {
       { name: 'roles', description: '角色管理' },
       { name: 'permissions', description: '权限管理' },
       { name: 'audit', description: '审计日志' },
+      { name: 'LLM', description: '大模型服务' },
       { name: 'health', description: '健康检查' },
     ],
   },
@@ -117,6 +119,7 @@ app.register(userRoutes, { prefix: '/api/users' });
 app.register(roleRoutes, { prefix: '/api/roles' });
 app.register(permissionRoutes, { prefix: '/api/permissions' });
 app.register(auditRoutes, { prefix: '/api/audit' });
+app.register(llmRoutes, { prefix: '/api/llm' });
 
 app.get(
   '/',

@@ -5,6 +5,7 @@ import { useAuthStore } from '@/store/auth';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { UserProfile } from '@/components/auth/UserProfile';
 import { RoleManagement } from '@/components/auth/RoleManagement';
+import { LLMPage } from './LLMPage';
 import {
     LayoutDashboard,
     Users,
@@ -12,7 +13,8 @@ import {
     Settings,
     LogOut,
     Menu,
-    X
+    X,
+    Brain
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -42,6 +44,7 @@ export function DashboardPage() {
 
     const tabs = [
         { id: 'dashboard', label: '仪表板', icon: LayoutDashboard, permission: null },
+        { id: 'llm', label: 'AI助手', icon: Brain, permission: null },
         { id: 'profile', label: '个人资料', icon: Users, permission: null },
         { id: 'roles', label: '角色管理', icon: Shield, permission: 'role:read' },
         { id: 'settings', label: '系统设置', icon: Settings, permission: 'system:read' },
@@ -349,6 +352,10 @@ export function DashboardPage() {
                                     </CardContent>
                                 </Card>
                             </div>
+                        )}
+
+                        {activeTab === 'llm' && (
+                            <LLMPage />
                         )}
 
                         {activeTab === 'profile' && (
