@@ -153,6 +153,7 @@ node tools/scripts/maintenance/restore.js
 #### `check-environment.js`
 
 检查开发环境依赖和配置：
+
 - Node.js、pnpm、npm 版本检查
 - Docker 安装和运行状态
 - 项目结构和必要文件验证
@@ -162,6 +163,7 @@ node tools/scripts/maintenance/restore.js
 #### `check-database-config.js`
 
 检查数据库配置和连接状态：
+
 - PostgreSQL 和 Redis 配置验证
 - Docker 容器状态检查
 - 环境变量配置检查
@@ -170,6 +172,7 @@ node tools/scripts/maintenance/restore.js
 #### `code-quality-check.js`
 
 分析代码复杂度和质量指标：
+
 - 代码复杂度分析
 - 重复代码检测
 - TypeScript 类型检查
@@ -178,6 +181,7 @@ node tools/scripts/maintenance/restore.js
 #### `security-audit.js`
 
 检查依赖包的安全漏洞：
+
 - 扫描依赖包安全漏洞
 - 检查过时依赖
 - 分析许可证问题
@@ -186,6 +190,7 @@ node tools/scripts/maintenance/restore.js
 #### `run-all-checks.js`
 
 运行所有自动化检查：
+
 - 环境检查（包含RBAC系统检查）
 - 安全审计
 - 代码质量检查
@@ -197,6 +202,7 @@ node tools/scripts/maintenance/restore.js
 #### `test-database-connection.js`
 
 测试数据库连接状态：
+
 - PostgreSQL 连接测试
 - Redis 连接测试
 - Prisma 数据库连接测试
@@ -205,6 +211,7 @@ node tools/scripts/maintenance/restore.js
 #### `rbac-manager.js`
 
 RBAC系统管理功能：
+
 - 初始化RBAC系统
 - 重置RBAC系统
 - 检查RBAC系统状态
@@ -217,6 +224,7 @@ RBAC系统管理功能：
 #### `database-backup.js`
 
 数据库备份和恢复功能：
+
 - PostgreSQL 数据库备份
 - 自动清理旧备份
 - 备份配置管理
@@ -226,6 +234,7 @@ RBAC系统管理功能：
 #### `setup.js`
 
 数据库环境设置：
+
 - 检查 Docker 状态
 - 启动 PostgreSQL 数据库
 - 等待数据库启动
@@ -237,6 +246,7 @@ RBAC系统管理功能：
 #### `reset.js`
 
 数据库重置功能：
+
 - 安全确认操作
 - 停止并删除数据库容器
 - 删除数据库数据
@@ -248,6 +258,7 @@ RBAC系统管理功能：
 #### `build.js`
 
 项目构建功能：
+
 - 清理之前的构建
 - 安装依赖
 - 生成 Prisma 客户端
@@ -258,6 +269,7 @@ RBAC系统管理功能：
 #### `deploy.js`
 
 项目部署功能：
+
 - 设置部署环境
 - 运行测试
 - 构建项目
@@ -270,6 +282,7 @@ RBAC系统管理功能：
 #### `generate-docs.js`
 
 API 文档生成：
+
 - 自动扫描 API 路由
 - 生成 Markdown 格式文档
 - 生成 OpenAPI 规范
@@ -279,6 +292,7 @@ API 文档生成：
 #### `generate-all-docs.js`
 
 综合文档生成：
+
 - 数据库文档
 - 项目结构文档
 - 环境配置文档
@@ -294,6 +308,7 @@ API 文档生成：
 #### `clean.js`
 
 项目清理功能：
+
 - 跨平台支持
 - 交互式确认
 - 清理构建产物、依赖包、缓存文件
@@ -302,6 +317,7 @@ API 文档生成：
 #### `maintenance.js`
 
 系统维护功能：
+
 - 依赖包清理
 - 缓存清理
 - 临时文件清理
@@ -313,6 +329,7 @@ API 文档生成：
 #### `restore.js`
 
 环境恢复功能：
+
 - 创建必要目录结构
 - 生成环境配置文件
 - 安装项目依赖
@@ -324,6 +341,7 @@ API 文档生成：
 #### `start.js`
 
 一键启动项目功能：
+
 - 环境配置检查
 - 项目依赖检查
 - Docker服务检查
@@ -338,6 +356,7 @@ API 文档生成：
 #### `stop.js`
 
 一键停止项目功能：
+
 - 停止Docker服务
 - 停止开发服务器（API、Web、文档）
 - 停止后台Node.js进程
@@ -350,6 +369,7 @@ API 文档生成：
 #### `monitoring-log.js`
 
 监控和日志分析：
+
 - 系统资源监控 (CPU、内存、磁盘)
 - 日志文件分析
 - 错误和警告统计
@@ -359,6 +379,7 @@ API 文档生成：
 #### `performance-test.js`
 
 性能测试功能：
+
 - 负载测试
 - 压力测试
 - 峰值测试
@@ -440,6 +461,7 @@ pnpm run clean:force      # 强制清理
 ### 常见问题
 
 1. **权限问题**
+
    ```bash
    # 确保脚本有执行权限
    chmod +x tools/scripts/*.js
@@ -450,6 +472,7 @@ pnpm run clean:force      # 强制清理
    - 检查脚本文件是否存在
 
 3. **依赖问题**
+
    ```bash
    pnpm install
    ```
@@ -465,11 +488,13 @@ pnpm run clean:force      # 强制清理
 ### 调试技巧
 
 1. **查看详细输出**
+
    ```bash
    node tools/scripts/script-manager.js exec check-environment --verbose
    ```
 
 2. **检查脚本信息**
+
    ```bash
    node tools/scripts/script-manager.js info check-environment
    ```
@@ -496,7 +521,7 @@ pnpm run clean:force      # 强制清理
 
 /**
  * 脚本名称
- * 
+ *
  * 脚本描述和功能说明
  */
 
@@ -523,7 +548,7 @@ class ScriptName {
     try {
       // 脚本逻辑
       await this.executeTask();
-      
+
       console.log('\n✅ 执行完成！');
     } catch (error) {
       console.error('\n❌ 执行失败:', error.message);

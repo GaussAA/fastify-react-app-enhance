@@ -33,6 +33,7 @@ const envManager = new SecureEnvManager(projectRoot);
 ```
 
 **功能特性：**
+
 - 自动生成安全的随机密钥
 - 从模板文件生成环境配置
 - 验证环境配置完整性
@@ -50,6 +51,7 @@ config/env-templates/
 ```
 
 **模板变量：**
+
 - `{{JWT_SECRET}}` - 自动生成的 JWT 密钥
 - `{{DB_PASSWORD}}` - 自动生成的数据库密码
 - `{{API_KEY}}` - 自动生成的 API 密钥
@@ -80,11 +82,13 @@ pnpm run security:check
 ### 开发环境设置
 
 1. **首次设置**：
+
    ```bash
    pnpm run env:generate
    ```
 
 2. **验证配置**：
+
    ```bash
    pnpm run security:check
    ```
@@ -97,6 +101,7 @@ pnpm run security:check
 ### 生产环境部署
 
 1. **设置环境变量**：
+
    ```bash
    export JWT_SECRET="your-production-jwt-secret"
    export DB_PASSWORD="your-production-db-password"
@@ -126,6 +131,7 @@ pnpm run security:check
 如果需要使用自定义密钥，可以：
 
 1. 创建 `.env.secrets` 文件：
+
    ```bash
    JWT_SECRET="your-custom-jwt-secret"
    DB_PASSWORD="your-custom-db-password"
@@ -142,6 +148,7 @@ pnpm run security:check
 ### 1. 版本控制
 
 **必须忽略的文件：**
+
 ```
 .env
 .env.local
@@ -150,6 +157,7 @@ pnpm run security:check
 ```
 
 **可以提交的文件：**
+
 ```
 config/env-templates/
 .env.example
@@ -195,12 +203,14 @@ pnpm run check:all
 ### 常见问题
 
 1. **模板文件不存在**
+
    ```
    错误: 模板文件不存在: config/env-templates/root.env
    解决: 确保模板文件存在于正确位置
    ```
 
 2. **权限问题**
+
    ```
    错误: EACCES: permission denied
    解决: 检查文件权限，确保有写入权限

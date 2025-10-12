@@ -66,24 +66,28 @@ pnpm run prisma:seed       # 运行数据库种子
 ### 1. RBAC系统初始化
 
 #### 使用pnpm命令
+
 ```bash
 # 初始化RBAC系统
 pnpm run init:rbac
 ```
 
 #### 使用脚本管理器
+
 ```bash
 # 通过脚本管理器执行
 node tools/scripts/script-manager.js exec rbac-manager init
 ```
 
 #### 直接使用脚本
+
 ```bash
 # 直接运行RBAC管理脚本
 node tools/scripts/automation/rbac-manager.js init
 ```
 
 **功能说明：**
+
 - 创建默认权限（用户管理、角色管理、权限管理等）
 - 创建默认角色（admin、user）
 - 创建默认管理员用户
@@ -98,6 +102,7 @@ pnpm run rbac:status
 ```
 
 **检查内容：**
+
 - 角色数量
 - 权限数量
 - 用户数量
@@ -105,6 +110,7 @@ pnpm run rbac:status
 - 系统运行状态
 
 **输出示例：**
+
 ```
 📊 检查RBAC系统状态...
 
@@ -126,12 +132,14 @@ pnpm run rbac:reset
 ```
 
 **功能说明：**
+
 - 删除所有RBAC数据
 - 重新创建数据库结构
 - 重新初始化RBAC系统
 - 创建新的管理员用户
 
 **注意事项：**
+
 - 此操作会删除所有现有数据
 - 需要用户确认操作
 - 建议在生产环境使用前先备份
@@ -139,12 +147,14 @@ pnpm run rbac:reset
 ### 4. 备份和恢复RBAC数据
 
 #### 备份RBAC数据
+
 ```bash
 # 备份RBAC数据
 pnpm run rbac:backup
 ```
 
 **备份内容：**
+
 - 用户表（users）
 - 角色表（roles）
 - 权限表（permissions）
@@ -153,17 +163,20 @@ pnpm run rbac:backup
 - 审计日志表（audit_logs）
 
 **备份文件位置：**
+
 ```
 backups/rbac-backup-YYYY-MM-DDTHH-mm-ss.sql
 ```
 
 #### 恢复RBAC数据
+
 ```bash
 # 恢复RBAC数据
 pnpm run rbac:restore backups/rbac-backup-2024-01-01.sql
 ```
 
 **注意事项：**
+
 - 需要指定备份文件路径
 - 会覆盖现有RBAC数据
 - 需要用户确认操作
@@ -171,24 +184,28 @@ pnpm run rbac:restore backups/rbac-backup-2024-01-01.sql
 ### 5. 数据库容器管理
 
 #### 启动数据库
+
 ```bash
 # 启动PostgreSQL和Redis容器
 pnpm run db:start
 ```
 
 #### 停止数据库
+
 ```bash
 # 停止数据库容器
 pnpm run db:stop
 ```
 
 #### 数据库设置
+
 ```bash
 # 完整的数据库设置
 pnpm run db:setup
 ```
 
 **设置流程：**
+
 1. 检查Docker状态
 2. 启动PostgreSQL数据库
 3. 等待数据库启动
@@ -243,6 +260,7 @@ CI=true pnpm run init:rbac
 ### 常见问题
 
 #### 1. 数据库连接失败
+
 ```bash
 # 检查Docker状态
 docker ps
@@ -255,6 +273,7 @@ node tools/scripts/automation/test-database-connection.js
 ```
 
 #### 2. RBAC系统未初始化
+
 ```bash
 # 检查RBAC状态
 pnpm run rbac:status
@@ -264,6 +283,7 @@ pnpm run init:rbac
 ```
 
 #### 3. 权限检查失败
+
 ```bash
 # 检查数据库中的角色和权限
 pnpm run rbac:status
@@ -273,6 +293,7 @@ pnpm run rbac:reset
 ```
 
 #### 4. 管理员用户无法登录
+
 ```bash
 # 检查管理员用户
 pnpm run rbac:status
@@ -284,18 +305,21 @@ node tools/scripts/automation/rbac-manager.js create-admin
 ### 调试技巧
 
 #### 1. 查看详细输出
+
 ```bash
 # 启用详细日志
 LOG_LEVEL=debug pnpm run rbac:status
 ```
 
 #### 2. 检查数据库状态
+
 ```bash
 # 直接查询数据库
 npx prisma studio
 ```
 
 #### 3. 查看脚本日志
+
 ```bash
 # 查看脚本执行日志
 node tools/scripts/automation/rbac-manager.js status --verbose

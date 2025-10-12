@@ -281,7 +281,11 @@ export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ['**/*.test.ts', '**/*.spec.ts'],
-  roots: ['<rootDir>/src', '<rootDir>/../../tests/unit/api', '<rootDir>/../../tests/integration/api'],
+  roots: [
+    '<rootDir>/src',
+    '<rootDir>/../../tests/unit/api',
+    '<rootDir>/../../tests/integration/api',
+  ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^(\\.{1,2}/.*)\\.js$': '$1',

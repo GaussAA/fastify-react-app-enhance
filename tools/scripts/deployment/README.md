@@ -2,7 +2,7 @@
 
 **位置**: `tools/scripts/deployment/`  
 **用途**: 项目构建、部署和发布管理  
-**更新时间**: 2025-01-27  
+**更新时间**: 2025-01-27
 
 ## 📋 脚本概览
 
@@ -16,12 +16,14 @@
 ## 🚀 快速开始
 
 ### 1. 项目构建
+
 ```bash
 # 构建整个项目
 node tools/scripts/deployment/build.js
 ```
 
 ### 2. 项目部署
+
 ```bash
 # 部署到生产环境
 node tools/scripts/deployment/deploy.js
@@ -36,6 +38,7 @@ node tools/scripts/deployment/deploy.js
 **功能**: 构建整个项目，包括API和Web应用，生成生产就绪的构建文件
 
 **构建步骤**:
+
 1. 清理之前的构建文件
 2. 安装依赖
 3. 生成Prisma客户端
@@ -45,6 +48,7 @@ node tools/scripts/deployment/deploy.js
 7. 生成构建报告
 
 **使用方法**:
+
 ```bash
 # 基本构建
 node tools/scripts/deployment/build.js
@@ -53,6 +57,7 @@ node tools/scripts/deployment/build.js
 ```
 
 **输出示例**:
+
 ```
 🏗️ 开始项目构建...
 
@@ -92,6 +97,7 @@ node tools/scripts/deployment/build.js
 ```
 
 **构建配置**:
+
 ```javascript
 // 构建配置选项
 const buildConfig = {
@@ -100,28 +106,29 @@ const buildConfig = {
     buildDir: 'apps/api/dist',
     entryPoint: 'src/server.ts',
     target: 'node18',
-    format: 'esm'
+    format: 'esm',
   },
   web: {
     sourceDir: 'apps/web',
     buildDir: 'apps/web/dist',
     entryPoint: 'src/main.tsx',
     target: 'es2020',
-    format: 'es'
+    format: 'es',
   },
   cleanup: {
     enabled: true,
-    patterns: ['dist/**', 'build/**', '*.tsbuildinfo']
+    patterns: ['dist/**', 'build/**', '*.tsbuildinfo'],
   },
   verification: {
     enabled: true,
     checkFiles: true,
-    checkSizes: true
-  }
+    checkSizes: true,
+  },
 };
 ```
 
 **构建验证**:
+
 ```bash
 # 验证构建文件
 ls -la apps/api/dist/
@@ -137,11 +144,13 @@ du -sh apps/web/dist/
 **功能**: 部署项目到生产环境，支持多种部署方式
 
 **部署方式**:
+
 - Docker部署
 - PM2部署
 - 直接部署
 
 **部署步骤**:
+
 1. 设置环境变量
 2. 运行测试
 3. 构建项目
@@ -150,6 +159,7 @@ du -sh apps/web/dist/
 6. 生成部署报告
 
 **使用方法**:
+
 ```bash
 # 基本部署
 node tools/scripts/deployment/deploy.js
@@ -162,6 +172,7 @@ DEPLOY_ENV=staging node tools/scripts/deployment/deploy.js
 ```
 
 **输出示例**:
+
 ```
 🚀 开始项目部署...
 
@@ -201,6 +212,7 @@ DEPLOY_ENV=staging node tools/scripts/deployment/deploy.js
 ```
 
 **部署配置**:
+
 ```javascript
 // 部署配置选项
 const deployConfig = {
@@ -208,35 +220,36 @@ const deployConfig = {
     development: {
       apiUrl: 'http://localhost:8001',
       webUrl: 'http://localhost:5173',
-      database: 'postgresql://localhost:5432/fastify_react_app_dev'
+      database: 'postgresql://localhost:5432/fastify_react_app_dev',
     },
     staging: {
       apiUrl: 'https://api-staging.example.com',
       webUrl: 'https://staging.example.com',
-      database: 'postgresql://staging-db:5432/fastify_react_app_staging'
+      database: 'postgresql://staging-db:5432/fastify_react_app_staging',
     },
     production: {
       apiUrl: 'https://api.example.com',
       webUrl: 'https://example.com',
-      database: 'postgresql://prod-db:5432/fastify_react_app_prod'
-    }
+      database: 'postgresql://prod-db:5432/fastify_react_app_prod',
+    },
   },
   deployment: {
     mode: 'docker', // docker, pm2, direct
     healthCheck: {
       enabled: true,
       timeout: 30000,
-      retries: 3
+      retries: 3,
     },
     rollback: {
       enabled: true,
-      maxVersions: 5
-    }
-  }
+      maxVersions: 5,
+    },
+  },
 };
 ```
 
 **Docker部署**:
+
 ```bash
 # Docker部署模式
 DEPLOY_MODE=docker node tools/scripts/deployment/deploy.js
@@ -252,6 +265,7 @@ DEPLOY_MODE=docker node tools/scripts/deployment/deploy.js
 ```
 
 **PM2部署**:
+
 ```bash
 # PM2部署模式
 DEPLOY_MODE=pm2 node tools/scripts/deployment/deploy.js
@@ -267,6 +281,7 @@ DEPLOY_MODE=pm2 node tools/scripts/deployment/deploy.js
 ```
 
 **直接部署**:
+
 ```bash
 # 直接部署模式
 DEPLOY_MODE=direct node tools/scripts/deployment/deploy.js
@@ -286,6 +301,7 @@ DEPLOY_MODE=direct node tools/scripts/deployment/deploy.js
 ## 📁 输出文件
 
 ### 构建文件
+
 ```
 apps/api/dist/                    # API构建输出
 ├── server.js                     # 主服务器文件
@@ -302,6 +318,7 @@ apps/web/dist/                    # Web构建输出
 ```
 
 ### 部署文件
+
 ```
 deployment/
 ├── docker/                       # Docker部署文件
@@ -357,27 +374,27 @@ module.exports = {
     output: {
       dir: 'dist',
       filename: 'server.js',
-      format: 'esm'
+      format: 'esm',
     },
     target: 'node18',
     minify: true,
-    sourcemap: false
+    sourcemap: false,
   },
   web: {
     entry: 'src/main.tsx',
     output: {
       dir: 'dist',
-      publicPath: '/'
+      publicPath: '/',
     },
     target: 'es2020',
     minify: true,
-    sourcemap: false
+    sourcemap: false,
   },
   optimization: {
     enabled: true,
     treeshaking: true,
-    minification: true
-  }
+    minification: true,
+  },
 };
 ```
 
@@ -390,29 +407,29 @@ module.exports = {
   environments: {
     development: {
       apiUrl: 'http://localhost:8001',
-      webUrl: 'http://localhost:5173'
+      webUrl: 'http://localhost:5173',
     },
     staging: {
       apiUrl: 'https://api-staging.example.com',
-      webUrl: 'https://staging.example.com'
+      webUrl: 'https://staging.example.com',
     },
     production: {
       apiUrl: 'https://api.example.com',
-      webUrl: 'https://example.com'
-    }
+      webUrl: 'https://example.com',
+    },
   },
   deployment: {
     mode: 'docker',
     healthCheck: {
       enabled: true,
       timeout: 30000,
-      retries: 3
+      retries: 3,
     },
     rollback: {
       enabled: true,
-      maxVersions: 5
-    }
-  }
+      maxVersions: 5,
+    },
+  },
 };
 ```
 
@@ -423,32 +440,35 @@ module.exports = {
 ### 常见问题
 
 1. **构建失败**
+
    ```bash
    # 检查依赖
    pnpm install
-   
+
    # 清理构建缓存
    rm -rf apps/*/dist
    rm -rf node_modules/.cache
    ```
 
 2. **部署失败**
+
    ```bash
    # 检查Docker状态
    docker ps
    docker logs <container-name>
-   
+
    # 检查PM2状态
    pm2 status
    pm2 logs
    ```
 
 3. **服务无法启动**
+
    ```bash
    # 检查端口占用
    lsof -i :8001
    lsof -i :5173
-   
+
    # 检查环境变量
    env | grep NODE_ENV
    ```
@@ -506,13 +526,13 @@ jobs:
         with:
           node-version: '22'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install
-      
+
       - name: Build project
         run: node tools/scripts/deployment/build.js
-      
+
       - name: Deploy
         run: node tools/scripts/deployment/deploy.js
         env:
@@ -581,4 +601,4 @@ curl -f http://localhost:8001/health
 
 ---
 
-*最后更新: 2025-01-27*
+_最后更新: 2025-01-27_

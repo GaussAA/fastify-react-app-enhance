@@ -2,7 +2,7 @@
 
 **位置**: `tools/scripts/utils/`  
 **用途**: 通用工具函数、环境管理和辅助脚本  
-**更新时间**: 2025-01-27  
+**更新时间**: 2025-01-27
 
 ## 📋 脚本概览
 
@@ -22,6 +22,7 @@
 ## 🚀 快速开始
 
 ### 1. 环境变量管理
+
 ```bash
 # 生成安全的环境配置
 node tools/scripts/utils/env-manager.js
@@ -31,12 +32,14 @@ node -e "import('./tools/scripts/utils/env-manager.js').then(m => new m.default(
 ```
 
 ### 2. 文件操作
+
 ```bash
 # 使用文件工具
 node -e "import('./tools/scripts/utils/file-utils.js').then(m => m.default.copyFile('src', 'dist'))"
 ```
 
 ### 3. 日志记录
+
 ```bash
 # 使用日志工具
 node -e "import('./tools/scripts/utils/logger.js').then(m => m.default.info('测试日志'))"
@@ -51,12 +54,14 @@ node -e "import('./tools/scripts/utils/logger.js').then(m => m.default.info('测
 **功能**: 安全地生成和管理环境变量，包括JWT密钥、数据库密码等敏感信息
 
 **主要特性**:
+
 - 自动生成安全的随机密钥
 - 支持环境变量模板
 - 确保敏感信息不被提交到版本控制
 - 支持Docker Compose配置生成
 
 **使用方法**:
+
 ```javascript
 import SecureEnvManager from './tools/scripts/utils/env-manager.js';
 
@@ -73,6 +78,7 @@ envManager.generateDockerCompose();
 ```
 
 **生成的安全配置**:
+
 ```javascript
 {
   JWT_SECRET: "a1b2c3d4e5f6...", // 64字符随机密钥
@@ -83,6 +89,7 @@ envManager.generateDockerCompose();
 ```
 
 **环境模板示例**:
+
 ```bash
 # 根目录环境配置模板
 NODE_ENV={{NODE_ENV}}
@@ -97,6 +104,7 @@ API_KEY="{{API_KEY}}"
 **功能**: 提供常用的文件系统操作辅助函数
 
 **主要方法**:
+
 - `copyFile()` - 复制文件
 - `copyDirectory()` - 复制目录
 - `ensureDirectory()` - 确保目录存在
@@ -105,6 +113,7 @@ API_KEY="{{API_KEY}}"
 - `getFileSize()` - 获取文件大小
 
 **使用方法**:
+
 ```javascript
 import fileUtils from './tools/scripts/utils/file-utils.js';
 
@@ -129,6 +138,7 @@ console.log(`文件大小: ${size} bytes`);
 ```
 
 **高级用法**:
+
 ```javascript
 // 批量复制文件
 const files = ['app.js', 'config.js', 'utils.js'];
@@ -151,12 +161,14 @@ console.log(`总大小: ${stats.totalSize} bytes`);
 **功能**: 提供统一的日志记录功能，支持不同日志级别和输出格式
 
 **日志级别**:
+
 - `error` - 错误信息
 - `warn` - 警告信息
 - `info` - 一般信息
 - `debug` - 调试信息
 
 **使用方法**:
+
 ```javascript
 import logger from './tools/scripts/utils/logger.js';
 
@@ -170,7 +182,7 @@ logger.debug('调试信息', { userId: 123, action: 'login' });
 logger.info('用户操作', {
   userId: 123,
   action: 'create_post',
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 });
 
 // 性能日志
@@ -178,11 +190,12 @@ const startTime = Date.now();
 // ... 执行操作
 logger.info('操作完成', {
   duration: Date.now() - startTime,
-  operation: 'database_query'
+  operation: 'database_query',
 });
 ```
 
 **配置选项**:
+
 ```javascript
 // 配置日志级别
 logger.setLevel('debug');
@@ -198,6 +211,7 @@ logger.setLogFile('logs/app.log');
 ```
 
 **日志格式示例**:
+
 ```json
 {
   "timestamp": "2025-01-27T10:30:00.000Z",
@@ -216,6 +230,7 @@ logger.setLogFile('logs/app.log');
 **功能**: 提供数据验证和清理功能，防止XSS和SQL注入
 
 **验证类型**:
+
 - 邮箱验证
 - 密码强度验证
 - URL验证
@@ -223,6 +238,7 @@ logger.setLogFile('logs/app.log');
 - 字符串长度验证
 
 **使用方法**:
+
 ```javascript
 import validator from './tools/scripts/utils/validator.js';
 
@@ -250,13 +266,13 @@ console.log(cleanInput); // "&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;
 const userData = {
   name: 'John Doe',
   email: 'john@example.com',
-  age: 25
+  age: 25,
 };
 
 const validationResult = validator.validateObject(userData, {
   name: { type: 'string', minLength: 2, maxLength: 50 },
   email: { type: 'email' },
-  age: { type: 'number', min: 18, max: 65 }
+  age: { type: 'number', min: 18, max: 65 },
 });
 
 if (!validationResult.valid) {
@@ -265,9 +281,10 @@ if (!validationResult.valid) {
 ```
 
 **自定义验证规则**:
+
 ```javascript
 // 添加自定义验证器
-validator.addValidator('phone', (value) => {
+validator.addValidator('phone', value => {
   return /^\+?[\d\s\-\(\)]+$/.test(value);
 });
 
@@ -280,12 +297,14 @@ const isValidPhone = validator.isPhone('+1-555-123-4567');
 **功能**: 提供密码哈希、密钥生成和加密解密功能
 
 **主要功能**:
+
 - 密码哈希和验证
 - 随机密钥生成
 - 数据加密解密
 - 数字签名
 
 **使用方法**:
+
 ```javascript
 import cryptoUtils from './tools/scripts/utils/crypto-utils.js';
 
@@ -294,7 +313,10 @@ const hashedPassword = await cryptoUtils.hashPassword('myPassword123');
 console.log(hashedPassword); // $2b$10$...
 
 // 密码验证
-const isValid = await cryptoUtils.verifyPassword('myPassword123', hashedPassword);
+const isValid = await cryptoUtils.verifyPassword(
+  'myPassword123',
+  hashedPassword
+);
 console.log(isValid); // true
 
 // 生成随机密钥
@@ -318,17 +340,22 @@ const signature = cryptoUtils.sign('data to sign', 'private-key');
 console.log(signature); // 数字签名
 
 // 验证数字签名
-const isValidSignature = cryptoUtils.verify('data to sign', signature, 'public-key');
+const isValidSignature = cryptoUtils.verify(
+  'data to sign',
+  signature,
+  'public-key'
+);
 console.log(isValidSignature); // true
 ```
 
 **安全配置**:
+
 ```javascript
 // 配置加密参数
 cryptoUtils.setConfig({
-  hashRounds: 12,        // bcrypt轮数
-  keyLength: 32,         // 密钥长度
-  algorithm: 'aes-256-gcm' // 加密算法
+  hashRounds: 12, // bcrypt轮数
+  keyLength: 32, // 密钥长度
+  algorithm: 'aes-256-gcm', // 加密算法
 });
 ```
 
@@ -337,12 +364,14 @@ cryptoUtils.setConfig({
 **功能**: 提供日期时间处理、格式化和计算功能
 
 **主要功能**:
+
 - 日期格式化
 - 日期计算
 - 时区转换
 - 相对时间显示
 
 **使用方法**:
+
 ```javascript
 import dateUtils from './tools/scripts/utils/date-utils.js';
 
@@ -378,6 +407,7 @@ console.log(parsed); // Date对象
 ```
 
 **日期格式**:
+
 ```javascript
 // 支持的格式
 const formats = {
@@ -385,7 +415,7 @@ const formats = {
   'YYYY-MM-DD HH:mm:ss': '2025-01-27 10:30:00',
   'MM/DD/YYYY': '01/27/2025',
   'DD/MM/YYYY': '27/01/2025',
-  'YYYY年MM月DD日': '2025年01月27日'
+  YYYY年MM月DD日: '2025年01月27日',
 };
 ```
 
@@ -394,12 +424,14 @@ const formats = {
 **功能**: 提供字符串处理、转换和格式化功能
 
 **主要功能**:
+
 - 字符串转换
 - 文本格式化
 - 字符串验证
 - 模板处理
 
 **使用方法**:
+
 ```javascript
 import stringUtils from './tools/scripts/utils/string-utils.js';
 
@@ -451,12 +483,14 @@ console.log(similarity); // 0.8
 **功能**: 提供配置文件加载、验证和管理功能
 
 **支持格式**:
+
 - JSON
 - YAML
 - JavaScript
 - 环境变量
 
 **使用方法**:
+
 ```javascript
 import configLoader from './tools/scripts/utils/config-loader.js';
 
@@ -484,8 +518,8 @@ const schema = {
   database: {
     host: { type: 'string', required: true },
     port: { type: 'number', min: 1, max: 65535 },
-    name: { type: 'string', required: true }
-  }
+    name: { type: 'string', required: true },
+  },
 };
 
 const validationResult = configLoader.validate(config, schema);
@@ -494,12 +528,13 @@ if (!validationResult.valid) {
 }
 
 // 配置热重载
-configLoader.watch('config/app.json', (newConfig) => {
+configLoader.watch('config/app.json', newConfig => {
   console.log('配置已更新:', newConfig);
 });
 ```
 
 **配置模板**:
+
 ```javascript
 // config/app.json
 {
@@ -564,24 +599,24 @@ module.exports = {
     level: 'info',
     format: 'json',
     output: 'both',
-    file: 'logs/utils.log'
+    file: 'logs/utils.log',
   },
   crypto: {
     hashRounds: 12,
     keyLength: 32,
-    algorithm: 'aes-256-gcm'
+    algorithm: 'aes-256-gcm',
   },
   file: {
     timeout: 30000,
     retryCount: 3,
-    backup: true
+    backup: true,
   },
   validator: {
     strictMode: true,
     customRules: {
-      phone: /^\+?[\d\s\-\(\)]+$/
-    }
-  }
+      phone: /^\+?[\d\s\-\(\)]+$/,
+    },
+  },
 };
 ```
 
@@ -592,29 +627,32 @@ module.exports = {
 ### 常见问题
 
 1. **环境变量生成失败**
+
    ```bash
    # 检查模板文件
    ls -la config/env-templates/
-   
+
    # 检查输出目录权限
    chmod -R 755 .
    ```
 
 2. **文件操作权限错误**
+
    ```bash
    # 检查文件权限
    ls -la src/
-   
+
    # 修复权限
    chmod -R 644 src/
    chmod -R 755 src/
    ```
 
 3. **加密工具错误**
+
    ```bash
    # 检查Node.js版本
    node --version
-   
+
    # 更新依赖
    pnpm update
    ```
@@ -636,6 +674,7 @@ NODE_ENV=development node tools/scripts/utils/logger.js
 ### 设置自动维护
 
 **Linux/macOS (crontab)**:
+
 ```bash
 # 编辑crontab
 crontab -e
@@ -648,6 +687,7 @@ crontab -e
 ```
 
 **Windows (任务计划程序)**:
+
 ```cmd
 # 创建定时任务
 schtasks /create /tn "LogCleanup" /tr "node tools/scripts/utils/logger.js cleanup" /sc daily /st 02:00
@@ -692,4 +732,4 @@ schtasks /create /tn "LogCleanup" /tr "node tools/scripts/utils/logger.js cleanu
 
 ---
 
-*最后更新: 2025-01-27*
+_最后更新: 2025-01-27_

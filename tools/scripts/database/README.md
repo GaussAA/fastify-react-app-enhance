@@ -2,7 +2,7 @@
 
 **位置**: `tools/scripts/database/`  
 **用途**: 数据库管理、备份、恢复和重置  
-**更新时间**: 2025-01-27  
+**更新时间**: 2025-01-27
 
 ## 📋 脚本概览
 
@@ -17,18 +17,21 @@
 ## 🚀 快速开始
 
 ### 1. 数据库设置
+
 ```bash
 # 初始化数据库环境
 node tools/scripts/database/setup.js
 ```
 
 ### 2. 数据库备份
+
 ```bash
 # 创建数据库备份
 node tools/scripts/database/database-backup.js
 ```
 
 ### 3. 数据库重置
+
 ```bash
 # 重置数据库
 node tools/scripts/database/reset.js
@@ -43,6 +46,7 @@ node tools/scripts/database/reset.js
 **功能**: 初始化数据库环境，包括Docker容器启动、迁移和种子数据
 
 **执行步骤**:
+
 1. 检查Docker环境
 2. 启动PostgreSQL容器
 3. 等待数据库就绪
@@ -51,6 +55,7 @@ node tools/scripts/database/reset.js
 6. 执行种子数据
 
 **使用方法**:
+
 ```bash
 # 基本设置
 node tools/scripts/database/setup.js
@@ -59,6 +64,7 @@ node tools/scripts/database/setup.js
 ```
 
 **输出示例**:
+
 ```
 🛠️ 开始数据库设置...
 
@@ -88,6 +94,7 @@ node tools/scripts/database/setup.js
 ```
 
 **配置选项**:
+
 ```javascript
 // 在脚本中可配置的选项
 const config = {
@@ -96,13 +103,13 @@ const config = {
     port: 5432,
     name: 'fastify_react_app',
     user: 'postgres',
-    password: process.env.DB_PASSWORD
+    password: process.env.DB_PASSWORD,
   },
   docker: {
     containerName: 'docker-postgres-1',
-    image: 'postgres:15'
+    image: 'postgres:15',
   },
-  timeout: 30000 // 等待数据库启动的超时时间
+  timeout: 30000, // 等待数据库启动的超时时间
 };
 ```
 
@@ -111,6 +118,7 @@ const config = {
 **功能**: 创建PostgreSQL数据库的完整备份，支持自动清理和报告生成
 
 **主要特性**:
+
 - 自动备份PostgreSQL数据库
 - 压缩备份文件
 - 自动清理旧备份
@@ -118,6 +126,7 @@ const config = {
 - 支持恢复功能
 
 **使用方法**:
+
 ```bash
 # 创建备份
 node tools/scripts/database/database-backup.js
@@ -126,6 +135,7 @@ node tools/scripts/database/database-backup.js
 ```
 
 **输出示例**:
+
 ```
 💾 开始数据库备份...
 
@@ -159,6 +169,7 @@ node tools/scripts/database/database-backup.js
 ```
 
 **备份配置**:
+
 ```json
 {
   "postgres": {
@@ -183,12 +194,14 @@ node tools/scripts/database/database-backup.js
 ```
 
 **恢复数据库**:
+
 ```bash
 # 从备份恢复数据库
 node tools/scripts/database/database-backup.js restore backups/database/fastify_react_app_20250127_120000.sql.gz
 ```
 
 **恢复示例**:
+
 ```
 🔄 开始数据库恢复...
 
@@ -207,6 +220,7 @@ node tools/scripts/database/database-backup.js restore backups/database/fastify_
 **功能**: 完全重置数据库到初始状态，包括数据清理和重新初始化
 
 **执行步骤**:
+
 1. 确认重置操作
 2. 停止数据库容器
 3. 清理数据库数据
@@ -217,12 +231,14 @@ node tools/scripts/database/database-backup.js restore backups/database/fastify_
 8. 执行种子数据
 
 **使用方法**:
+
 ```bash
 # 重置数据库（需要确认）
 node tools/scripts/database/reset.js
 ```
 
 **输出示例**:
+
 ```
 🔄 开始数据库重置...
 
@@ -263,6 +279,7 @@ node tools/scripts/database/reset.js
 ```
 
 **安全确认**:
+
 ```bash
 # 重置前会要求确认
 ⚠️  警告: 此操作将删除所有数据库数据！
@@ -270,18 +287,19 @@ node tools/scripts/database/reset.js
 ```
 
 **配置选项**:
+
 ```javascript
 // 重置配置
 const config = {
   database: {
     containerName: 'docker-postgres-1',
-    dataVolume: '../../infrastructure/database/postgres'
+    dataVolume: '../../infrastructure/database/postgres',
   },
   confirmation: {
     required: true,
-    keyword: 'yes'
+    keyword: 'yes',
   },
-  timeout: 30000
+  timeout: 30000,
 };
 ```
 
@@ -290,6 +308,7 @@ const config = {
 ## 📁 输出文件
 
 ### 备份文件
+
 ```
 backups/database/
 ├── fastify_react_app_20250127_120000.sql.gz    # 压缩的备份文件
@@ -298,6 +317,7 @@ backups/database/
 ```
 
 ### 报告文件
+
 ```
 docs/generated/reports/
 ├── backup-report.json                          # 备份报告
@@ -368,21 +388,24 @@ DOCKER_IMAGE=postgres:15
 ### 常见问题
 
 1. **Docker容器未运行**
+
    ```bash
    # 启动Docker容器
    docker-compose up -d postgres
    ```
 
 2. **数据库连接失败**
+
    ```bash
    # 检查数据库状态
    docker ps | grep postgres
-   
+
    # 查看数据库日志
    docker logs docker-postgres-1
    ```
 
 3. **权限错误**
+
    ```bash
    # 确保有足够的权限
    sudo chown -R $USER:$USER backups/
@@ -423,6 +446,7 @@ psql -h localhost -U postgres -d fastify_react_app < backups/database/fastify_re
 ### 设置自动备份
 
 **Linux/macOS (crontab)**:
+
 ```bash
 # 编辑crontab
 crontab -e
@@ -435,6 +459,7 @@ crontab -e
 ```
 
 **Windows (任务计划程序)**:
+
 1. 打开任务计划程序
 2. 创建基本任务
 3. 设置触发器为每天
@@ -495,4 +520,4 @@ du -sh backups/database/*
 
 ---
 
-*最后更新: 2025-01-27*
+_最后更新: 2025-01-27_

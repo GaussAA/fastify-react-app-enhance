@@ -2,14 +2,14 @@
 
 **位置**: `tools/scripts/maintenance/`  
 **用途**: 项目维护、环境恢复和清理工具  
-**更新时间**: 2025-01-27  
+**更新时间**: 2025-01-27
 
 ## 📋 脚本概览
 
 | 脚本名称          | 功能描述     | 使用场景           |
 | ----------------- | ------------ | ------------------ |
 | `restore.js`      | 开发环境恢复 | 初始化开发环境     |
-| `clean.js`      | 项目清理     | 清理临时文件和缓存 |
+| `clean.js`        | 项目清理     | 清理临时文件和缓存 |
 | `health-check.js` | 健康检查     | 检查项目状态       |
 | `backup.js`       | 项目备份     | 备份重要文件       |
 
@@ -18,6 +18,7 @@
 ## 🚀 快速开始
 
 ### 1. 恢复开发环境
+
 ```bash
 # 恢复完整的开发环境
 pnpm run restore
@@ -26,6 +27,7 @@ node tools/scripts/maintenance/restore.js
 ```
 
 ### 2. 清理项目
+
 ```bash
 # 清理临时文件和缓存
 pnpm run clean
@@ -34,6 +36,7 @@ node tools/scripts/maintenance/clean.js
 ```
 
 ### 3. 健康检查
+
 ```bash
 # 检查项目健康状态
 pnpm run health:check
@@ -42,6 +45,7 @@ node tools/scripts/maintenance/health-check.js
 ```
 
 ### 4. 项目备份
+
 ```bash
 # 备份项目重要文件
 pnpm run backup
@@ -58,6 +62,7 @@ node tools/scripts/maintenance/backup.js
 **功能**: 一键恢复完整的开发环境，包括依赖安装、环境配置、数据库设置等
 
 **恢复内容**:
+
 - 安装项目依赖
 - 生成安全的环境配置文件
 - 创建Docker Compose配置
@@ -66,6 +71,7 @@ node tools/scripts/maintenance/backup.js
 - 运行安全审计
 
 **使用方法**:
+
 ```bash
 # 完整恢复开发环境
 node tools/scripts/maintenance/restore.js
@@ -74,6 +80,7 @@ node tools/scripts/maintenance/restore.js
 ```
 
 **输出示例**:
+
 ```
 🚀 开始恢复开发环境...
 
@@ -116,18 +123,20 @@ node tools/scripts/maintenance/restore.js
 **恢复步骤详解**:
 
 1. **依赖安装**
+
    ```bash
    # 安装根目录依赖
    pnpm install
-   
+
    # 安装API项目依赖
    cd apps/api && pnpm install
-   
+
    # 安装Web项目依赖
    cd apps/web && pnpm install
    ```
 
 2. **环境配置生成**
+
    ```bash
    # 生成安全的环境变量
    - 根目录 .env
@@ -137,25 +146,27 @@ node tools/scripts/maintenance/restore.js
    ```
 
 3. **数据库设置**
+
    ```bash
    # 运行Prisma迁移
    npx prisma migrate dev
-   
+
    # 生成Prisma客户端
    npx prisma generate
-   
+
    # 创建种子数据
    npx prisma db seed
    ```
 
 4. **代码质量检查**
+
    ```bash
    # ESLint检查
    pnpm run lint
-   
+
    # Prettier格式化
    pnpm run format
-   
+
    # TypeScript类型检查
    pnpm run type-check
    ```
@@ -171,6 +182,7 @@ node tools/scripts/maintenance/restore.js
 **功能**: 清理项目中的临时文件、缓存、构建产物等，释放磁盘空间
 
 **清理内容**:
+
 - Node.js缓存和临时文件
 - 构建产物和分发文件
 - 日志文件
@@ -179,6 +191,7 @@ node tools/scripts/maintenance/restore.js
 - 编辑器临时文件
 
 **使用方法**:
+
 ```bash
 # 清理所有临时文件
 node tools/scripts/maintenance/cleanup.js
@@ -190,6 +203,7 @@ node tools/scripts/maintenance/cleanup.js --type=cache
 ```
 
 **输出示例**:
+
 ```
 🧹 开始清理项目...
 
@@ -227,6 +241,7 @@ node tools/scripts/maintenance/cleanup.js --type=cache
 **清理类型**:
 
 1. **构建产物** (`--type=build`)
+
    ```bash
    # 清理的目录和文件
    dist/
@@ -237,6 +252,7 @@ node tools/scripts/maintenance/cleanup.js --type=cache
    ```
 
 2. **缓存文件** (`--type=cache`)
+
    ```bash
    # 清理的目录和文件
    node_modules/.cache/
@@ -247,6 +263,7 @@ node tools/scripts/maintenance/cleanup.js --type=cache
    ```
 
 3. **日志文件** (`--type=logs`)
+
    ```bash
    # 清理的目录和文件
    logs/
@@ -271,6 +288,7 @@ node tools/scripts/maintenance/cleanup.js --type=cache
 **功能**: 全面检查项目健康状态，包括依赖、配置、数据库、服务等
 
 **检查内容**:
+
 - 依赖包状态
 - 环境配置完整性
 - 数据库连接状态
@@ -279,6 +297,7 @@ node tools/scripts/maintenance/cleanup.js --type=cache
 - 安全配置状态
 
 **使用方法**:
+
 ```bash
 # 完整健康检查
 node tools/scripts/maintenance/health-check.js
@@ -290,6 +309,7 @@ node tools/scripts/maintenance/health-check.js --component=database
 ```
 
 **输出示例**:
+
 ```
 🏥 开始项目健康检查...
 
@@ -339,6 +359,7 @@ node tools/scripts/maintenance/health-check.js --component=database
 **健康检查项目**:
 
 1. **依赖包检查**
+
    ```bash
    # 检查项目
    - 依赖包完整性
@@ -348,6 +369,7 @@ node tools/scripts/maintenance/health-check.js --component=database
    ```
 
 2. **环境配置检查**
+
    ```bash
    # 检查项目
    - 必需环境变量
@@ -357,6 +379,7 @@ node tools/scripts/maintenance/health-check.js --component=database
    ```
 
 3. **数据库检查**
+
    ```bash
    # 检查项目
    - 数据库连接
@@ -366,6 +389,7 @@ node tools/scripts/maintenance/health-check.js --component=database
    ```
 
 4. **服务状态检查**
+
    ```bash
    # 检查项目
    - API服务运行状态
@@ -375,6 +399,7 @@ node tools/scripts/maintenance/health-check.js --component=database
    ```
 
 5. **代码质量检查**
+
    ```bash
    # 检查项目
    - ESLint错误
@@ -397,6 +422,7 @@ node tools/scripts/maintenance/health-check.js --component=database
 **功能**: 备份项目重要文件，包括源代码、配置、数据库等
 
 **备份内容**:
+
 - 源代码文件
 - 配置文件
 - 环境变量模板
@@ -405,6 +431,7 @@ node tools/scripts/maintenance/health-check.js --component=database
 - 工具脚本
 
 **使用方法**:
+
 ```bash
 # 完整项目备份
 node tools/scripts/maintenance/backup.js
@@ -419,6 +446,7 @@ node tools/scripts/maintenance/backup.js --component=database
 ```
 
 **输出示例**:
+
 ```
 💾 开始项目备份...
 
@@ -470,6 +498,7 @@ node tools/scripts/maintenance/backup.js --component=database
 **备份组件**:
 
 1. **源代码备份** (`--component=code`)
+
    ```bash
    # 备份的目录和文件
    apps/
@@ -482,6 +511,7 @@ node tools/scripts/maintenance/backup.js --component=database
    ```
 
 2. **配置文件备份** (`--component=config`)
+
    ```bash
    # 备份的目录和文件
    package.json
@@ -492,6 +522,7 @@ node tools/scripts/maintenance/backup.js --component=database
    ```
 
 3. **环境模板备份** (`--component=env`)
+
    ```bash
    # 备份的目录和文件
    config/env-templates/
@@ -500,6 +531,7 @@ node tools/scripts/maintenance/backup.js --component=database
    ```
 
 4. **数据库备份** (`--component=database`)
+
    ```bash
    # 备份的目录和文件
    apps/api/prisma/
@@ -515,6 +547,7 @@ node tools/scripts/maintenance/backup.js --component=database
    ```
 
 **备份清单示例**:
+
 ```json
 {
   "backupInfo": {
@@ -613,48 +646,52 @@ CLEANUP_CONFIRM=true
 ### 常见问题
 
 1. **恢复脚本失败**
+
    ```bash
    # 检查依赖安装
    pnpm install
-   
+
    # 检查环境配置
    node tools/scripts/maintenance/health-check.js
-   
+
    # 清理后重试
    node tools/scripts/maintenance/cleanup.js
    node tools/scripts/maintenance/restore.js
    ```
 
 2. **清理脚本权限错误**
+
    ```bash
    # 检查文件权限
    ls -la
-   
+
    # 修改权限
    chmod -R 755 .
-   
+
    # 使用sudo（谨慎）
    sudo node tools/scripts/maintenance/cleanup.js
    ```
 
 3. **健康检查超时**
+
    ```bash
    # 增加超时时间
    node tools/scripts/maintenance/health-check.js --timeout=60000
-   
+
    # 检查服务状态
    docker ps
    netstat -tulpn | grep :8001
    ```
 
 4. **备份空间不足**
+
    ```bash
    # 检查磁盘空间
    df -h
-   
+
    # 清理旧备份
    rm -rf backups/old-*
-   
+
    # 使用外部存储
    node tools/scripts/maintenance/backup.js --output=/external/backup
    ```
@@ -679,6 +716,7 @@ node tools/scripts/maintenance/cleanup.js --dry-run
 ### 设置自动维护
 
 **Linux/macOS (crontab)**:
+
 ```bash
 # 编辑crontab
 crontab -e
@@ -694,6 +732,7 @@ crontab -e
 ```
 
 **Windows (任务计划程序)**:
+
 ```cmd
 # 创建健康检查任务
 schtasks /create /tn "HealthCheck" /tr "node tools/scripts/maintenance/health-check.js" /sc daily /st 02:00
@@ -744,4 +783,4 @@ schtasks /create /tn "ProjectBackup" /tr "node tools/scripts/maintenance/backup.
 
 ---
 
-*最后更新: 2025-01-27*
+_最后更新: 2025-01-27_

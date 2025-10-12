@@ -5,6 +5,7 @@
 ### 1. 环境准备
 
 确保已安装以下依赖：
+
 - Node.js >= 22.0.0
 - pnpm >= 10.0.0
 - PostgreSQL >= 15
@@ -23,11 +24,13 @@ pnpm run prisma:generate
 ### 3. 配置环境变量
 
 复制环境变量模板：
+
 ```bash
 cp config/env-templates/api.env apps/api/.env
 ```
 
 编辑 `apps/api/.env` 文件：
+
 ```env
 NODE_ENV=development
 PORT=8001
@@ -122,6 +125,7 @@ curl -X POST http://localhost:8001/api/roles \
 ## Swagger API 文档
 
 启动服务后，访问 Swagger UI：
+
 - **URL**: http://localhost:8001/docs
 - **功能**: 交互式 API 文档和测试
 
@@ -146,14 +150,22 @@ curl -X POST http://localhost:8001/api/roles \
 
 ```javascript
 // 检查用户读取权限
-app.get('/api/users', {
-  preHandler: [authenticateToken, requirePermission('user', 'read')]
-}, handler);
+app.get(
+  '/api/users',
+  {
+    preHandler: [authenticateToken, requirePermission('user', 'read')],
+  },
+  handler
+);
 
 // 检查管理员角色
-app.delete('/api/users/:id', {
-  preHandler: [authenticateToken, requireRole(['admin'])]
-}, handler);
+app.delete(
+  '/api/users/:id',
+  {
+    preHandler: [authenticateToken, requireRole(['admin'])],
+  },
+  handler
+);
 ```
 
 ## 常用命令
@@ -209,17 +221,20 @@ pnpm run format           # 代码格式化
 ### 调试技巧
 
 1. **启用详细日志**
+
 ```env
 LOG_LEVEL=debug
 ```
 
 2. **查看审计日志**
+
 ```bash
 curl -X GET "http://localhost:8001/api/audit?limit=10" \
   -H "Authorization: Bearer ADMIN_TOKEN"
 ```
 
 3. **检查用户权限**
+
 ```bash
 curl -X GET "http://localhost:8001/api/users/1" \
   -H "Authorization: Bearer USER_TOKEN"
@@ -262,6 +277,7 @@ REDIS_URL="your-production-redis-url"
 ## 支持
 
 如果遇到问题，请：
+
 1. 查看 [故障排除](#故障排除) 部分
 2. 检查 [完整文档](./rbac-system.md)
 3. 查看项目 Issues

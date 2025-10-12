@@ -34,6 +34,7 @@ export function isValidPassword(password: string): boolean {
  */
 export function isValidUrl(url: string): boolean {
   try {
+    // eslint-disable-next-line no-undef
     new URL(url);
     return true;
   } catch {

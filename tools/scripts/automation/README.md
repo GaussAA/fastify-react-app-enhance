@@ -2,7 +2,7 @@
 
 **位置**: `tools/scripts/automation/`  
 **用途**: 项目自动化检查和任务执行  
-**更新时间**: 2025-01-27  
+**更新时间**: 2025-01-27
 
 ## 📋 脚本概览
 
@@ -23,6 +23,7 @@
 ## 🚀 快速开始
 
 ### 1. 环境检查
+
 ```bash
 # 检查开发环境
 pnpm run check:env
@@ -31,6 +32,7 @@ node tools/scripts/automation/check-environment.js
 ```
 
 ### 2. 安全审计
+
 ```bash
 # 运行安全审计
 pnpm run check:security
@@ -39,6 +41,7 @@ node tools/scripts/automation/security-audit.js
 ```
 
 ### 3. 代码质量检查
+
 ```bash
 # 检查代码质量
 pnpm run check:quality
@@ -47,6 +50,7 @@ node tools/scripts/automation/code-quality-check.js
 ```
 
 ### 4. 综合检查
+
 ```bash
 # 运行所有检查
 pnpm run check:all
@@ -63,6 +67,7 @@ node tools/scripts/automation/run-all-checks.js
 **功能**: 全面检查开发环境的依赖和配置
 
 **检查项目**:
+
 - Node.js 版本 (>= 22.0.0)
 - 包管理器 (pnpm >= 10.0.0, npm >= 11.0.0)
 - Docker 安装和运行状态
@@ -73,6 +78,7 @@ node tools/scripts/automation/run-all-checks.js
 - 代码质量工具
 
 **使用方法**:
+
 ```bash
 # 基本检查
 node tools/scripts/automation/check-environment.js
@@ -81,6 +87,7 @@ node tools/scripts/automation/check-environment.js
 ```
 
 **输出示例**:
+
 ```
 🔍 开始环境检查...
 
@@ -115,12 +122,14 @@ node tools/scripts/automation/check-environment.js
 **功能**: 检查依赖包的安全漏洞、过时依赖和许可证问题
 
 **检查项目**:
+
 - 依赖包安全漏洞 (高危/中危/低危)
 - 过时依赖包
 - 许可证合规性
 - 自动修复建议
 
 **使用方法**:
+
 ```bash
 # 运行安全审计
 node tools/scripts/automation/security-audit.js
@@ -129,6 +138,7 @@ node tools/scripts/automation/security-audit.js
 ```
 
 **输出示例**:
+
 ```
 🔒 开始安全审计...
 
@@ -166,6 +176,7 @@ node tools/scripts/automation/security-audit.js
 **功能**: 分析代码复杂度、重复代码、类型错误和代码规范问题
 
 **检查项目**:
+
 - 代码复杂度分析
 - 重复代码检测
 - TypeScript 类型检查
@@ -173,6 +184,7 @@ node tools/scripts/automation/security-audit.js
 - 代码指标统计
 
 **使用方法**:
+
 ```bash
 # 运行代码质量检查
 node tools/scripts/automation/code-quality-check.js
@@ -181,6 +193,7 @@ node tools/scripts/automation/code-quality-check.js
 ```
 
 **输出示例**:
+
 ```
 🔍 开始代码质量检查...
 
@@ -223,6 +236,7 @@ node tools/scripts/automation/code-quality-check.js
 **功能**: 管理配置模板文件和敏感值，从模板和值生成最终配置文件
 
 **主要特性**:
+
 - 管理配置模板文件（结构定义）
 - 管理敏感值文件（.env.secrets）
 - 从模板和值生成最终配置文件
@@ -230,6 +244,7 @@ node tools/scripts/automation/code-quality-check.js
 - 交互式配置管理
 
 **使用方法**:
+
 ```bash
 # 交互式配置管理
 node tools/scripts/automation/config-updater.js interactive
@@ -266,6 +281,7 @@ node tools/scripts/automation/config-updater.js list
 ```
 
 **交互式管理示例**:
+
 ```
 🚀 开始交互式配置管理...
 
@@ -302,12 +318,14 @@ node tools/scripts/automation/config-updater.js list
 **功能**: 检查项目中的安全配置问题，包括硬编码敏感信息
 
 **检查项目**:
+
 - 硬编码密码和密钥
 - 默认密码和密钥
 - 环境配置文件验证
 - .gitignore 配置检查
 
 **使用方法**:
+
 ```bash
 # 运行安全配置检查
 pnpm run security:check
@@ -316,6 +334,7 @@ node tools/scripts/automation/security-check.js
 ```
 
 **输出示例**:
+
 ```
 🔒 开始安全配置检查...
 
@@ -337,6 +356,7 @@ node tools/scripts/automation/security-check.js
 **功能**: 检查PostgreSQL和Redis的配置和连接状态
 
 **检查项目**:
+
 - Docker 服务状态
 - Docker Compose 配置
 - 环境变量配置
@@ -344,12 +364,14 @@ node tools/scripts/automation/security-check.js
 - Prisma 配置
 
 **使用方法**:
+
 ```bash
 # 检查数据库配置
 node tools/scripts/automation/check-database-config.js
 ```
 
 **输出示例**:
+
 ```
 🔍 检查数据库配置...
 
@@ -397,18 +419,21 @@ node tools/scripts/automation/check-database-config.js
 **功能**: 测试PostgreSQL和Redis的连接状态
 
 **测试项目**:
+
 - PostgreSQL 连接测试
 - Redis 连接测试
 - Prisma 数据库连接测试
 - Docker 容器状态检查
 
 **使用方法**:
+
 ```bash
 # 测试数据库连接
 node tools/scripts/automation/test-database-connection.js
 ```
 
 **输出示例**:
+
 ```
 🔍 测试数据库连接...
 
@@ -439,12 +464,14 @@ def456ghi789   redis:7     "docker-entrypoint.s…"   2 hours ago     Up 2 hours
 **功能**: 分析项目中可以自动化的任务和操作
 
 **分析项目**:
+
 - 现有自动化任务
 - 缺失的自动化任务
 - 自动化建议
 - 实施计划
 
 **使用方法**:
+
 ```bash
 # 运行自动化分析
 node tools/scripts/automation/automation-analysis.js
@@ -453,6 +480,7 @@ node tools/scripts/automation/automation-analysis.js
 ```
 
 **输出示例**:
+
 ```
 🔍 分析项目自动化任务...
 
@@ -469,6 +497,7 @@ node tools/scripts/automation/automation-analysis.js
 **功能**: 运行所有自动化检查和任务
 
 **检查项目**:
+
 - 环境检查
 - 安全审计
 - 代码质量检查
@@ -478,6 +507,7 @@ node tools/scripts/automation/automation-analysis.js
 - 测试运行
 
 **使用方法**:
+
 ```bash
 # 运行所有检查
 pnpm run check:all
@@ -488,6 +518,7 @@ node tools/scripts/automation/run-all-checks.js
 ```
 
 **输出示例**:
+
 ```
 🚀 开始综合自动化检查...
 
@@ -599,18 +630,21 @@ LOG_LEVEL=info
 ### 常见问题
 
 1. **权限错误**
+
    ```bash
    # 确保脚本有执行权限
    chmod +x tools/scripts/automation/*.js
    ```
 
 2. **依赖缺失**
+
    ```bash
    # 安装缺失的依赖
    pnpm install
    ```
 
 3. **Docker 服务未运行**
+
    ```bash
    # 启动 Docker 服务
    docker-compose up -d
@@ -652,4 +686,4 @@ NODE_ENV=development node tools/scripts/automation/security-audit.js
 
 ---
 
-*最后更新: 2025-01-27*
+_最后更新: 2025-01-27_

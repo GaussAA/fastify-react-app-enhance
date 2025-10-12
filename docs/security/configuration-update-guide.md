@@ -2,7 +2,7 @@
 
 **更新时间**: 2025-01-27  
 **适用版本**: Fastify-React-App-Enhance v1.0+  
-**安全等级**: 🟢 安全  
+**安全等级**: 🟢 安全
 
 ## 📋 概述
 
@@ -38,7 +38,7 @@ pnpm run config:update
 3. 全部配置
 4. 仅验证配置
 
-请输入选择 (1-4): 
+请输入选择 (1-4):
 ```
 
 ### 2. 快速命令
@@ -74,6 +74,7 @@ pnpm run config:update
 ```
 
 系统会询问您是否更新以下敏感信息：
+
 - **JWT密钥**: 用于API认证
 - **数据库密码**: PostgreSQL数据库访问密码
 - **Redis密码**: Redis缓存服务密码
@@ -96,6 +97,7 @@ pnpm run config:update
 ```
 
 这将：
+
 - 重新生成 `docker-compose.yml`
 - 使用最新的安全密钥
 - 更新服务配置
@@ -117,6 +119,7 @@ pnpm run config:validate
 ```
 
 验证内容包括：
+
 - ✅ 环境变量完整性
 - ✅ 必需配置项存在
 - ✅ 敏感信息安全性
@@ -142,6 +145,7 @@ pnpm run security:check
 ```
 
 备份包含：
+
 - 所有环境配置文件 (`.env`, `.env.secrets`)
 - Docker配置文件
 - 配置模板文件
@@ -162,6 +166,7 @@ pnpm run config:restore config-backup-2025-01-27T10-30-00-000Z
 ### 配置验证
 
 更新后自动验证：
+
 - ✅ 环境变量格式正确
 - ✅ 必需配置项完整
 - ✅ 敏感信息已更新
@@ -248,7 +253,7 @@ const updater = new ConfigUpdater(process.cwd());
 
 // 更新JWT密钥
 await updater.updateEnvConfig({
-    JWT_SECRET: updater.envManager.generateJwtSecret()
+  JWT_SECRET: updater.envManager.generateJwtSecret(),
 });
 
 // 验证配置
@@ -262,11 +267,13 @@ updater.validateConfig();
 ### 生产环境部署
 
 1. **部署前备份**:
+
    ```bash
    pnpm run config:backup "before-production-deploy"
    ```
 
 2. **验证配置**:
+
    ```bash
    pnpm run config:validate
    ```
@@ -371,6 +378,7 @@ pnpm run config:backup "feature-xyz-implementation"
 ### Q: 如何更新特定环境变量？
 
 A: 使用交互式工具：
+
 ```bash
 pnpm run config:update
 # 选择 "1. 环境变量配置"
@@ -380,6 +388,7 @@ pnpm run config:update
 ### Q: 配置更新后服务无法启动？
 
 A: 检查并恢复：
+
 ```bash
 pnpm run config:validate  # 检查配置
 pnpm run config:list      # 查看备份
@@ -389,6 +398,7 @@ pnpm run config:restore <backup-name>  # 恢复备份
 ### Q: 如何在不同环境间同步配置？
 
 A: 使用模板和重新生成：
+
 ```bash
 # 1. 更新配置模板
 # 2. 重新生成环境文件
@@ -398,6 +408,7 @@ pnpm run config:regenerate
 ### Q: 备份文件占用太多空间？
 
 A: 定期清理旧备份：
+
 ```bash
 # 手动删除旧备份
 rm -rf backups/config/config-backup-*
@@ -417,4 +428,4 @@ rm -rf backups/config/config-backup-*
 
 ---
 
-*本指南基于2025-01-27的配置更新工具版本编写。*
+_本指南基于2025-01-27的配置更新工具版本编写。_

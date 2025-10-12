@@ -2,7 +2,7 @@
 
 **位置**: `tools/scripts/monitoring/`  
 **用途**: 系统监控、性能分析和健康检查  
-**更新时间**: 2025-01-27  
+**更新时间**: 2025-01-27
 
 ## 📋 脚本概览
 
@@ -18,6 +18,7 @@
 ## 🚀 快速开始
 
 ### 1. 系统健康检查
+
 ```bash
 # 执行健康检查
 pnpm run health:check
@@ -26,6 +27,7 @@ node tools/scripts/monitoring/health-check.js
 ```
 
 ### 2. 性能监控
+
 ```bash
 # 启动性能监控
 pnpm run monitor:performance
@@ -34,6 +36,7 @@ node tools/scripts/monitoring/performance-monitor.js
 ```
 
 ### 3. 日志分析
+
 ```bash
 # 分析应用日志
 pnpm run logs:analyze
@@ -42,6 +45,7 @@ node tools/scripts/monitoring/log-analyzer.js
 ```
 
 ### 4. 系统监控
+
 ```bash
 # 监控系统资源
 pnpm run monitor:system
@@ -58,6 +62,7 @@ node tools/scripts/monitoring/system-monitor.js
 **功能**: 全面检查系统健康状态，包括服务状态、数据库连接、API响应、资源使用等
 
 **检查项目**:
+
 - 服务状态检查
 - 数据库连接检查
 - API端点健康检查
@@ -66,6 +71,7 @@ node tools/scripts/monitoring/system-monitor.js
 - 配置文件检查
 
 **使用方法**:
+
 ```bash
 # 基本健康检查
 node tools/scripts/monitoring/health-check.js
@@ -78,6 +84,7 @@ node tools/scripts/monitoring/health-check.js --output health-report.json
 ```
 
 **输出示例**:
+
 ```
 🏥 开始系统健康检查...
 
@@ -116,6 +123,7 @@ node tools/scripts/monitoring/health-check.js --output health-report.json
 ```
 
 **健康检查报告示例**:
+
 ```json
 {
   "timestamp": "2025-01-27T10:30:00.000Z",
@@ -170,6 +178,7 @@ node tools/scripts/monitoring/health-check.js --output health-report.json
 **功能**: 实时监控应用性能指标，包括响应时间、吞吐量、错误率、资源使用等
 
 **监控指标**:
+
 - API响应时间
 - 请求吞吐量
 - 错误率统计
@@ -179,6 +188,7 @@ node tools/scripts/monitoring/health-check.js --output health-report.json
 - 缓存命中率
 
 **使用方法**:
+
 ```bash
 # 启动性能监控
 node tools/scripts/monitoring/performance-monitor.js
@@ -194,6 +204,7 @@ node tools/scripts/monitoring/performance-monitor.js --interval 5
 ```
 
 **输出示例**:
+
 ```
 📈 启动性能监控...
 
@@ -240,6 +251,7 @@ node tools/scripts/monitoring/performance-monitor.js --interval 5
 ```
 
 **性能监控报告示例**:
+
 ```json
 {
   "monitoring_session": {
@@ -319,6 +331,7 @@ node tools/scripts/monitoring/performance-monitor.js --interval 5
 **功能**: 分析应用日志，统计错误、性能指标、用户行为等，生成分析报告
 
 **分析内容**:
+
 - 错误日志统计
 - 性能日志分析
 - 用户行为分析
@@ -327,6 +340,7 @@ node tools/scripts/monitoring/performance-monitor.js --interval 5
 - 趋势分析
 
 **使用方法**:
+
 ```bash
 # 分析最近24小时日志
 node tools/scripts/monitoring/log-analyzer.js
@@ -342,6 +356,7 @@ node tools/scripts/monitoring/log-analyzer.js --verbose
 ```
 
 **输出示例**:
+
 ```
 📋 开始日志分析...
 
@@ -385,6 +400,7 @@ node tools/scripts/monitoring/log-analyzer.js --verbose
 ```
 
 **日志分析报告示例**:
+
 ```json
 {
   "analysis_period": {
@@ -462,6 +478,7 @@ node tools/scripts/monitoring/log-analyzer.js --verbose
 **功能**: 监控服务器系统资源，包括CPU、内存、磁盘、网络等，提供实时系统状态
 
 **监控项目**:
+
 - CPU使用率和负载
 - 内存使用情况
 - 磁盘空间和IO
@@ -470,6 +487,7 @@ node tools/scripts/monitoring/log-analyzer.js --verbose
 - 系统服务状态
 
 **使用方法**:
+
 ```bash
 # 启动系统监控
 node tools/scripts/monitoring/system-monitor.js
@@ -485,6 +503,7 @@ node tools/scripts/monitoring/system-monitor.js --output system-status.json
 ```
 
 **输出示例**:
+
 ```
 🖥️ 启动系统监控...
 
@@ -527,6 +546,7 @@ node tools/scripts/monitoring/system-monitor.js --output system-status.json
 ```
 
 **系统监控报告示例**:
+
 ```json
 {
   "monitoring_session": {
@@ -667,53 +687,57 @@ LOG_ANALYZER_PATTERN_WARNING=WARN|WARNING
 ### 常见问题
 
 1. **健康检查失败**
+
    ```bash
    # 检查服务状态
    docker ps
    netstat -tulpn | grep :8001
-   
+
    # 检查数据库连接
    psql -h localhost -p 5432 -U postgres -d fastify_react_app
-   
+
    # 检查环境配置
    cat .env
    ```
 
 2. **性能监控数据异常**
+
    ```bash
    # 检查系统资源
    top
    htop
    iostat -x 1
-   
+
    # 检查应用日志
    tail -f logs/app.log
-   
+
    # 重启监控服务
    node tools/scripts/monitoring/performance-monitor.js --restart
    ```
 
 3. **日志分析失败**
+
    ```bash
    # 检查日志文件权限
    ls -la logs/
-   
+
    # 检查日志文件格式
    head -n 10 logs/app.log
-   
+
    # 清理损坏的日志文件
    rm logs/corrupted.log
    ```
 
 4. **系统监控权限错误**
+
    ```bash
    # 检查系统权限
    whoami
    groups
-   
+
    # 使用sudo运行（谨慎）
    sudo node tools/scripts/monitoring/system-monitor.js
-   
+
    # 检查系统服务状态
    systemctl status
    ```
@@ -738,6 +762,7 @@ node tools/scripts/monitoring/system-monitor.js --dry-run
 ### 设置自动监控
 
 **Linux/macOS (crontab)**:
+
 ```bash
 # 编辑crontab
 crontab -e
@@ -756,6 +781,7 @@ crontab -e
 ```
 
 **Windows (任务计划程序)**:
+
 ```cmd
 # 创建健康检查任务
 schtasks /create /tn "HealthCheck" /tr "node tools/scripts/monitoring/health-check.js" /sc minute /mo 5
@@ -809,4 +835,4 @@ schtasks /create /tn "SystemMonitor" /tr "node tools/scripts/monitoring/system-m
 
 ---
 
-*最后更新: 2025-01-27*
+_最后更新: 2025-01-27_
