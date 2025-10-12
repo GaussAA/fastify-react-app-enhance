@@ -29,7 +29,7 @@ export function ChatInterface() {
         createSession,
         deleteSession,
         setCurrentSession,
-    sendStreamMessage,
+        sendStreamMessage,
         clearMessages,
         clearError
     } = useLLMStore();
