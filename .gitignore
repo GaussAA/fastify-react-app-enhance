@@ -1,19 +1,31 @@
+# ===========================================
 # Dependencies
+# ===========================================
 node_modules/
 .pnpm-store/
+jspm_packages/
 
+# ===========================================
 # Build outputs
+# ===========================================
 dist/
 build/
 coverage/
+*.lcov
 
+# ===========================================
 # Environment variables
+# ===========================================
 .env
 .env.local
 .env.*.local
+.env.test
+.env.production
 .env.secrets
 
+# ===========================================
 # Logs
+# ===========================================
 logs/
 *.log
 npm-debug.log*
@@ -21,82 +33,97 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# ===========================================
 # Runtime data
+# ===========================================
 pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-
-# nyc test coverage
+# ===========================================
+# Test coverage
+# ===========================================
 .nyc_output
+coverage/
 
-# Dependency directories
-node_modules/
-jspm_packages/
-
-# TypeScript cache
+# ===========================================
+# TypeScript
+# ===========================================
 *.tsbuildinfo
 
-# Optional npm cache directory
+# ===========================================
+# Cache directories
+# ===========================================
 .npm
-
-# Optional eslint cache
 .eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-.env.test
-.env.production
-
-# parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
-
-# Next.js build output
-.next
-
-# Nuxt.js build / generate output
-.nuxt
-
-# Gatsby files
-.cache/
-public
-
-# Storybook build outputs
-.out
-.storybook-out
-
-# Temporary folders
-tmp/
-temp/
-
-# Cache directories
 cache/
 
-# Backup directories
-backups/
+# ===========================================
+# Package managers
+# ===========================================
+.yarn-integrity
+*.tgz
 
+# ===========================================
+# Vite (Frontend build tool)
+# ===========================================
+.vite/
+
+# ===========================================
+# Fastify (Backend framework)
+# ===========================================
+fastify.log
+
+# ===========================================
+# Docker
+# ===========================================
+.dockerignore
+docker-compose.override.yml
+
+# ===========================================
+# Database
+# ===========================================
+*.db
+*.sqlite
+*.sqlite3
+infrastructure/database/postgres/data/
+infrastructure/database/redis/data/
+
+# ===========================================
+# Prisma
+# ===========================================
+prisma/migrations/
+
+# ===========================================
+# Temporary files
+# ===========================================
+tmp/
+temp/
+*.tmp
+*.temp
+
+# ===========================================
+# Backup files
+# ===========================================
+backups/
+*.backup
+*.bak
+
+# ===========================================
 # Editor directories and files
+# ===========================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
+# ===========================================
 # OS generated files
+# ===========================================
 .DS_Store
 .DS_Store?
 ._*
@@ -105,17 +132,28 @@ backups/
 ehthumbs.db
 Thumbs.db
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# ===========================================
+# Optional REPL history
+# ===========================================
+.node_repl_history
 
-# Prisma
-prisma/migrations/
+# ===========================================
+# Performance monitoring
+# ===========================================
+performance.json
+*.perf
 
-# Docker
-.dockerignore
+# ===========================================
+# Security
+# ===========================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
 
-# Backup files
-*.backup
-*.bak
+# ===========================================
+# Documentation generated files
+# ===========================================
+docs/generated/reports/*.json
+docs/generated/analysis/*.json
