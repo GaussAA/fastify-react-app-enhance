@@ -4,12 +4,12 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { 
-  LLMChatRequest, 
-  LLMChatResponse, 
-  LLMStreamResponse, 
-  LLMModel, 
-  LLMServiceConfig 
+import {
+    LLMChatRequest,
+    LLMChatResponse,
+    LLMStreamResponse,
+    LLMModel,
+    LLMServiceConfig
 } from '../../types/llm.js';
 import { BaseLLMService } from './base-llm.service.js';
 

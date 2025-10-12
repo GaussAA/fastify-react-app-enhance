@@ -160,26 +160,26 @@ GET /api/llm/health
 
 ### 环境变量
 
-| 变量名 | 说明 | 默认值 |
-|--------|------|--------|
-| `LLM_DEFAULT_PROVIDER` | 默认提供商 | `deepseek` |
-| `LLM_API_KEY` | API密钥 | - |
-| `LLM_DEFAULT_MODEL` | 默认模型 | `deepseek-chat` |
-| `LLM_BASE_URL` | 服务基础URL | `https://api.deepseek.com/v1` |
-| `LLM_TIMEOUT` | 请求超时时间(ms) | `30000` |
-| `LLM_MAX_RETRIES` | 最大重试次数 | `3` |
-| `LLM_TEMPERATURE` | 默认温度 | `0.7` |
-| `LLM_MAX_TOKENS` | 默认最大令牌数 | `2000` |
+| 变量名                 | 说明             | 默认值                        |
+| ---------------------- | ---------------- | ----------------------------- |
+| `LLM_DEFAULT_PROVIDER` | 默认提供商       | `deepseek`                    |
+| `LLM_API_KEY`          | API密钥          | -                             |
+| `LLM_DEFAULT_MODEL`    | 默认模型         | `deepseek-chat`               |
+| `LLM_BASE_URL`         | 服务基础URL      | `https://api.deepseek.com/v1` |
+| `LLM_TIMEOUT`          | 请求超时时间(ms) | `30000`                       |
+| `LLM_MAX_RETRIES`      | 最大重试次数     | `3`                           |
+| `LLM_TEMPERATURE`      | 默认温度         | `0.7`                         |
+| `LLM_MAX_TOKENS`       | 默认最大令牌数   | `2000`                        |
 
 ### 模型参数
 
-| 参数 | 类型 | 范围 | 说明 |
-|------|------|------|------|
-| `temperature` | number | 0-2 | 控制输出随机性 |
-| `max_tokens` | number | >0 | 最大输出长度 |
-| `top_p` | number | 0-1 | 核采样参数 |
-| `frequency_penalty` | number | -2到2 | 频率惩罚 |
-| `presence_penalty` | number | -2到2 | 存在惩罚 |
+| 参数                | 类型   | 范围  | 说明           |
+| ------------------- | ------ | ----- | -------------- |
+| `temperature`       | number | 0-2   | 控制输出随机性 |
+| `max_tokens`        | number | >0    | 最大输出长度   |
+| `top_p`             | number | 0-1   | 核采样参数     |
+| `frequency_penalty` | number | -2到2 | 频率惩罚       |
+| `presence_penalty`  | number | -2到2 | 存在惩罚       |
 
 ## 扩展开发
 
@@ -242,13 +242,13 @@ import { CustomComponent } from '@/components/llm/CustomComponent';
 
 ### 常见错误
 
-| 错误码 | 说明 | 解决方案 |
-|--------|------|----------|
-| `INVALID_API_KEY` | API密钥无效 | 检查环境变量配置 |
-| `MODEL_NOT_FOUND` | 模型不存在 | 使用正确的模型名称 |
-| `RATE_LIMIT_EXCEEDED` | 请求频率超限 | 降低请求频率 |
-| `INSUFFICIENT_QUOTA` | 配额不足 | 检查账户余额 |
-| `TIMEOUT` | 请求超时 | 增加超时时间或检查网络 |
+| 错误码                | 说明         | 解决方案               |
+| --------------------- | ------------ | ---------------------- |
+| `INVALID_API_KEY`     | API密钥无效  | 检查环境变量配置       |
+| `MODEL_NOT_FOUND`     | 模型不存在   | 使用正确的模型名称     |
+| `RATE_LIMIT_EXCEEDED` | 请求频率超限 | 降低请求频率           |
+| `INSUFFICIENT_QUOTA`  | 配额不足     | 检查账户余额           |
+| `TIMEOUT`             | 请求超时     | 增加超时时间或检查网络 |
 
 ### 调试技巧
 
