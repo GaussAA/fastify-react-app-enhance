@@ -3,15 +3,19 @@
  * 集成聊天界面和模型管理功能
  */
 
-import { useEffect } from 'react';
-import { Brain, MessageSquare, Settings, Activity } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Brain, MessageSquare, Settings, Activity, Code, Eye, Database } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ChatInterface } from '@/components/llm/ChatInterface';
+import { MarkdownTest } from '@/components/llm/MarkdownTest';
+import { SessionPersistenceTest } from '@/components/llm/SessionPersistenceTest';
 import { useLLMStore } from '@/store/llm';
 
 export function LLMPage() {
+    const [activeView, setActiveView] = useState<'chat' | 'markdown-test' | 'session-test'>('chat');
+
     const {
         serviceStatus,
         models,
@@ -55,6 +59,37 @@ export function LLMPage() {
                     </div>
 
                     <div className="flex items-center space-x-3">
+                        {/* 视图切换按钮 */}
+                        <div className="flex items-center space-x-2">
+                            <Button
+                                variant={activeView === 'chat' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setActiveView('chat')}
+                                className="flex items-center space-x-1"
+                            >
+                                <MessageSquare className="h-4 w-4" />
+                                <span>聊天</span>
+                            </Button>
+                            <Button
+                                variant={activeView === 'markdown-test' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setActiveView('markdown-test')}
+                                className="flex items-center space-x-1"
+                            >
+                                <Code className="h-4 w-4" />
+                                <span>Markdown测试</span>
+                            </Button>
+                            <Button
+                                variant={activeView === 'session-test' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setActiveView('session-test')}
+                                className="flex items-center space-x-1"
+                            >
+                                <Database className="h-4 w-4" />
+                                <span>会话测试</span>
+                            </Button>
+                        </div>
+
                         {/* 服务状态 */}
                         <div className="flex items-center space-x-2">
                             <Activity className="h-4 w-4 text-gray-400" />
@@ -127,9 +162,17 @@ export function LLMPage() {
                 )}
             </div>
 
-            {/* 聊天界面 */}
+            {/* 主内容区域 */}
             <div className="flex-1 overflow-hidden">
-                <ChatInterface />
+                {activeView === 'chat' ? (
+                    <ChatInterface />
+                ) : activeView === 'markdown-test' ? (
+                    <MarkdownTest />
+                ) : (
+                    <div className="h-full overflow-y-auto p-6">
+                        <SessionPersistenceTest />
+                    </div>
+                )}
             </div>
         </div>
     );

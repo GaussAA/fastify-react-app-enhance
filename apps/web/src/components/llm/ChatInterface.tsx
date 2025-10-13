@@ -12,6 +12,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLLMStore } from '@/store/llm';
 import { ChatMessage } from '@/components/llm/ChatMessage';
 import { ChatSettings } from '@/components/llm/ChatSettings';
+import { SessionManager } from '@/components/llm/SessionManager';
+import { useSessionInitialization } from '@/hooks/useSessionInitialization';
 
 export function ChatInterface() {
     const [inputMessage, setInputMessage] = useState('');
@@ -19,6 +21,9 @@ export function ChatInterface() {
     const [streamingContent, setStreamingContent] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    // 初始化会话
+    const { currentUserId } = useSessionInitialization();
 
     const {
         sessions,
@@ -31,7 +36,8 @@ export function ChatInterface() {
         setCurrentSession,
         sendStreamMessage,
         clearMessages,
-        clearError
+        clearError,
+        setError
     } = useLLMStore();
 
     // 自动滚动到底部
@@ -47,6 +53,11 @@ export function ChatInterface() {
     const handleSendMessage = async () => {
         if (!inputMessage.trim() || isLoading) return;
 
+        if (!currentUserId) {
+            setError('请先登录后再发送消息');
+            return;
+        }
+
         const message = inputMessage.trim();
         setInputMessage('');
 
@@ -58,6 +69,7 @@ export function ChatInterface() {
         } catch (error) {
             console.error('发送消息失败:', error);
         } finally {
+            // 流式处理完成后清空流式内容
             setStreamingContent('');
         }
     };
@@ -71,8 +83,13 @@ export function ChatInterface() {
     };
 
     // 创建新会话
-    const handleNewSession = () => {
-        createSession();
+    const handleNewSession = async () => {
+        if (!currentUserId) {
+            setError('请先登录后再创建会话');
+            return;
+        }
+
+        await createSession();
         setInputMessage('');
         setStreamingContent('');
     };
@@ -101,7 +118,10 @@ export function ChatInterface() {
             {/* 侧边栏 - 会话列表 */}
             <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
                 <div className="p-4 border-b border-gray-200">
-                    <div className="flex items-center justify-between mb-4">
+                    {/* 会话管理 */}
+                    <SessionManager />
+
+                    <div className="flex items-center justify-between mb-4 mt-4">
                         <h2 className="text-lg font-semibold text-gray-900">对话历史</h2>
                         <Button
                             onClick={handleNewSession}
@@ -208,30 +228,11 @@ export function ChatInterface() {
                                         key={index}
                                         message={message}
                                         isLast={index === currentSession.messages.length - 1}
+                                        streamingContent={streamingContent}
+                                        isStreaming={isLoading && index === currentSession.messages.length - 1 && message.role === 'assistant'}
                                     />
                                 ))}
 
-                                {/* 流式消息显示 */}
-                                {streamingContent && (
-                                    <div className="flex justify-start">
-                                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 max-w-3xl">
-                                            <div className="flex items-start space-x-3">
-                                                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                                    <MessageSquare className="h-4 w-4 text-green-600" />
-                                                </div>
-                                                <div className="flex-1">
-                                                    <div className="text-sm font-medium text-gray-900 mb-1">
-                                                        AI助手
-                                                    </div>
-                                                    <div className="text-gray-700 whitespace-pre-wrap">
-                                                        {streamingContent}
-                                                        <span className="animate-pulse">|</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
 
                                 <div ref={messagesEndRef} />
                             </div>

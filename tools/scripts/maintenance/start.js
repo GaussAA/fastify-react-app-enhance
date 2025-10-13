@@ -10,10 +10,14 @@ import { execSync } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
+import { loadAppConfig } from '../../../config/config-loader.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '../../../');
+
+// 加载统一配置
+const appConfig = loadAppConfig();
 
 // 颜色定义
 const colors = {
@@ -86,7 +90,7 @@ function checkEnvironment() {
 
     const requiredFiles = [
         '.env',
-        'infrastructure/docker/docker-compose.yml'
+        appConfig.DOCKER.COMPOSE_FILE
     ];
 
     let missingFiles = [];
@@ -106,7 +110,7 @@ function checkEnvironment() {
 
     log('✅ 环境配置文件完整', 'green');
     log('💡 使用根目录 .env 文件进行统一配置管理', 'cyan');
-    
+
     // 同步环境变量到子项目
     log('🔄 同步环境变量到子项目...', 'blue');
     try {
@@ -115,7 +119,7 @@ function checkEnvironment() {
     } catch (error) {
         log('⚠️ 环境变量同步失败，但继续执行', 'yellow');
     }
-    
+
     return true;
 }
 
@@ -146,7 +150,7 @@ function startDatabase() {
 
     // 启动数据库容器
     if (!runCommand(
-        'docker compose -f infrastructure/docker/docker-compose.yml up -d postgres redis',
+        `docker compose -f ${appConfig.DOCKER.COMPOSE_FILE} up -d postgres redis`,
         '启动数据库容器'
     )) {
         log('❌ 数据库启动失败', 'red');
@@ -154,11 +158,11 @@ function startDatabase() {
     }
 
     // 等待数据库启动
-    if (!waitForPort(5432, 'PostgreSQL', 30)) {
+    if (!waitForPort(appConfig.PORTS.POSTGRES, 'PostgreSQL', 30)) {
         log('⚠️ PostgreSQL启动超时，但继续执行', 'yellow');
     }
 
-    if (!waitForPort(6379, 'Redis', 15)) {
+    if (!waitForPort(appConfig.PORTS.REDIS, 'Redis', 15)) {
         log('⚠️ Redis启动超时，但继续执行', 'yellow');
     }
 
@@ -176,8 +180,8 @@ function setupDatabase() {
 
         // 运行数据库迁移
         if (!runCommand('pnpm run prisma:migrate', '运行数据库迁移')) {
-            log('⚠️ 数据库迁移失败，尝试初始化', 'yellow');
-            if (!runCommand('npx prisma migrate dev --name init', '初始化数据库迁移', join(projectRoot, 'apps/api'))) {
+            log('⚠️ 数据库迁移失败，尝试部署现有迁移', 'yellow');
+            if (!runCommand('npx prisma migrate deploy', '部署数据库迁移', join(projectRoot, 'apps/api'))) {
                 log('⚠️ 数据库迁移失败，但继续执行', 'yellow');
             }
         }
@@ -217,12 +221,12 @@ function startDevelopmentServers() {
     log('🚀 启动开发服务器...', 'blue');
 
     // 检查端口是否被占用
-    if (checkPort(8001)) {
-        log('⚠️ 端口8001已被占用，API服务器可能已在运行', 'yellow');
+    if (checkPort(appConfig.PORTS.API)) {
+        log(`⚠️ 端口${appConfig.PORTS.API}已被占用，API服务器可能已在运行`, 'yellow');
     }
 
-    if (checkPort(5173)) {
-        log('⚠️ 端口5173已被占用，Web服务器可能已在运行', 'yellow');
+    if (checkPort(appConfig.PORTS.WEB)) {
+        log(`⚠️ 端口${appConfig.PORTS.WEB}已被占用，Web服务器可能已在运行`, 'yellow');
     }
 
     // 启动开发环境
@@ -247,11 +251,11 @@ function showStartupInfo() {
     log('🎉 项目启动完成！', 'green');
     log('', 'reset');
     log('📋 服务信息：', 'cyan');
-    log('  🌐 API服务器: http://localhost:8001', 'blue');
-    log('  📚 API文档: http://localhost:8001/docs', 'blue');
-    log('  🎨 Web应用: http://localhost:5173', 'blue');
-    log('  🗄️ PostgreSQL: localhost:5432', 'blue');
-    log('  🔴 Redis: localhost:6379', 'blue');
+    log(`  🌐 API服务器: ${appConfig.URLS.API}`, 'blue');
+    log(`  📚 API文档: ${appConfig.URLS.API}/docs`, 'blue');
+    log(`  🎨 Web应用: ${appConfig.URLS.WEB}`, 'blue');
+    log(`  🗄️ PostgreSQL: localhost:${appConfig.PORTS.POSTGRES}`, 'blue');
+    log(`  🔴 Redis: localhost:${appConfig.PORTS.REDIS}`, 'blue');
     log('', 'reset');
     log('🛠️ 常用命令：', 'cyan');
     log('  pnpm run stop     - 停止所有服务', 'blue');

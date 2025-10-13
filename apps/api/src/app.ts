@@ -2,22 +2,25 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-import dotenv from 'dotenv';
+import './config/env.js'; // 加载环境变量配置
 import { userRoutes } from './routes/user.route.js';
 import { authRoutes } from './routes/auth.route.js';
 import { roleRoutes } from './routes/role.route.js';
 import { permissionRoutes } from './routes/permission.route.js';
 import { auditRoutes } from './routes/audit.route.js';
 import { llmSimpleRoutes } from './routes/llm-simple.route.js';
+import { aiConversationRoutes } from './routes/ai-conversation.route.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
+import { getAIIntegrationService } from './services/ai-integration.service.js';
+import { prisma } from './prisma-client.js';
 import rateLimit from '@fastify/rate-limit';
 import helmet from '@fastify/helmet';
+import { FastifyRequest, FastifyReply } from 'fastify';
 // Use Fastify's built-in logger via the `logger` option and app.log for logs
-
-dotenv.config();
 
 export const app = Fastify({
   logger: { level: process.env.LOG_LEVEL || 'info' },
+  bodyLimit: 1048576, // 1MB
 });
 
 // 注册 Swagger 插件
@@ -59,10 +62,10 @@ app.register(swaggerUi, {
     deepLinking: false,
   },
   uiHooks: {
-    onRequest: function (_request, _reply, next) {
+    onRequest: function (_request: FastifyRequest, _reply: FastifyReply, next: () => void) {
       next();
     },
-    preHandler: function (_request, _reply, next) {
+    preHandler: function (_request: FastifyRequest, _reply: FastifyReply, next: () => void) {
       next();
     },
   },
@@ -96,16 +99,26 @@ app.register(helmet, {
 app.register(rateLimit, {
   max: 100, // 最大请求数
   timeWindow: '1 minute', // 时间窗口
-  errorResponseBuilder: (request, context) => ({
+  errorResponseBuilder: (request: FastifyRequest, context: any) => ({
     success: false,
     message: '请求过于频繁，请稍后再试',
     code: 'RATE_LIMIT_EXCEEDED',
-    retryAfter: Math.round(context.timeWindow / 1000)
+    retryAfter: 60
   })
 });
 
+// 配置 JSON 解析器
+app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+  try {
+    const json = JSON.parse(body as string);
+    done(null, json);
+  } catch (err) {
+    done(err as any, undefined);
+  }
+});
+
 app.register(cors, {
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173'],
+  origin: ['http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -120,6 +133,7 @@ app.register(roleRoutes, { prefix: '/api/roles' });
 app.register(permissionRoutes, { prefix: '/api/permissions' });
 app.register(auditRoutes, { prefix: '/api/audit' });
 app.register(llmSimpleRoutes, { prefix: '/api/llm' });
+app.register(aiConversationRoutes, { prefix: '/api/ai' });
 
 app.get(
   '/',
@@ -139,10 +153,33 @@ app.get(
       },
     },
   },
-  async (_req, _reply) => {
+  async (_req: FastifyRequest, _reply: FastifyReply) => {
     return { ok: true, message: 'Fastify API running' };
   }
 );
+
+// 初始化AI系统（在应用启动前）
+app.addHook('onReady', async () => {
+  try {
+    console.log('🤖 初始化AI系统...');
+
+    // 初始化AI集成服务
+    const aiService = getAIIntegrationService(prisma, app);
+
+    // 系统健康检查
+    const health = await aiService.getSystemHealth();
+    console.log('✅ AI系统初始化完成，状态:', health.status);
+
+  } catch (error) {
+    console.error('❌ AI系统初始化失败:', error);
+  }
+});
+
+// 设置AI监控中间件（在应用启动前）
+app.addHook('onRequest', async (request: FastifyRequest, _reply: FastifyReply) => {
+  // 简单的请求日志
+  console.log(`${request.method} ${request.url}`);
+});
 
 // 导出 build 函数用于测试
 export const build = () => app;

@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
+// @ts-ignore
+import { getConfig } from '../../../../config/env-loader.mjs';
 import { permissionService } from '../services/permission.service.js';
 import { auditService } from '../services/audit.service.js';
 
@@ -40,7 +41,8 @@ export async function authenticateToken(
         }
 
         // 验证JWT token
-        const decoded = jwt.verify(token, env.JWT_SECRET) as any;
+        const config = getConfig();
+        const decoded = jwt.verify(token, config.security.JWT_SECRET) as any;
 
         // 获取用户权限和角色
         const [permissions, userRoles] = await Promise.all([
@@ -86,14 +88,15 @@ export async function authenticateToken(
  */
 export async function optionalAuth(
     request: AuthenticatedRequest,
-    reply: FastifyReply
+    _reply: FastifyReply
 ) {
     try {
         const authHeader = request.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1];
 
         if (token) {
-            const decoded = jwt.verify(token, env.JWT_SECRET) as any;
+            const config = getConfig();
+            const decoded = jwt.verify(token, config.security.JWT_SECRET) as any;
             request.user = {
                 id: decoded.userId,
                 email: decoded.email,
@@ -255,6 +258,7 @@ export function generateToken(payload: {
     email: string;
     name: string;
 }): string {
+    const config = getConfig();
     return jwt.sign(
         {
             userId: payload.userId,
@@ -262,9 +266,9 @@ export function generateToken(payload: {
             name: payload.name,
             iat: Math.floor(Date.now() / 1000)
         },
-        env.JWT_SECRET,
+        config.security.JWT_SECRET,
         {
-            expiresIn: env.JWT_EXPIRES_IN,
+            expiresIn: config.business.JWT_EXPIRES_IN,
             issuer: 'fastify-react-app',
             audience: 'fastify-react-app-users'
         }
@@ -279,6 +283,7 @@ export function generateRefreshToken(payload: {
     email: string;
     name: string;
 }): string {
+    const config = getConfig();
     return jwt.sign(
         {
             userId: payload.userId,
@@ -287,7 +292,7 @@ export function generateRefreshToken(payload: {
             type: 'refresh',
             iat: Math.floor(Date.now() / 1000)
         },
-        env.JWT_SECRET,
+        config.security.JWT_SECRET,
         {
             expiresIn: '7d', // Refresh token有效期7天
             issuer: 'fastify-react-app',
@@ -300,14 +305,16 @@ export function generateRefreshToken(payload: {
  * 验证JWT token
  */
 export function verifyToken(token: string): any {
-    return jwt.verify(token, env.JWT_SECRET);
+    const config = getConfig();
+    return jwt.verify(token, config.security.JWT_SECRET);
 }
 
 /**
  * 验证Refresh Token
  */
 export function verifyRefreshToken(token: string): any {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as any;
+    const config = getConfig();
+    const decoded = jwt.verify(token, config.security.JWT_SECRET) as any;
     if (decoded.type !== 'refresh') {
         throw new Error('Invalid token type');
     }

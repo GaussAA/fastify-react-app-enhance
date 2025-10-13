@@ -5,9 +5,11 @@
 
 // 基础消息类型
 export interface LLMMessage {
+    id?: string;
     role: 'system' | 'user' | 'assistant';
     content: string;
     name?: string;
+    timestamp?: Date;
 }
 
 // 聊天请求参数

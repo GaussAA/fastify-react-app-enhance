@@ -10,8 +10,8 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// 加载环境变量
-config({ path: join(__dirname, '../../../.env') });
+// 加载环境变量 - 从项目根目录加载统一管理的 .env 文件
+config({ path: join(__dirname, '../../../../.env') });
 
 // 验证必需的环境变量
 const requiredEnvVars = [

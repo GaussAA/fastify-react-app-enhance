@@ -90,7 +90,12 @@ docker-compose.override.yml
 *.sqlite
 *.sqlite3
 infrastructure/database/postgres/data/
+infrastructure/database/postgres/base/
+infrastructure/database/postgres/global/
+infrastructure/database/postgres/pg_wal/
+infrastructure/database/postgres/pg_xact/
 infrastructure/database/redis/data/
+infrastructure/database/redis/dump.rdb
 
 # ===========================================
 # Prisma

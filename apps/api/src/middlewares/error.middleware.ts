@@ -17,7 +17,8 @@ export function errorHandler(
         url: request.url,
         method: request.method,
         ip: request.ip,
-        userAgent: request.headers['user-agent']
+        userAgent: request.headers['user-agent'],
+        body: request.body
     });
 
     // 根据错误类型返回不同的响应
@@ -42,10 +43,15 @@ export function errorHandler(
     }
 
     // 默认服务器错误
+    const isDevelopment = process.env.NODE_ENV === 'development';
     return reply.status(500).send({
         success: false,
         message: '服务器内部错误',
-        code: 'INTERNAL_SERVER_ERROR'
+        code: 'INTERNAL_SERVER_ERROR',
+        ...(isDevelopment && {
+            error: error.message,
+            stack: error.stack
+        })
     });
 }
 

@@ -8,13 +8,16 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LLMMessage } from '@/types/llm';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface ChatMessageProps {
     message: LLMMessage;
     isLast?: boolean;
+    streamingContent?: string;
+    isStreaming?: boolean;
 }
 
-export function ChatMessage({ message, isLast }: ChatMessageProps) {
+export function ChatMessage({ message, isLast, streamingContent, isStreaming }: ChatMessageProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -57,15 +60,24 @@ export function ChatMessage({ message, isLast }: ChatMessageProps) {
 
                         <div
                             className={`rounded-lg p-4 ${isUser
-                                    ? 'bg-blue-600 text-white'
-                                    : isSystem
-                                        ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
-                                        : 'bg-white border border-gray-200 text-gray-900'
+                                ? 'bg-blue-600 text-white'
+                                : isSystem
+                                    ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
+                                    : 'bg-white border border-gray-200 text-gray-900'
                                 }`}
                         >
-                            <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                                {message.content}
-                            </div>
+                            {isUser || isSystem ? (
+                                // 用户和系统消息使用普通文本渲染
+                                <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                                    {isLast && isStreaming && streamingContent ? streamingContent : message.content}
+                                </div>
+                            ) : (
+                                // AI消息使用Markdown渲染（包括流式内容）
+                                <MarkdownRenderer
+                                    content={isLast && isStreaming && streamingContent ? streamingContent : message.content}
+                                    isStreaming={isLast && isStreaming}
+                                />
+                            )}
                         </div>
 
                         {!isUser && (

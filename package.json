@@ -11,12 +11,13 @@
     "bootstrap": "pnpm --filter fastify-api install && pnpm --filter fastify-web install",
     "check:all": "node tools/scripts/automation/run-all-checks.js",
     "check:env": "node tools/scripts/automation/check-environment.js",
-    "check:llm": "node scripts/check-llm-config.js",
+    "check:llm": "node tools/scripts/utils/check-llm-config.js",
     "check:quality": "node tools/scripts/automation/code-quality-check.js",
     "check:security": "node tools/scripts/automation/security-audit.js",
     "changeset": "changeset",
     "clean": "node tools/scripts/maintenance/clean.js",
     "clean:force": "node tools/scripts/maintenance/clean.js --force",
+    "config:generate": "node config/generate-env-templates.js",
     "db:backup": "node tools/scripts/database/database-backup.js",
     "db:reset": "node tools/scripts/database/reset.js",
     "db:restore": "node tools/scripts/database/database-backup.js restore",
@@ -41,7 +42,7 @@
     "monitor": "node tools/scripts/monitoring/monitoring-log.js",
     "prepare": "husky",
     "prisma:generate": "pnpm --filter fastify-api run prisma generate",
-    "prisma:migrate": "pnpm --filter fastify-api run prisma migrate dev",
+    "prisma:migrate": "pnpm --filter fastify-api run prisma migrate deploy",
     "prisma:seed": "pnpm --filter fastify-api run prisma db seed",
     "rbac:backup": "node tools/scripts/automation/rbac-manager.js backup",
     "rbac:init": "pnpm run init:rbac",
@@ -53,8 +54,8 @@
     "security:check": "node tools/scripts/automation/security-check.js",
     "setup": "pnpm install && pnpm run setup:db && pnpm run init:rbac",
     "setup:db": "pnpm run prisma:generate && pnpm run prisma:migrate",
-    "setup:env": "node scripts/setup-env.js",
-    "sync:env": "node scripts/sync-env.js",
+    "setup:env": "node tools/scripts/utils/setup-env.js",
+    "sync:env": "node tools/scripts/utils/sync-env.js",
     "start": "node tools/scripts/maintenance/start.js",
     "stop": "node tools/scripts/maintenance/stop.js",
     "test": "pnpm --filter fastify-api run test",
@@ -72,6 +73,7 @@
     "@eslint/js": "^9.37.0",
     "@microsoft/api-documenter": "^7.27.1",
     "@microsoft/api-extractor": "^7.53.1",
+    "@types/jsonwebtoken": "^9.0.10",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "concurrently": "^9.2.1",
@@ -87,5 +89,10 @@
     "npm": ">=11.0.0",
     "pnpm": ">=10.0.0"
   },
-  "packageManager": "pnpm@10.18.0"
+  "packageManager": "pnpm@10.18.0",
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "pino": "^9.13.1",
+    "pino-pretty": "^13.1.2"
+  }
 }
