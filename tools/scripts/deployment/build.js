@@ -265,7 +265,8 @@ class ProjectBuilder {
       const { execSync } = await import('child_process');
       const result = execSync('npx prisma db execute --stdin', {
         cwd: this.apiDir,
-        input: 'SELECT COUNT(*) FROM "roles" WHERE name IN (\'admin\', \'user\');',
+        input:
+          "SELECT COUNT(*) FROM \"roles\" WHERE name IN ('admin', 'user');",
         stdio: 'pipe',
       });
 

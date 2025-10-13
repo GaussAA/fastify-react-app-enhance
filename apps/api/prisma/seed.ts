@@ -15,7 +15,7 @@ async function main() {
     },
   });
 
-  const userRole = await prisma.role.upsert({
+  await prisma.role.upsert({
     where: { name: 'user' },
     update: {},
     create: {
@@ -27,12 +27,48 @@ async function main() {
 
   // 创建默认权限
   const permissions = [
-    { name: 'user:read', displayName: '查看用户', resource: 'user', action: 'read', description: '查看用户' },
-    { name: 'user:write', displayName: '编辑用户', resource: 'user', action: 'write', description: '编辑用户' },
-    { name: 'user:delete', displayName: '删除用户', resource: 'user', action: 'delete', description: '删除用户' },
-    { name: 'role:read', displayName: '查看角色', resource: 'role', action: 'read', description: '查看角色' },
-    { name: 'role:write', displayName: '编辑角色', resource: 'role', action: 'write', description: '编辑角色' },
-    { name: 'role:delete', displayName: '删除角色', resource: 'role', action: 'delete', description: '删除角色' },
+    {
+      name: 'user:read',
+      displayName: '查看用户',
+      resource: 'user',
+      action: 'read',
+      description: '查看用户',
+    },
+    {
+      name: 'user:write',
+      displayName: '编辑用户',
+      resource: 'user',
+      action: 'write',
+      description: '编辑用户',
+    },
+    {
+      name: 'user:delete',
+      displayName: '删除用户',
+      resource: 'user',
+      action: 'delete',
+      description: '删除用户',
+    },
+    {
+      name: 'role:read',
+      displayName: '查看角色',
+      resource: 'role',
+      action: 'read',
+      description: '查看角色',
+    },
+    {
+      name: 'role:write',
+      displayName: '编辑角色',
+      resource: 'role',
+      action: 'write',
+      description: '编辑角色',
+    },
+    {
+      name: 'role:delete',
+      displayName: '删除角色',
+      resource: 'role',
+      action: 'delete',
+      description: '删除角色',
+    },
   ];
 
   for (const perm of permissions) {

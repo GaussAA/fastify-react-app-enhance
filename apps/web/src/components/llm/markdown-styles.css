@@ -1,84 +1,84 @@
 /* Markdown渲染器专用样式 */
 
 .markdown-content {
-    /* 基础样式 */
-    line-height: 1.6;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    color: #1f2937 !important;
-    /* 确保基础文本颜色为深灰色 */
+  /* 基础样式 */
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: #1f2937 !important;
+  /* 确保基础文本颜色为深灰色 */
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-    .markdown-content {
-        font-size: 14px;
-    }
+  .markdown-content {
+    font-size: 14px;
+  }
 
-    .markdown-content h1 {
-        font-size: 1.5rem;
-    }
+  .markdown-content h1 {
+    font-size: 1.5rem;
+  }
 
-    .markdown-content h2 {
-        font-size: 1.25rem;
-    }
+  .markdown-content h2 {
+    font-size: 1.25rem;
+  }
 
-    .markdown-content h3 {
-        font-size: 1.125rem;
-    }
+  .markdown-content h3 {
+    font-size: 1.125rem;
+  }
 
-    .markdown-content pre {
-        font-size: 12px;
-        padding: 12px;
-    }
+  .markdown-content pre {
+    font-size: 12px;
+    padding: 12px;
+  }
 
-    .markdown-content table {
-        font-size: 12px;
-    }
+  .markdown-content table {
+    font-size: 12px;
+  }
 
-    .markdown-content th,
-    .markdown-content td {
-        padding: 8px 12px;
-    }
+  .markdown-content th,
+  .markdown-content td {
+    padding: 8px 12px;
+  }
 }
 
 @media (max-width: 480px) {
-    .markdown-content {
-        font-size: 13px;
-    }
+  .markdown-content {
+    font-size: 13px;
+  }
 
-    .markdown-content pre {
-        font-size: 11px;
-        padding: 8px;
-    }
+  .markdown-content pre {
+    font-size: 11px;
+    padding: 8px;
+  }
 
-    .markdown-content table {
-        font-size: 11px;
-    }
+  .markdown-content table {
+    font-size: 11px;
+  }
 
-    .markdown-content th,
-    .markdown-content td {
-        padding: 6px 8px;
-    }
+  .markdown-content th,
+  .markdown-content td {
+    padding: 6px 8px;
+  }
 }
 
 /* 代码高亮优化 - 增强对比度 */
 .markdown-content pre,
 .markdown-code-block {
-    position: relative;
-    background: #1e1e1e !important;
-    color: #d4d4d4 !important;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .markdown-content pre code,
 .markdown-code-block code {
-    background: transparent !important;
-    color: inherit !important;
-    padding: 0 !important;
-    border: none !important;
-    font-size: inherit !important;
+  background: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: inherit !important;
 }
 
 /* 全面增强语法高亮对比度 - 基于VS Code Dark+主题 */
@@ -87,26 +87,26 @@
 .markdown-code-block .hljs-comment,
 .markdown-code-block .hljs-quote,
 .markdown-code-block .hljs-doctag {
-    color: #6a9955 !important;
-    /* 亮绿色注释 */
-    font-style: italic;
-    opacity: 1 !important;
-    /* 确保不透明 */
-    font-weight: 600 !important;
-    /* 更粗的字重 */
-    text-shadow: 0 0 1px rgba(106, 153, 85, 0.3) !important;
-    /* 轻微阴影增强对比度 */
+  color: #6a9955 !important;
+  /* 亮绿色注释 */
+  font-style: italic;
+  opacity: 1 !important;
+  /* 确保不透明 */
+  font-weight: 600 !important;
+  /* 更粗的字重 */
+  text-shadow: 0 0 1px rgba(106, 153, 85, 0.3) !important;
+  /* 轻微阴影增强对比度 */
 }
 
 /* 确保所有注释类型都有足够的对比度 */
 .markdown-code-block .hljs-quote,
 .markdown-code-block .hljs-doctag {
-    color: #6a9955 !important;
-    /* 亮绿色注释 */
-    font-weight: 500 !important;
-    /* 稍微加粗 */
-    opacity: 1 !important;
-    /* 确保不透明 */
+  color: #6a9955 !important;
+  /* 亮绿色注释 */
+  font-weight: 500 !important;
+  /* 稍微加粗 */
+  opacity: 1 !important;
+  /* 确保不透明 */
 }
 
 /* 关键字 - 蓝色系 */
@@ -116,9 +116,9 @@
 .markdown-code-block .hljs-name,
 .markdown-code-block .hljs-tag,
 .markdown-code-block .hljs-meta-keyword {
-    color: #569cd6 !important;
-    /* 蓝色关键字 */
-    font-weight: bold;
+  color: #569cd6 !important;
+  /* 蓝色关键字 */
+  font-weight: bold;
 }
 
 /* 字符串 - 橙色系 */
@@ -128,8 +128,8 @@
 .markdown-code-block .hljs-attribute,
 .markdown-code-block .hljs-symbol,
 .markdown-code-block .hljs-bullet {
-    color: #ce9178 !important;
-    /* 橙色字符串 */
+  color: #ce9178 !important;
+  /* 橙色字符串 */
 }
 
 /* 字符串插值 - 确保插值部分与字符串颜色一致 */
@@ -138,22 +138,22 @@
 .markdown-code-block .hljs-template-variable,
 .markdown-code-block .hljs-string .hljs-subst,
 .markdown-code-block .hljs-string .hljs-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* JavaScript模板字符串插值 */
 .markdown-code-block .hljs-string .hljs-variable,
 .markdown-code-block .hljs-template-string .hljs-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* Python f-string插值 */
 .markdown-code-block .hljs-string .hljs-subst,
 .markdown-code-block .hljs-string .hljs-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* 更全面的插值覆盖 - 针对所有可能的类名 */
@@ -165,16 +165,16 @@
 .markdown-code-block .hljs-string .hljs-expression,
 .markdown-code-block .hljs-string .hljs-embedded,
 .markdown-code-block .hljs-string .hljs-embedded-expression {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* 针对JSX/React的特殊处理 */
 .markdown-code-block .hljs-string .hljs-jsx-expression,
 .markdown-code-block .hljs-string .hljs-jsx-variable,
 .markdown-code-block .hljs-string .hljs-jsx-interpolation {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* 针对所有可能的插值语法 */
@@ -182,16 +182,16 @@
 .markdown-code-block .hljs-string .hljs-interpolation,
 .markdown-code-block .hljs-string .hljs-embedded-expression,
 .markdown-code-block .hljs-string .hljs-embedded-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* 数字和字面量 - 浅绿色 */
 .markdown-code-block .hljs-number,
 .markdown-code-block .hljs-literal,
 .markdown-code-block .hljs-deletion {
-    color: #b5cea8 !important;
-    /* 浅绿色数字 */
+  color: #b5cea8 !important;
+  /* 浅绿色数字 */
 }
 
 /* 变量和属性 - 使用更亮的颜色 */
@@ -199,94 +199,94 @@
 .markdown-code-block .hljs-template-variable,
 .markdown-code-block .hljs-attr,
 .markdown-code-block .hljs-property {
-    color: #9cdcfe !important;
-    /* 亮蓝色变量 */
+  color: #9cdcfe !important;
+  /* 亮蓝色变量 */
 }
 
 /* 函数和方法 - 黄色系 */
 .markdown-code-block .hljs-function,
 .markdown-code-block .hljs-title.function_,
 .markdown-code-block .hljs-params {
-    color: #dcdcaa !important;
-    /* 黄色函数 */
+  color: #dcdcaa !important;
+  /* 黄色函数 */
 }
 
 /* 类型和类 - 浅蓝色 */
 .markdown-code-block .hljs-type,
 .markdown-code-block .hljs-class,
 .markdown-code-block .hljs-class .hljs-title {
-    color: #4ec9b0 !important;
-    /* 青色类型 */
+  color: #4ec9b0 !important;
+  /* 青色类型 */
 }
 
 /* 元数据和特殊标记 */
 .markdown-code-block .hljs-meta,
 .markdown-code-block .hljs-meta-string {
-    color: #ce9178 !important;
-    /* 橙色元数据 */
+  color: #ce9178 !important;
+  /* 橙色元数据 */
 }
 
 /* 正则表达式 */
 .markdown-code-block .hljs-regexp {
-    color: #d16969 !important;
-    /* 红色正则 */
+  color: #d16969 !important;
+  /* 红色正则 */
 }
 
 /* 强调和重要文本 */
 .markdown-code-block .hljs-emphasis {
-    font-style: italic;
+  font-style: italic;
 }
 
 .markdown-code-block .hljs-strong {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* 链接 */
 .markdown-code-block .hljs-link {
-    color: #569cd6 !important;
-    text-decoration: underline;
+  color: #569cd6 !important;
+  text-decoration: underline;
 }
 
 /* 更多语法高亮类名覆盖 */
 .markdown-code-block .hljs-addition {
-    color: #b5cea8 !important;
-    /* 浅绿色 */
+  color: #b5cea8 !important;
+  /* 浅绿色 */
 }
 
 .markdown-code-block .hljs-deletion {
-    color: #f44747 !important;
-    /* 红色 */
+  color: #f44747 !important;
+  /* 红色 */
 }
 
 .markdown-code-block .hljs-emphasis {
-    font-style: italic;
+  font-style: italic;
 }
 
 .markdown-code-block .hljs-strong {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 /* 特殊字符和运算符 */
 .markdown-code-block .hljs-operator,
 .markdown-code-block .hljs-punctuation {
-    color: #d4d4d4 !important;
-    /* 浅灰色 */
+  color: #d4d4d4 !important;
+  /* 浅灰色 */
 }
 
 /* 标签和属性 */
 .markdown-code-block .hljs-tag .hljs-name {
-    color: #569cd6 !important;
-    /* 蓝色 */
+  color: #569cd6 !important;
+  /* 蓝色 */
 }
 
 .markdown-code-block .hljs-tag .hljs-attr {
-    color: #9cdcfe !important;
-    /* 浅蓝色 */
+  color: #9cdcfe !important;
+  /* 浅蓝色 */
 }
 
 .markdown-code-block .hljs-tag .hljs-string {
-    color: #ce9178 !important;
-    /* 橙色 */
+  color: #ce9178 !important;
+  /* 橙色 */
 }
 
 /* 特定语言的语法高亮增强 */
@@ -294,57 +294,57 @@
 /* JavaScript/TypeScript特定 */
 .markdown-code-block .hljs-template-string,
 .markdown-code-block .hljs-template-string .hljs-string {
-    color: #ce9178 !important;
-    /* 橙色 */
+  color: #ce9178 !important;
+  /* 橙色 */
 }
 
 .markdown-code-block .hljs-template-string .hljs-subst,
 .markdown-code-block .hljs-template-string .hljs-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* Python特定 */
 .markdown-code-block .hljs-string .hljs-subst,
 .markdown-code-block .hljs-string .hljs-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* 正则表达式 */
 .markdown-code-block .hljs-regexp {
-    color: #d16969 !important;
-    /* 红色 */
+  color: #d16969 !important;
+  /* 红色 */
 }
 
 /* 常量 */
 .markdown-code-block .hljs-constant {
-    color: #4fc1ff !important;
-    /* 亮蓝色 */
+  color: #4fc1ff !important;
+  /* 亮蓝色 */
 }
 
 /* 类型 */
 .markdown-code-block .hljs-type {
-    color: #4ec9b0 !important;
-    /* 青色 */
+  color: #4ec9b0 !important;
+  /* 青色 */
 }
 
 /* 类名 */
 .markdown-code-block .hljs-class {
-    color: #4ec9b0 !important;
-    /* 青色 */
+  color: #4ec9b0 !important;
+  /* 青色 */
 }
 
 /* 函数名 */
 .markdown-code-block .hljs-function {
-    color: #dcdcaa !important;
-    /* 黄色 */
+  color: #dcdcaa !important;
+  /* 黄色 */
 }
 
 /* 参数 */
 .markdown-code-block .hljs-params {
-    color: #d4d4d4 !important;
-    /* 浅灰色 */
+  color: #d4d4d4 !important;
+  /* 浅灰色 */
 }
 
 /* 强制覆盖所有可能的插值情况 - 最高优先级 */
@@ -364,8 +364,8 @@
 .markdown-code-block .hljs-string .hljs-interpolation,
 .markdown-code-block .hljs-string .hljs-embedded-expression,
 .markdown-code-block .hljs-string .hljs-embedded-variable {
-    color: #ce9178 !important;
-    /* 与字符串相同的橙色 */
+  color: #ce9178 !important;
+  /* 与字符串相同的橙色 */
 }
 
 /* 强制覆盖所有可能的注释情况 - 最高优先级 */
@@ -375,198 +375,198 @@
 .markdown-code-block .hljs-comment *,
 .markdown-code-block .hljs-quote *,
 .markdown-code-block .hljs-doctag * {
-    color: #6a9955 !important;
-    /* 亮绿色注释 */
-    font-weight: 600 !important;
-    /* 更粗的字重 */
-    opacity: 1 !important;
-    /* 确保不透明 */
-    text-shadow: 0 0 1px rgba(106, 153, 85, 0.3) !important;
-    /* 轻微阴影增强对比度 */
+  color: #6a9955 !important;
+  /* 亮绿色注释 */
+  font-weight: 600 !important;
+  /* 更粗的字重 */
+  opacity: 1 !important;
+  /* 确保不透明 */
+  text-shadow: 0 0 1px rgba(106, 153, 85, 0.3) !important;
+  /* 轻微阴影增强对比度 */
 }
 
 /* 确保所有文本都有足够的对比度 */
 .markdown-code-block * {
-    color: inherit !important;
+  color: inherit !important;
 }
 
 /* 内联代码样式优化 */
 .markdown-content p code,
 .markdown-content li code,
 .markdown-content td code {
-    background: #f1f5f9 !important;
-    color: #e11d48 !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-    font-size: 0.875em !important;
-    font-weight: 500 !important;
-    border: 1px solid #e2e8f0 !important;
+  background: #f1f5f9 !important;
+  color: #e11d48 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 0.875em !important;
+  font-weight: 500 !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 /* 表格样式 - 确保高对比度 */
 .markdown-table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 16px 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 16px 0;
 }
 
 .markdown-table {
-    min-width: 100%;
-    border-collapse: collapse;
-    background: #ffffff !important;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 100%;
+  border-collapse: collapse;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .markdown-table-head {
-    background: #f9fafb !important;
+  background: #f9fafb !important;
 }
 
 .markdown-table-body {
-    background: #ffffff !important;
+  background: #ffffff !important;
 }
 
 .markdown-table-row {
-    border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .markdown-table-row:hover {
-    background: #f9fafb !important;
+  background: #f9fafb !important;
 }
 
 .markdown-table-row:nth-child(even) {
-    background: #f9fafb !important;
+  background: #f9fafb !important;
 }
 
 .markdown-table-header {
-    background: #f9fafb !important;
-    color: #374151 !important;
-    font-weight: 600;
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 2px solid #e5e7eb;
-    border-right: 1px solid #e5e7eb;
-    font-size: 14px;
+  background: #f9fafb !important;
+  color: #374151 !important;
+  font-weight: 600;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  font-size: 14px;
 }
 
 .markdown-table-header:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .markdown-table-cell {
-    color: #1f2937 !important;
-    padding: 12px 16px;
-    border-bottom: 1px solid #f3f4f6;
-    border-right: 1px solid #f3f4f6;
-    font-size: 14px;
+  color: #1f2937 !important;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  border-right: 1px solid #f3f4f6;
+  font-size: 14px;
 }
 
 .markdown-table-cell:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 .markdown-table-row:last-child .markdown-table-cell {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 /* 链接样式优化 - 确保高对比度 */
 .markdown-link {
-    color: #2563eb !important;
-    /* 蓝色链接 */
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: all 0.2s ease;
-    font-weight: 500;
+  color: #2563eb !important;
+  /* 蓝色链接 */
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 .markdown-link:hover {
-    color: #1d4ed8 !important;
-    /* 深蓝色悬停 */
-    border-bottom-color: currentColor;
-    text-decoration: underline;
+  color: #1d4ed8 !important;
+  /* 深蓝色悬停 */
+  border-bottom-color: currentColor;
+  text-decoration: underline;
 }
 
 /* 引用块样式优化 - 确保高对比度 */
 .markdown-blockquote {
-    position: relative;
-    margin: 16px 0;
-    padding: 16px 20px;
-    background: #f8fafc !important;
-    border-left: 4px solid #3b82f6 !important;
-    border-radius: 0 8px 8px 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    color: #1f2937 !important;
-    font-style: italic;
+  position: relative;
+  margin: 16px 0;
+  padding: 16px 20px;
+  background: #f8fafc !important;
+  border-left: 4px solid #3b82f6 !important;
+  border-radius: 0 8px 8px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #1f2937 !important;
+  font-style: italic;
 }
 
 .markdown-content blockquote::before {
-    content: '"';
-    position: absolute;
-    top: -8px;
-    left: 12px;
-    font-size: 2rem;
-    color: #3b82f6;
-    opacity: 0.3;
-    font-family: serif;
+  content: '"';
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  font-size: 2rem;
+  color: #3b82f6;
+  opacity: 0.3;
+  font-family: serif;
 }
 
 /* 列表样式优化 */
 .markdown-content ul,
 .markdown-content ol,
 .markdown-list {
-    padding-left: 1.5rem;
-    margin-left: 0;
-    margin-bottom: 1rem;
-    font-size: 14px;
-    line-height: 1.6;
+  padding-left: 1.5rem;
+  margin-left: 0;
+  margin-bottom: 1rem;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .markdown-content li,
 .markdown-list-item {
-    margin: 0.25rem 0;
-    line-height: 1.6;
-    display: list-item;
-    list-style-position: outside;
-    color: #1f2937 !important;
+  margin: 0.25rem 0;
+  line-height: 1.6;
+  display: list-item;
+  list-style-position: outside;
+  color: #1f2937 !important;
 }
 
 .markdown-content li p,
 .markdown-list-item p {
-    margin: 0;
-    display: inline;
-    line-height: inherit;
-    color: #1f2937 !important;
+  margin: 0;
+  display: inline;
+  line-height: inherit;
+  color: #1f2937 !important;
 }
 
 /* 确保列表项内容在同一行，防止换行 */
 .markdown-content ol li,
 .markdown-content ul li,
 .markdown-list-item {
-    display: list-item;
-    list-style-position: outside;
-    text-indent: 0;
-    padding-left: 0;
-    color: #1f2937 !important;
+  display: list-item;
+  list-style-position: outside;
+  text-indent: 0;
+  padding-left: 0;
+  color: #1f2937 !important;
 }
 
 /* 防止列表项内容换行 */
-.markdown-content li>*,
-.markdown-list-item>* {
-    display: inline;
-    margin: 0;
-    color: #1f2937 !important;
+.markdown-content li > *,
+.markdown-list-item > * {
+  display: inline;
+  margin: 0;
+  color: #1f2937 !important;
 }
 
 /* 有序列表样式 */
 .markdown-ol {
-    list-style-type: decimal;
+  list-style-type: decimal;
 }
 
 /* 无序列表样式 */
 .markdown-ul {
-    list-style-type: disc;
+  list-style-type: disc;
 }
 
 /* 标题样式 - 确保标题有足够的对比度 */
@@ -576,85 +576,85 @@
 .markdown-h4,
 .markdown-h5,
 .markdown-h6 {
-    color: #111827 !important;
-    /* 深黑色，确保高对比度 */
-    font-weight: bold;
-    margin-bottom: 0.75rem;
-    margin-top: 1.5rem;
+  color: #111827 !important;
+  /* 深黑色，确保高对比度 */
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 .markdown-h1 {
-    font-size: 1.875rem;
-    /* 30px */
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 0.5rem;
+  font-size: 1.875rem;
+  /* 30px */
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
 }
 
 .markdown-h2 {
-    font-size: 1.5rem;
-    /* 24px */
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 0.25rem;
+  font-size: 1.5rem;
+  /* 24px */
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.25rem;
 }
 
 .markdown-h3 {
-    font-size: 1.25rem;
-    /* 20px */
+  font-size: 1.25rem;
+  /* 20px */
 }
 
 .markdown-h4 {
-    font-size: 1.125rem;
-    /* 18px */
+  font-size: 1.125rem;
+  /* 18px */
 }
 
 .markdown-h5 {
-    font-size: 1rem;
-    /* 16px */
+  font-size: 1rem;
+  /* 16px */
 }
 
 .markdown-h6 {
-    font-size: 0.875rem;
-    /* 14px */
+  font-size: 0.875rem;
+  /* 14px */
 }
 
 /* 代码块样式 - 修复代码高亮对比度 */
 .markdown-code-block {
-    background: #1e1e1e !important;
-    color: #d4d4d4 !important;
-    border-radius: 8px;
-    padding: 1rem;
-    overflow-x: auto;
-    font-size: 14px;
-    margin-bottom: 1rem;
-    border: 1px solid #374151;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 14px;
+  margin-bottom: 1rem;
+  border: 1px solid #374151;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
 .markdown-code-block code {
-    background: transparent !important;
-    color: inherit !important;
-    padding: 0 !important;
-    border: none !important;
-    font-size: inherit !important;
+  background: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: inherit !important;
 }
 
 /* 内联代码样式 */
 .markdown-inline-code {
-    background: #f3f4f6 !important;
-    color: #dc2626 !important;
-    padding: 2px 6px !important;
-    border-radius: 4px !important;
-    font-size: 0.875em !important;
-    font-weight: 500 !important;
-    border: 1px solid #d1d5db !important;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  background: #f3f4f6 !important;
+  color: #dc2626 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 0.875em !important;
+  font-weight: 500 !important;
+  border: 1px solid #d1d5db !important;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
 /* 代码块内的代码样式 */
 .markdown-code {
-    font-size: 14px;
-    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-    color: #d4d4d4 !important;
+  font-size: 14px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  color: #d4d4d4 !important;
 }
 
 /* 确保所有文本都有正确的颜色 */
@@ -662,139 +662,138 @@
 .markdown-content li,
 .markdown-content div,
 .markdown-content span {
-    color: #1f2937 !important;
+  color: #1f2937 !important;
 }
 
 /* 确保列表项文本颜色正确 */
 .markdown-content ul li,
 .markdown-content ol li {
-    color: #1f2937 !important;
+  color: #1f2937 !important;
 }
 
 /* 确保段落文本颜色正确 */
 .markdown-content p {
-    color: #1f2937 !important;
+  color: #1f2937 !important;
 }
 
 /* 任务列表样式 */
-.markdown-content li input[type="checkbox"] {
-    margin-right: 8px;
-    transform: scale(1.1);
+.markdown-content li input[type='checkbox'] {
+  margin-right: 8px;
+  transform: scale(1.1);
 }
 
 /* 图片样式优化 */
 .markdown-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
 .markdown-content img:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 /* 分隔线样式 */
 .markdown-content hr {
-    border: none;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-    margin: 24px 0;
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  margin: 24px 0;
 }
 
 /* 强调文本样式 - 确保高对比度 */
 .markdown-content strong {
-    font-weight: 700 !important;
-    color: #111827 !important;
+  font-weight: 700 !important;
+  color: #111827 !important;
 }
 
 .markdown-content em {
-    font-style: italic;
-    color: #1f2937 !important;
+  font-style: italic;
+  color: #1f2937 !important;
 }
 
 /* 删除线样式 */
 .markdown-content del {
-    opacity: 0.7;
-    text-decoration: line-through;
-    text-decoration-color: #ef4444;
+  opacity: 0.7;
+  text-decoration: line-through;
+  text-decoration-color: #ef4444;
 }
 
 /* 流式处理光标动画 */
 .markdown-content .streaming-cursor {
-    display: inline-block;
-    width: 2px;
-    height: 1.2em;
-    background-color: #3b82f6;
-    animation: blink 1s infinite;
-    margin-left: 2px;
-    vertical-align: text-bottom;
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  background-color: #3b82f6;
+  animation: blink 1s infinite;
+  margin-left: 2px;
+  vertical-align: text-bottom;
 }
 
 @keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
 
-    0%,
-    50% {
-        opacity: 1;
-    }
-
-    51%,
-    100% {
-        opacity: 0;
-    }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* 深色模式支持 */
 @media (prefers-color-scheme: dark) {
-    .markdown-content {
-        color: #e5e7eb;
-    }
+  .markdown-content {
+    color: #e5e7eb;
+  }
 
-    .markdown-content h1,
-    .markdown-content h2,
-    .markdown-content h3,
-    .markdown-content h4,
-    .markdown-content h5,
-    .markdown-content h6 {
-        color: #f9fafb;
-    }
+  .markdown-content h1,
+  .markdown-content h2,
+  .markdown-content h3,
+  .markdown-content h4,
+  .markdown-content h5,
+  .markdown-content h6 {
+    color: #f9fafb;
+  }
 
-    .markdown-content p {
-        color: #d1d5db;
-    }
+  .markdown-content p {
+    color: #d1d5db;
+  }
 
-    .markdown-content code {
-        background: #374151 !important;
-        color: #fbbf24 !important;
-        border-color: #4b5563 !important;
-    }
+  .markdown-content code {
+    background: #374151 !important;
+    color: #fbbf24 !important;
+    border-color: #4b5563 !important;
+  }
 
-    /* 深色模式下的引用块和表格样式已由新的CSS类处理 */
+  /* 深色模式下的引用块和表格样式已由新的CSS类处理 */
 
-    .markdown-content hr {
-        background: linear-gradient(90deg, transparent, #4b5563, transparent);
-    }
+  .markdown-content hr {
+    background: linear-gradient(90deg, transparent, #4b5563, transparent);
+  }
 }
 
 /* 打印样式 */
 @media print {
-    .markdown-content {
-        color: black !important;
-        background: white !important;
-    }
+  .markdown-content {
+    color: black !important;
+    background: white !important;
+  }
 
-    .markdown-content pre {
-        background: #f5f5f5 !important;
-        color: black !important;
-        border: 1px solid #ccc !important;
-    }
+  .markdown-content pre {
+    background: #f5f5f5 !important;
+    color: black !important;
+    border: 1px solid #ccc !important;
+  }
 
-    .markdown-content code {
-        background: #f5f5f5 !important;
-        color: black !important;
-        border: 1px solid #ccc !important;
-    }
+  .markdown-content code {
+    background: #f5f5f5 !important;
+    color: black !important;
+    border: 1px solid #ccc !important;
+  }
 
-    /* 链接和引用块样式已由新的CSS类处理 */
+  /* 链接和引用块样式已由新的CSS类处理 */
 }

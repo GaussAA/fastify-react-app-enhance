@@ -10,7 +10,10 @@ import { permissionRoutes } from './routes/permission.route.js';
 import { auditRoutes } from './routes/audit.route.js';
 import { llmSimpleRoutes } from './routes/llm-simple.route.js';
 import { aiConversationRoutes } from './routes/ai-conversation.route.js';
-import { errorHandler, notFoundHandler } from './middlewares/error.middleware.js';
+import {
+  errorHandler,
+  notFoundHandler,
+} from './middlewares/error.middleware.js';
 import { getAIIntegrationService } from './services/ai-integration.service.js';
 import { prisma } from './prisma-client.js';
 import rateLimit from '@fastify/rate-limit';
@@ -18,10 +21,20 @@ import helmet from '@fastify/helmet';
 import { FastifyRequest, FastifyReply } from 'fastify';
 // Use Fastify's built-in logger via the `logger` option and app.log for logs
 
+// 扩展 Fastify 实例类型
+declare module 'fastify' {
+  interface FastifyInstance {
+    prisma: typeof prisma;
+  }
+}
+
 export const app = Fastify({
   logger: { level: process.env.LOG_LEVEL || 'info' },
   bodyLimit: 1048576, // 1MB
 });
+
+// 注册 Prisma 客户端到 Fastify 实例
+app.decorate('prisma', prisma);
 
 // 注册 Swagger 插件
 app.register(swagger, {
@@ -62,10 +75,18 @@ app.register(swaggerUi, {
     deepLinking: false,
   },
   uiHooks: {
-    onRequest: function (_request: FastifyRequest, _reply: FastifyReply, next: () => void) {
+    onRequest: function (
+      _request: FastifyRequest,
+      _reply: FastifyReply,
+      next: () => void
+    ) {
       next();
     },
-    preHandler: function (_request: FastifyRequest, _reply: FastifyReply, next: () => void) {
+    preHandler: function (
+      _request: FastifyRequest,
+      _reply: FastifyReply,
+      next: () => void
+    ) {
       next();
     },
   },
@@ -84,44 +105,57 @@ app.register(helmet, {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'"],
       fontSrc: ["'self'"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
-      frameSrc: ["'none'"]
-    }
+      frameSrc: ["'none'"],
+    },
   },
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
 });
 
 // 注册速率限制
 app.register(rateLimit, {
   max: 100, // 最大请求数
   timeWindow: '1 minute', // 时间窗口
-  errorResponseBuilder: (request: FastifyRequest, context: any) => ({
+  errorResponseBuilder: (_request: FastifyRequest, _context: any) => ({
     success: false,
     message: '请求过于频繁，请稍后再试',
     code: 'RATE_LIMIT_EXCEEDED',
-    retryAfter: 60
-  })
+    retryAfter: 60,
+  }),
 });
 
 // 配置 JSON 解析器
-app.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
-  try {
-    const json = JSON.parse(body as string);
-    done(null, json);
-  } catch (err) {
-    done(err as any, undefined);
+app.addContentTypeParser(
+  'application/json',
+  { parseAs: 'string' },
+  function (req, body, done) {
+    try {
+      // 对于DELETE请求，通常没有请求体，直接返回空对象
+      if (
+        req.method === 'DELETE' &&
+        (!body || (body as string).trim() === '')
+      ) {
+        done(null, {});
+        return;
+      }
+
+      const json = JSON.parse(body as string);
+      done(null, json);
+    } catch (err) {
+      done(err as any, undefined);
+    }
   }
-});
+);
 
 app.register(cors, {
   origin: ['http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
 });
 // 注册错误处理中间件
 app.setErrorHandler(errorHandler);
@@ -169,17 +203,19 @@ app.addHook('onReady', async () => {
     // 系统健康检查
     const health = await aiService.getSystemHealth();
     console.log('✅ AI系统初始化完成，状态:', health.status);
-
   } catch (error) {
     console.error('❌ AI系统初始化失败:', error);
   }
 });
 
 // 设置AI监控中间件（在应用启动前）
-app.addHook('onRequest', async (request: FastifyRequest, _reply: FastifyReply) => {
-  // 简单的请求日志
-  console.log(`${request.method} ${request.url}`);
-});
+app.addHook(
+  'onRequest',
+  async (request: FastifyRequest, _reply: FastifyReply) => {
+    // 简单的请求日志
+    console.log(`${request.method} ${request.url}`);
+  }
+);
 
 // 导出 build 函数用于测试
 export const build = () => app;

@@ -5,7 +5,7 @@
  * 根据统一配置生成各种环境变量模板文件
  */
 
-import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { loadAppConfig } from './config-loader.js';
@@ -243,7 +243,10 @@ networks:
 #   redis_data:
 `;
 
-  const filePath = join(projectRoot, 'infrastructure/docker/docker-compose.yml');
+  const filePath = join(
+    projectRoot,
+    'infrastructure/docker/docker-compose.yml'
+  );
   writeFileSync(filePath, content);
   log(`✅ 生成 Docker Compose 配置: ${filePath}`, 'green');
 }
@@ -347,8 +350,10 @@ function main() {
     log('  🐳 infrastructure/docker/docker-compose.yml', 'blue');
     log('  📚 config/README.md', 'blue');
     log('', 'reset');
-    log('💡 如需修改端口配置，请编辑 config/ports.ts 后重新运行此脚本', 'yellow');
-
+    log(
+      '💡 如需修改端口配置，请编辑 config/ports.ts 后重新运行此脚本',
+      'yellow'
+    );
   } catch (error) {
     log(`❌ 生成配置模板失败: ${error.message}`, 'red');
     process.exit(1);

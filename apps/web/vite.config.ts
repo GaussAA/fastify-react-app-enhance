@@ -24,9 +24,15 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       // 将环境变量暴露给前端
-      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(env.VITE_API_BASE_URL || 'http://localhost:8001/api'),
-      'import.meta.env.VITE_APP_TITLE': JSON.stringify(env.VITE_APP_TITLE || 'Fastify React App'),
-      'import.meta.env.VITE_APP_VERSION': JSON.stringify(env.VITE_APP_VERSION || '1.0.0'),
+      'import.meta.env.VITE_API_BASE_URL': JSON.stringify(
+        env.VITE_API_BASE_URL || 'http://localhost:8001/api'
+      ),
+      'import.meta.env.VITE_APP_TITLE': JSON.stringify(
+        env.VITE_APP_TITLE || 'Fastify React App'
+      ),
+      'import.meta.env.VITE_APP_VERSION': JSON.stringify(
+        env.VITE_APP_VERSION || '1.0.0'
+      ),
       'import.meta.env.VITE_API_KEY': JSON.stringify(env.VITE_API_KEY || ''),
     },
   };

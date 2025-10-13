@@ -18,16 +18,19 @@
 ## 🛡️ 安全设计原则
 
 ### 1. **敏感信息隔离**
+
 - `.env` 文件包含所有敏感信息，已添加到 `.gitignore`
 - AI 无法访问真实的 API 密钥和密码
 - 用户完全控制敏感信息的输入
 
 ### 2. **模板化管理**
+
 - `env.example` 作为配置模板，AI 可以安全地更新
 - 使用占位符格式 `{CONFIG_NAME}` 标识需要用户填写的配置项
 - 清晰的配置项说明和默认值
 
 ### 3. **配置验证**
+
 - 提供配置检查脚本验证配置完整性
 - 自动检测配置错误和缺失项
 - 提供详细的错误信息和解决方案
@@ -35,11 +38,13 @@
 ## 🚀 快速开始
 
 ### 1. 复制配置模板
+
 ```bash
 cp env.example .env
 ```
 
 ### 2. 编辑配置文件
+
 使用您喜欢的编辑器打开 `.env` 文件，填写所有配置项的实际值：
 
 ```env
@@ -61,11 +66,13 @@ LLM_BASE_URL=https://api.deepseek.com/v1
 ```
 
 ### 3. 验证配置
+
 ```bash
 node scripts/check-llm-config.js
 ```
 
 ### 4. 启动服务
+
 ```bash
 # 启动后端
 pnpm --filter fastify-api run dev
@@ -92,16 +99,16 @@ pnpm --filter fastify-web run dev
 
 ### LLM 服务配置
 
-| 配置项 | 说明 | 默认值 | 示例 |
-|--------|------|--------|------|
-| `LLM_DEFAULT_PROVIDER` | LLM服务提供商 | `deepseek` | `deepseek`, `openai` |
-| `LLM_API_KEY` | API密钥 | - | `sk-xxx...` |
-| `LLM_DEFAULT_MODEL` | 默认模型 | `deepseek-chat` | `deepseek-chat` |
-| `LLM_BASE_URL` | 服务基础URL | `https://api.deepseek.com/v1` | API服务地址 |
-| `LLM_TIMEOUT` | 请求超时(ms) | `30000` | `30000` |
-| `LLM_MAX_RETRIES` | 最大重试次数 | `3` | `3` |
-| `LLM_TEMPERATURE` | 温度参数 | `0.7` | `0.0-2.0` |
-| `LLM_MAX_TOKENS` | 最大令牌数 | `2000` | `1000-4000` |
+| 配置项                 | 说明          | 默认值                        | 示例                 |
+| ---------------------- | ------------- | ----------------------------- | -------------------- |
+| `LLM_DEFAULT_PROVIDER` | LLM服务提供商 | `deepseek`                    | `deepseek`, `openai` |
+| `LLM_API_KEY`          | API密钥       | -                             | `sk-xxx...`          |
+| `LLM_DEFAULT_MODEL`    | 默认模型      | `deepseek-chat`               | `deepseek-chat`      |
+| `LLM_BASE_URL`         | 服务基础URL   | `https://api.deepseek.com/v1` | API服务地址          |
+| `LLM_TIMEOUT`          | 请求超时(ms)  | `30000`                       | `30000`              |
+| `LLM_MAX_RETRIES`      | 最大重试次数  | `3`                           | `3`                  |
+| `LLM_TEMPERATURE`      | 温度参数      | `0.7`                         | `0.0-2.0`            |
+| `LLM_MAX_TOKENS`       | 最大令牌数    | `2000`                        | `1000-4000`          |
 
 ## 🔍 故障排除
 

@@ -14,10 +14,7 @@ const __dirname = dirname(__filename);
 config({ path: join(__dirname, '../../../../.env') });
 
 // 验证必需的环境变量
-const requiredEnvVars = [
-  'DATABASE_URL',
-  'JWT_SECRET'
-];
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET'];
 
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {

@@ -7,11 +7,13 @@
 ## 核心问题分析
 
 ### 原始问题
+
 1. **前端状态管理缺乏持久化**：Zustand store仅使用内存存储，页面刷新后状态丢失
 2. **前后端会话管理分离**：前端使用简单内存存储，后端有完整持久化系统但未集成
 3. **会话恢复机制缺失**：页面加载时没有恢复会话的逻辑
 
 ### 根本原因
+
 - 前端Zustand store没有持久化中间件
 - 缺乏与后端AI对话系统的集成
 - 没有用户登录状态管理
@@ -22,37 +24,39 @@
 ### 1. 前端状态持久化
 
 #### Zustand Store 增强
+
 ```typescript
 // 添加持久化中间件
 export const useLLMStore = create<LLMState>()(
-    persist(
-        (set, get) => ({
-            // 状态和方法实现
-        }),
-        {
-            name: 'llm-store',
-            storage: createJSONStorage(() => localStorage),
-            partialize: (state) => ({
-                sessions: state.sessions,
-                currentSession: state.currentSession,
-                config: state.config,
-                currentUserId: state.currentUserId,
-                backendSessionId: state.backendSessionId
-            }),
-            onRehydrateStorage: () => (state) => {
-                // 页面加载时自动同步后端数据
-                if (state?.currentUserId) {
-                    setTimeout(() => {
-                        state.syncWithBackend();
-                    }, 100);
-                }
-            }
+  persist(
+    (set, get) => ({
+      // 状态和方法实现
+    }),
+    {
+      name: 'llm-store',
+      storage: createJSONStorage(() => localStorage),
+      partialize: state => ({
+        sessions: state.sessions,
+        currentSession: state.currentSession,
+        config: state.config,
+        currentUserId: state.currentUserId,
+        backendSessionId: state.backendSessionId,
+      }),
+      onRehydrateStorage: () => state => {
+        // 页面加载时自动同步后端数据
+        if (state?.currentUserId) {
+          setTimeout(() => {
+            state.syncWithBackend();
+          }, 100);
         }
-    )
+      },
+    }
+  )
 );
 ```
 
 #### 新增状态字段
+
 - `currentUserId`: 当前用户ID，用于会话关联
 - `backendSessionId`: 后端会话ID，用于前后端同步
 - 持久化关键状态到localStorage
@@ -60,26 +64,30 @@ export const useLLMStore = create<LLMState>()(
 ### 2. 后端API集成
 
 #### AI会话API客户端 (`apps/web/src/lib/ai-session-api.ts`)
+
 ```typescript
 class AISessionApiClient {
-    // 创建会话
-    async createSession(request: CreateSessionRequest): Promise<SessionResponse>
-    
-    // 获取用户会话列表
-    async getUserSessions(userId: string): Promise<SessionSummary[]>
-    
-    // 处理对话
-    async processConversation(request: ConversationRequest): Promise<ConversationResponse>
-    
-    // 恢复会话
-    async getSession(sessionId: string): Promise<SessionData>
-    
-    // 终止会话
-    async terminateSession(sessionId: string): Promise<void>
+  // 创建会话
+  async createSession(request: CreateSessionRequest): Promise<SessionResponse>;
+
+  // 获取用户会话列表
+  async getUserSessions(userId: string): Promise<SessionSummary[]>;
+
+  // 处理对话
+  async processConversation(
+    request: ConversationRequest
+  ): Promise<ConversationResponse>;
+
+  // 恢复会话
+  async getSession(sessionId: string): Promise<SessionData>;
+
+  // 终止会话
+  async terminateSession(sessionId: string): Promise<void>;
 }
 ```
 
 #### 会话管理方法
+
 - `loadUserSessions`: 从后端加载用户所有会话
 - `restoreSession`: 恢复特定会话的完整数据
 - `syncWithBackend`: 同步后端数据到前端
@@ -87,33 +95,35 @@ class AISessionApiClient {
 ### 3. 会话初始化机制
 
 #### 会话初始化钩子 (`apps/web/src/hooks/useSessionInitialization.ts`)
+
 ```typescript
 export function useSessionInitialization() {
-    useEffect(() => {
-        const initializeSession = async () => {
-            const storedUserId = localStorage.getItem('userId');
-            const token = localStorage.getItem('token');
+  useEffect(() => {
+    const initializeSession = async () => {
+      const storedUserId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
 
-            if (storedUserId && token) {
-                setCurrentUserId(storedUserId);
-                await loadUserSessions(storedUserId);
-            }
-        };
-        initializeSession();
-    }, []);
+      if (storedUserId && token) {
+        setCurrentUserId(storedUserId);
+        await loadUserSessions(storedUserId);
+      }
+    };
+    initializeSession();
+  }, []);
 
-    // 监听登录状态变化
-    useEffect(() => {
-        const handleStorageChange = (e: StorageEvent) => {
-            // 处理登录/登出状态变化
-        };
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
+  // 监听登录状态变化
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // 处理登录/登出状态变化
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 }
 ```
 
 #### 会话管理组件 (`apps/web/src/components/llm/SessionManager.tsx`)
+
 - 显示用户登录状态
 - 提供会话刷新功能
 - 处理登录/登出操作
@@ -122,17 +132,20 @@ export function useSessionInitialization() {
 ### 4. 数据同步策略
 
 #### 本地优先策略
+
 - 优先使用本地存储的会话数据
 - 异步同步后端数据
 - 减少用户等待时间
 
 #### 双向同步机制
+
 - **创建会话**：前端 → 后端
 - **发送消息**：前端 → 后端
 - **恢复会话**：后端 → 前端
 - **删除会话**：前端 → 后端
 
 #### 冲突解决
+
 - 时间戳比较
 - 后端数据优先
 - 自动合并策略
@@ -140,8 +153,9 @@ export function useSessionInitialization() {
 ## 状态管理流程
 
 ### 会话创建流程
+
 ```
-用户点击"新对话" 
+用户点击"新对话"
     ↓
 检查用户登录状态
     ↓
@@ -153,6 +167,7 @@ export function useSessionInitialization() {
 ```
 
 ### 消息发送流程
+
 ```
 用户发送消息
     ↓
@@ -168,6 +183,7 @@ export function useSessionInitialization() {
 ```
 
 ### 页面恢复流程
+
 ```
 页面加载
     ↓
@@ -185,6 +201,7 @@ onRehydrateStorage触发
 ## 测试和验证
 
 ### 会话持久化测试组件 (`apps/web/src/components/llm/SessionPersistenceTest.tsx`)
+
 - 测试会话创建功能
 - 测试会话加载功能
 - 测试后端数据同步
@@ -192,6 +209,7 @@ onRehydrateStorage触发
 - 模拟页面刷新测试
 
 ### 测试功能
+
 - ✅ 会话创建和保存
 - ✅ 页面刷新后会话恢复
 - ✅ 用户登录状态管理
@@ -201,6 +219,7 @@ onRehydrateStorage触发
 ## 文件结构
 
 ### 新增文件
+
 ```
 apps/web/src/
 ├── lib/
@@ -219,6 +238,7 @@ docs/ai-system/
 ```
 
 ### 修改文件
+
 ```
 apps/web/src/
 ├── types/llm.ts                   # 更新LLMMessage类型
@@ -229,21 +249,25 @@ apps/web/src/
 ## 技术特性
 
 ### 1. 持久化机制
+
 - **本地存储**：使用localStorage保存关键状态
 - **自动恢复**：页面加载时自动恢复状态
 - **选择性持久化**：只保存必要的状态数据
 
 ### 2. 数据同步
+
 - **实时同步**：操作时实时同步到后端
 - **异步恢复**：页面加载时异步同步后端数据
 - **冲突处理**：智能处理数据冲突
 
 ### 3. 用户体验
+
 - **无缝恢复**：页面刷新后会话自动恢复
 - **状态指示**：清晰的加载和错误状态显示
 - **操作反馈**：实时的操作结果反馈
 
 ### 4. 错误处理
+
 - **网络错误**：优雅处理网络异常
 - **数据验证**：确保数据完整性
 - **用户提示**：清晰的错误信息显示
@@ -251,16 +275,19 @@ apps/web/src/
 ## 性能优化
 
 ### 1. 懒加载策略
+
 - 会话列表按需加载
 - 消息历史分页加载
 - 组件懒加载
 
 ### 2. 缓存策略
+
 - 本地缓存优先
 - 智能缓存更新
 - 内存使用优化
 
 ### 3. 网络优化
+
 - 请求合并
 - 批量操作
 - 连接复用
@@ -268,16 +295,19 @@ apps/web/src/
 ## 部署和配置
 
 ### 1. 环境要求
+
 - Node.js 18+
 - 现代浏览器支持localStorage
 - 后端AI对话系统运行
 
 ### 2. 配置项
+
 - API端点配置
 - 认证机制配置
 - 存储策略配置
 
 ### 3. 监控指标
+
 - 会话创建成功率
 - 数据同步成功率
 - 页面加载性能

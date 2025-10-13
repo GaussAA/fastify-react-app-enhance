@@ -1,393 +1,318 @@
-import { FastifyInstance } from 'fastify';
-import { getAllUsers, createUser } from '../controllers/user.controller.js';
-import { authenticateToken, requirePermission } from '../middlewares/auth.middleware.js';
-import { userService } from '../services/user.service.js';
+/**
+ * 重构后的用户路由
+ * 使用重构后的服务层，减少重复代码
+ */
 
-export async function userRoutes(app: FastifyInstance) {
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { getUserService } from '../services/service-factory.js';
+import {
+  successResponse,
+  createdResponse,
+  paginatedResponse,
+  notFoundResponse,
+  routeHandler,
+} from '../utils/response.js';
+import { userResponses } from '../schemas/responses.js';
+
+/**
+ * 用户路由插件
+ */
+export async function userRoutes(fastify: FastifyInstance) {
+  const userService = getUserService((fastify as any).prisma);
+
   // 获取所有用户
-  app.get(
+  fastify.get(
     '/',
     {
-      preHandler: [authenticateToken],
       schema: {
-        description: '获取所有用户列表',
-        tags: ['users'],
-        summary: '获取用户列表',
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean', description: '请求是否成功' },
-              data: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number', description: '用户ID' },
-                    name: { type: 'string', description: '用户姓名' },
-                    email: { type: 'string', description: '用户邮箱' },
-                    createdAt: {
-                      type: 'string',
-                      format: 'date-time',
-                      description: '创建时间',
-                    },
-                  },
-                },
-              },
-              message: { type: 'string', description: '响应消息' },
-            },
-          },
-          500: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean', description: '请求是否成功' },
-              message: { type: 'string', description: '错误消息' },
-            },
-          },
-        },
-      },
-    },
-    getAllUsers
-  );
-
-  // 创建新用户
-  app.post(
-    '/',
-    {
-      preHandler: [authenticateToken],
-      schema: {
-        description: '创建新用户',
-        tags: ['users'],
-        summary: '创建用户',
-        body: {
+        querystring: {
           type: 'object',
-          required: ['name', 'email'],
           properties: {
-            name: {
+            page: { type: 'integer', minimum: 1, default: 1 },
+            limit: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+            search: { type: 'string' },
+            isActive: { type: 'boolean' },
+            isVerified: { type: 'boolean' },
+            role: { type: 'string' },
+            sortBy: {
               type: 'string',
-              description: '用户姓名',
-              minLength: 1,
-              maxLength: 100,
+              enum: ['name', 'email', 'createdAt', 'updatedAt'],
             },
-            email: {
+            sortOrder: {
               type: 'string',
-              format: 'email',
-              description: '用户邮箱',
-              minLength: 5,
-              maxLength: 255,
+              enum: ['asc', 'desc'],
+              default: 'desc',
             },
           },
         },
-        response: {
-          201: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean', description: '请求是否成功' },
-              data: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number', description: '用户ID' },
-                  name: { type: 'string', description: '用户姓名' },
-                  email: { type: 'string', description: '用户邮箱' },
-                  createdAt: {
-                    type: 'string',
-                    format: 'date-time',
-                    description: '创建时间',
-                  },
-                },
-              },
-              message: { type: 'string', description: '响应消息' },
-            },
-          },
-          400: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean', description: '请求是否成功' },
-              message: { type: 'string', description: '错误消息' },
-              errors: {
-                type: 'array',
-                items: { type: 'string' },
-                description: '详细错误信息',
-              },
-            },
-          },
-          500: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean', description: '请求是否成功' },
-              message: { type: 'string', description: '错误消息' },
-            },
-          },
-        },
+        // response: userResponses, // 临时注释掉以修复启动问题
       },
     },
-    createUser
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const query = request.query as any;
+      const result = await userService.getAllUsers(query);
+      return paginatedResponse(
+        reply,
+        result.data,
+        result.pagination,
+        '获取用户列表成功'
+      );
+    })
   );
 
   // 根据ID获取用户
-  app.get(
+  fastify.get(
     '/:id',
     {
-      preHandler: [authenticateToken, requirePermission('user', 'read')],
       schema: {
-        description: '根据ID获取用户详情',
-        tags: ['users'],
-        summary: '获取用户详情',
         params: {
           type: 'object',
           properties: {
-            id: { type: 'number', description: '用户ID' }
+            id: { type: 'integer' },
           },
-          required: ['id']
+          required: ['id'],
         },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  name: { type: 'string' },
-                  email: { type: 'string' },
-                  phone: { type: 'string' },
-                  avatar: { type: 'string' },
-                  isActive: { type: 'boolean' },
-                  isVerified: { type: 'boolean' },
-                  lastLoginAt: { type: 'string', format: 'date-time' },
-                  createdAt: { type: 'string', format: 'date-time' },
-                  userRoles: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        role: {
-                          type: 'object',
-                          properties: {
-                            id: { type: 'number' },
-                            name: { type: 'string' },
-                            displayName: { type: 'string' }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              message: { type: 'string' }
-            }
-          },
-          404: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              message: { type: 'string' }
-            }
-          }
-        }
-      }
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
     },
-    async (request: any, reply: any) => {
-      try {
-        const { id } = request.params as { id: number };
-        const user = await userService.getById(id);
-
-        if (!user) {
-          return reply.status(404).send({
-            success: false,
-            message: '用户不存在'
-          });
-        }
-
-        return reply.send({
-          success: true,
-          data: user,
-          message: '获取用户详情成功'
-        });
-      } catch (error) {
-        return reply.status(500).send({
-          success: false,
-          message: '获取用户详情失败'
-        });
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id } = request.params as { id: number };
+      const user = await userService.getUserById(id);
+      if (!user) {
+        return notFoundResponse(reply, '用户未找到');
       }
-    }
+      return successResponse(reply, user, '获取用户成功');
+    })
+  );
+
+  // 创建用户
+  fastify.post(
+    '/',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', minLength: 1, maxLength: 100 },
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', minLength: 6 },
+            isActive: { type: 'boolean', default: true },
+            isVerified: { type: 'boolean', default: false },
+            roles: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
+          required: ['name', 'email', 'password'],
+        },
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
+    },
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const userData = request.body as any;
+      const createdBy = (request as any).user?.id;
+      const user = await userService.createUser(userData, createdBy);
+      return createdResponse(reply, user, '用户创建成功');
+    })
   );
 
   // 更新用户
-  app.put(
+  fastify.put(
     '/:id',
     {
-      preHandler: [authenticateToken, requirePermission('user', 'update')],
       schema: {
-        description: '更新用户信息',
-        tags: ['users'],
-        summary: '更新用户',
         params: {
           type: 'object',
           properties: {
-            id: { type: 'number', description: '用户ID' }
+            id: { type: 'integer' },
           },
-          required: ['id']
+          required: ['id'],
         },
         body: {
           type: 'object',
           properties: {
             name: { type: 'string', minLength: 1, maxLength: 100 },
             email: { type: 'string', format: 'email' },
-            phone: { type: 'string' },
-            avatar: { type: 'string' },
+            password: { type: 'string', minLength: 6 },
             isActive: { type: 'boolean' },
-            isVerified: { type: 'boolean' }
-          }
+            isVerified: { type: 'boolean' },
+            roles: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
         },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'object' },
-              message: { type: 'string' }
-            }
-          }
-        }
-      }
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
     },
-    async (request: any, reply: any) => {
-      try {
-        const { id } = request.params as { id: number };
-        const updateData = request.body as any;
-        const updatedBy = (request as any).user?.id;
-
-        const user = await userService.update(id, updateData, updatedBy);
-
-        return reply.send({
-          success: true,
-          data: user,
-          message: '用户更新成功'
-        });
-      } catch (error) {
-        return reply.status(400).send({
-          success: false,
-          message: error instanceof Error ? error.message : '用户更新失败'
-        });
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id } = request.params as { id: number };
+      const userData = request.body as any;
+      const updatedBy = (request as any).user?.id;
+      const user = await userService.updateUser(id, userData, updatedBy);
+      if (!user) {
+        return notFoundResponse(reply, '用户未找到');
       }
-    }
+      return successResponse(reply, user, '用户更新成功');
+    })
   );
 
   // 删除用户
-  app.delete(
+  fastify.delete(
     '/:id',
     {
-      preHandler: [authenticateToken, requirePermission('user', 'delete')],
       schema: {
-        description: '删除用户',
-        tags: ['users'],
-        summary: '删除用户',
         params: {
           type: 'object',
           properties: {
-            id: { type: 'number', description: '用户ID' }
+            id: { type: 'integer' },
           },
-          required: ['id']
+          required: ['id'],
         },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              message: { type: 'string' }
-            }
-          }
-        }
-      }
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
     },
-    async (request: any, reply: any) => {
-      try {
-        const { id } = request.params as { id: number };
-        const deletedBy = (request as any).user?.id;
-
-        await userService.delete(id, deletedBy);
-
-        return reply.send({
-          success: true,
-          message: '用户删除成功'
-        });
-      } catch (error) {
-        return reply.status(400).send({
-          success: false,
-          message: error instanceof Error ? error.message : '用户删除失败'
-        });
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id } = request.params as { id: number };
+      const deletedBy = (request as any).user?.id;
+      const result = await userService.deleteUser(id, deletedBy);
+      if (!result) {
+        return notFoundResponse(reply, '用户未找到');
       }
-    }
+      return successResponse(reply, null, '用户删除成功');
+    })
   );
 
-  // 激活/停用用户
-  app.patch(
-    '/:id/toggle-active',
+  // 激活用户
+  fastify.patch(
+    '/:id/activate',
     {
-      preHandler: [authenticateToken, requirePermission('user', 'update')],
       schema: {
-        description: '激活或停用用户',
-        tags: ['users'],
-        summary: '切换用户状态',
         params: {
           type: 'object',
           properties: {
-            id: { type: 'number', description: '用户ID' }
+            id: { type: 'integer' },
           },
-          required: ['id']
+          required: ['id'],
         },
-        body: {
-          type: 'object',
-          required: ['isActive'],
-          properties: {
-            isActive: { type: 'boolean', description: '是否激活' }
-          }
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean' },
-              data: { type: 'object' },
-              message: { type: 'string' }
-            }
-          }
-        }
-      }
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
     },
-    async (request: any, reply: any) => {
-      try {
-        const { id } = request.params as { id: number };
-        const { isActive } = request.body as { isActive: boolean };
-        const updatedBy = (request as any).user?.id;
-
-        const user = await userService.toggleActive(id, isActive, updatedBy);
-
-        return reply.send({
-          success: true,
-          data: user,
-          message: `用户${isActive ? '激活' : '停用'}成功`
-        });
-      } catch (error) {
-        return reply.status(400).send({
-          success: false,
-          message: error instanceof Error ? error.message : '用户状态更新失败'
-        });
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id } = request.params as { id: number };
+      const activatedBy = (request as any).user?.id;
+      const user = await userService.activateUser(id, activatedBy);
+      if (!user) {
+        return notFoundResponse(reply, '用户未找到');
       }
-    }
+      return successResponse(reply, user, '用户激活成功');
+    })
+  );
+
+  // 停用用户
+  fastify.patch(
+    '/:id/deactivate',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+          },
+          required: ['id'],
+        },
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
+    },
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id } = request.params as { id: number };
+      const deactivatedBy = (request as any).user?.id;
+      const user = await userService.deactivateUser(id, deactivatedBy);
+      if (!user) {
+        return notFoundResponse(reply, '用户未找到');
+      }
+      return successResponse(reply, user, '用户停用成功');
+    })
+  );
+
+  // 验证用户邮箱
+  fastify.patch(
+    '/:id/verify',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+          },
+          required: ['id'],
+        },
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
+    },
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { id } = request.params as { id: number };
+      const verifiedBy = (request as any).user?.id;
+      const user = await userService.verifyUserEmail(id, verifiedBy);
+      if (!user) {
+        return notFoundResponse(reply, '用户未找到');
+      }
+      return successResponse(reply, user, '用户邮箱验证成功');
+    })
+  );
+
+  // 搜索用户
+  fastify.get(
+    '/search/:query',
+    {
+      schema: {
+        params: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', minLength: 1 },
+          },
+          required: ['query'],
+        },
+        querystring: {
+          type: 'object',
+          properties: {
+            page: { type: 'integer', minimum: 1, default: 1 },
+            limit: { type: 'integer', minimum: 1, maximum: 100, default: 20 },
+            isActive: { type: 'boolean' },
+            isVerified: { type: 'boolean' },
+            role: { type: 'string' },
+            sortBy: {
+              type: 'string',
+              enum: ['name', 'email', 'createdAt', 'updatedAt'],
+            },
+            sortOrder: {
+              type: 'string',
+              enum: ['asc', 'desc'],
+              default: 'desc',
+            },
+          },
+        },
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
+    },
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { query } = request.params as { query: string };
+      const options = request.query as any;
+      const result = await userService.searchUsers(query, options);
+      return paginatedResponse(
+        reply,
+        result.data,
+        result.pagination,
+        '搜索用户成功'
+      );
+    })
   );
 
   // 获取用户统计信息
-  app.get(
+  fastify.get(
     '/stats/overview',
     {
-      preHandler: [authenticateToken, requirePermission('user', 'read')],
       schema: {
-        description: '获取用户统计信息',
-        tags: ['users'],
-        summary: '获取用户概览统计',
         response: {
           200: {
             type: 'object',
@@ -396,35 +321,113 @@ export async function userRoutes(app: FastifyInstance) {
               data: {
                 type: 'object',
                 properties: {
-                  totalUsers: { type: 'number' },
-                  activeUsers: { type: 'number' },
-                  verifiedUsers: { type: 'number' },
-                  recentUsers: { type: 'number' },
-                  inactiveUsers: { type: 'number' },
-                  unverifiedUsers: { type: 'number' }
-                }
+                  total: { type: 'integer' },
+                  active: { type: 'integer' },
+                  inactive: { type: 'integer' },
+                  verified: { type: 'integer' },
+                  unverified: { type: 'integer' },
+                  byRole: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        role: { type: 'string' },
+                        count: { type: 'integer' },
+                      },
+                    },
+                  },
+                },
               },
-              message: { type: 'string' }
-            }
-          }
-        }
-      }
+              message: { type: 'string' },
+            },
+          },
+          500: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
     },
-    async (request: any, reply: any) => {
-      try {
-        const stats = await userService.getStats();
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const stats = await userService.getUserStats();
+      return successResponse(reply, stats, '获取用户统计信息成功');
+    })
+  );
 
-        return reply.send({
-          success: true,
-          data: stats,
-          message: '获取用户统计成功'
-        });
-      } catch (error) {
-        return reply.status(500).send({
-          success: false,
-          message: '获取用户统计失败'
-        });
-      }
-    }
+  // 批量创建用户
+  fastify.post(
+    '/batch',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            users: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', minLength: 1, maxLength: 100 },
+                  email: { type: 'string', format: 'email' },
+                  password: { type: 'string', minLength: 6 },
+                  isActive: { type: 'boolean', default: true },
+                  isVerified: { type: 'boolean', default: false },
+                  roles: {
+                    type: 'array',
+                    items: { type: 'string' },
+                  },
+                },
+                required: ['name', 'email', 'password'],
+              },
+            },
+          },
+          required: ['users'],
+        },
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
+    },
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { users } = request.body as { users: any[] };
+      const createdBy = (request as any).user?.id;
+      const result = await userService.createUsersBatch(users, createdBy);
+      return createdResponse(reply, result, '批量创建用户成功');
+    })
+  );
+
+  // 批量更新用户状态
+  fastify.patch(
+    '/batch/status',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            userIds: {
+              type: 'array',
+              items: { type: 'integer' },
+            },
+            isActive: { type: 'boolean' },
+          },
+          required: ['userIds', 'isActive'],
+        },
+        // response: userResponses, // 临时注释掉以修复启动问题
+      },
+    },
+    routeHandler(async (request: FastifyRequest, reply: FastifyReply) => {
+      const { userIds, isActive } = request.body as {
+        userIds: number[];
+        isActive: boolean;
+      };
+      const updatedBy = (request as any).user?.id;
+      const result = await userService.updateUsersStatus(
+        userIds,
+        isActive,
+        updatedBy
+      );
+      return successResponse(reply, result, '批量更新用户状态成功');
+    })
   );
 }

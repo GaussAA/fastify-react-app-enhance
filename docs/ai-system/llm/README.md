@@ -122,7 +122,7 @@ Content-Type: application/json
 {
   "messages": [
     {
-      "role": "user", 
+      "role": "user",
       "content": "请写一首诗"
     }
   ],
@@ -193,7 +193,7 @@ export class CustomService extends BaseLLMService {
   async chat(request: LLMChatRequest): Promise<LLMChatResponse> {
     // 实现具体的API调用逻辑
   }
-  
+
   // 实现其他抽象方法...
 }
 ```
@@ -226,7 +226,9 @@ export interface LLMServiceConfig {
 ```typescript
 // apps/web/src/components/llm/CustomComponent.tsx
 export function CustomComponent() {
-  const { /* 使用LLM状态 */ } = useLLMStore();
+  const {
+    /* 使用LLM状态 */
+  } = useLLMStore();
   // 组件实现...
 }
 ```

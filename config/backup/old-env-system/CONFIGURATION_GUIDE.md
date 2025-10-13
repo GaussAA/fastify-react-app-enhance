@@ -30,12 +30,14 @@ config/
 ### 1. 统一配置管理（config/ports.ts）
 
 **管理内容：**
+
 - ✅ 端口配置（PostgreSQL, Redis, API, Web等）
 - ✅ 服务URL配置
 - ✅ Docker端口映射
 - ✅ 健康检查配置
 
 **特点：**
+
 - 相对固定，不经常变化
 - 不包含敏感信息
 - 集中管理，一处修改全局生效
@@ -43,11 +45,13 @@ config/
 ### 2. 环境变量管理（.env文件）
 
 **管理内容：**
+
 - ✅ **必需配置**：敏感信息（JWT_SECRET, DB_PASSWORD, LLM_API_KEY）
 - ✅ **可选配置**：有默认值的配置（NODE_ENV, LOG_LEVEL等）
 - ✅ **自动生成配置**：由统一配置管理系统生成（DATABASE_URL, REDIS_URL等）
 
 **特点：**
+
 - **精简高效**：只包含必需和可选的配置
 - **智能默认值**：非敏感配置有合理默认值
 - **自动生成**：端口相关配置自动生成
@@ -65,6 +69,7 @@ config/
 | **端口配置**     | 统一配置  | 集中管理，一处修改全局生效   | `PORTS.API`, `PORTS.POSTGRES`                    |
 
 **💡 优势：**
+
 - **精简**：.env 文件只包含必需和可选的配置
 - **高效**：非敏感配置有默认值，开箱即用
 - **安全**：敏感信息必须设置，有验证机制
@@ -75,22 +80,26 @@ config/
 ### 首次设置
 
 1. **生成配置模板**
+
    ```bash
    pnpm run config:generate
    ```
 
 2. **创建环境变量文件**
+
    ```bash
    cp env.example .env
    ```
 
 3. **编辑必需配置**
+
    ```bash
    # 编辑 .env 文件，只需设置必需配置
    nano .env
    ```
-   
+
    **只需设置这3个必需配置：**
+
    ```bash
    JWT_SECRET=your_jwt_secret_key_here
    DB_PASSWORD=your_secure_password_here
@@ -107,12 +116,14 @@ config/
 ### 修改端口配置
 
 1. **编辑端口配置**
+
    ```bash
    # 编辑 config/ports.ts
    nano config/ports.ts
    ```
 
 2. **重新生成配置文件**
+
    ```bash
    pnpm run config:generate
    ```
@@ -125,6 +136,7 @@ config/
 ### 修改环境变量
 
 1. **编辑环境变量**
+
    ```bash
    # 编辑 .env 文件
    nano .env
@@ -138,9 +150,10 @@ config/
 ## 📝 配置示例
 
 ### 端口配置（config/ports.ts）
+
 ```typescript
 export const PORTS = {
-  POSTGRES: 15432,  // 修改这里
+  POSTGRES: 15432, // 修改这里
   REDIS: 6379,
   API: 8001,
   WEB: 5173,
@@ -148,6 +161,7 @@ export const PORTS = {
 ```
 
 ### 精简环境变量（.env）
+
 ```bash
 # 必需配置（敏感信息，必须设置）
 JWT_SECRET=your_super_secret_key_here
@@ -168,6 +182,7 @@ LLM_MAX_TOKENS=2000
 ```
 
 **💡 精简配置的优势：**
+
 - **只需设置3个必需配置**：JWT_SECRET, DB_PASSWORD, LLM_API_KEY
 - **其他配置有默认值**：开箱即用，无需手动设置
 - **自动生成配置**：端口相关配置自动生成，避免手动维护
@@ -189,6 +204,7 @@ LLM_MAX_TOKENS=2000
 **操作步骤：**
 
 1. **编辑端口定义**
+
    ```typescript
    // config/ports.ts
    export const PORTS = {
@@ -199,16 +215,18 @@ LLM_MAX_TOKENS=2000
      PRISMA_STUDIO: 5555,
      REDIS_COMMANDER: 8081,
      // 新增端口
-     NEW_SERVICE: 9000,  // 添加新服务端口
+     NEW_SERVICE: 9000, // 添加新服务端口
    } as const;
    ```
 
 2. **重新生成配置文件**
+
    ```bash
    pnpm run config:generate
    ```
 
 3. **在代码中使用**
+
    ```typescript
    import { PORTS } from '../config/ports.js';
    const newServicePort = PORTS.NEW_SERVICE;
@@ -226,11 +244,12 @@ LLM_MAX_TOKENS=2000
 **操作步骤：**
 
 1. **更新配置定义**
+
    ```typescript
    // config/env-config.ts
    export const ENV_CONFIG = {
      // 现有配置...
-     
+
      // 新增配置
      NEW_API_KEY: process.env.NEW_API_KEY || '',
      NEW_SERVICE_URL: process.env.NEW_SERVICE_URL || 'https://api.example.com',
@@ -239,20 +258,22 @@ LLM_MAX_TOKENS=2000
    ```
 
 2. **更新验证逻辑**（如果是必需变量）
+
    ```typescript
    // config/env-config.ts
    export function validateEnvironment() {
      const requiredVars = [
        'JWT_SECRET',
-       'DB_PASSWORD', 
+       'DB_PASSWORD',
        'LLM_API_KEY',
-       'NEW_API_KEY',  // 如果是必需变量
+       'NEW_API_KEY', // 如果是必需变量
      ];
      // ...
    }
    ```
 
 3. **更新配置生成器**
+
    ```javascript
    // config/generate-env-templates.js
    // 在 generateRootEnvExample() 函数中添加新变量
@@ -266,23 +287,26 @@ LLM_MAX_TOKENS=2000
    ```
 
 4. **重新生成配置模板**
+
    ```bash
    pnpm run config:generate
    ```
 
 5. **创建/更新 .env 文件**
+
    ```bash
    # 复制模板
    cp env.example .env
-   
+
    # 编辑 .env 文件，设置新变量
    nano .env
    ```
 
 6. **在代码中使用**
+
    ```typescript
    import { APP_CONFIG } from '../config/env-config.js';
-   
+
    const apiKey = APP_CONFIG.NEW_API_KEY;
    const serviceUrl = APP_CONFIG.NEW_SERVICE_URL;
    ```
@@ -294,18 +318,19 @@ LLM_MAX_TOKENS=2000
 **操作步骤：**
 
 1. **更新应用配置**
+
    ```typescript
    // config/env-config.ts
    export const APP_CONFIG = {
      // 现有配置...
-     
+
      // 新增应用配置
      NEW_SERVICE: {
        NAME: 'new-service',
        TIMEOUT: 5000,
        RETRY_COUNT: 3,
      },
-     
+
      // 新增健康检查配置
      HEALTH_CHECK: {
        // 现有配置...
@@ -319,9 +344,10 @@ LLM_MAX_TOKENS=2000
    ```
 
 2. **在代码中使用**
+
    ```typescript
    import { APP_CONFIG } from '../config/env-config.js';
-   
+
    const serviceName = APP_CONFIG.NEW_SERVICE.NAME;
    const timeout = APP_CONFIG.NEW_SERVICE.TIMEOUT;
    ```
@@ -361,15 +387,17 @@ LLM_MAX_TOKENS=2000
 **步骤：**
 
 1. **添加端口配置**
+
    ```typescript
    // config/ports.ts
    export const PORTS = {
      // 现有配置...
-     REDIS_MONITOR: 8082,  // 新增
+     REDIS_MONITOR: 8082, // 新增
    } as const;
    ```
 
 2. **重新生成配置**
+
    ```bash
    pnpm run config:generate
    ```
@@ -380,7 +408,7 @@ LLM_MAX_TOKENS=2000
    redis-monitor:
      image: redis-commander:latest
      ports:
-       - '8082:8081'  # 自动从配置生成
+       - '8082:8081' # 自动从配置生成
    ```
 
 ### 示例2：添加第三方支付服务
@@ -390,6 +418,7 @@ LLM_MAX_TOKENS=2000
 **步骤：**
 
 1. **更新环境变量配置**
+
    ```typescript
    // config/env-config.ts
    export const ENV_CONFIG = {
@@ -400,6 +429,7 @@ LLM_MAX_TOKENS=2000
    ```
 
 2. **更新验证逻辑**
+
    ```typescript
    // config/env-config.ts
    export function validateEnvironment() {
@@ -407,13 +437,14 @@ LLM_MAX_TOKENS=2000
        'JWT_SECRET',
        'DB_PASSWORD',
        'LLM_API_KEY',
-       'STRIPE_SECRET_KEY',  // 新增
+       'STRIPE_SECRET_KEY', // 新增
      ];
      // ...
    }
    ```
 
 3. **更新配置生成器**
+
    ```javascript
    // config/generate-env-templates.js
    const content = `# 现有配置...
@@ -438,6 +469,7 @@ LLM_MAX_TOKENS=2000
 **步骤：**
 
 1. **更新应用配置**
+
    ```typescript
    // config/env-config.ts
    export const APP_CONFIG = {
@@ -451,9 +483,10 @@ LLM_MAX_TOKENS=2000
    ```
 
 2. **在代码中使用**
+
    ```typescript
    import { APP_CONFIG } from '../config/env-config.js';
-   
+
    if (APP_CONFIG.FEATURES.ENABLE_ANALYTICS) {
      // 启用分析功能
    }
@@ -466,6 +499,7 @@ LLM_MAX_TOKENS=2000
 **错误信息：** `Cannot find module 'config/ports.js'`
 
 **解决方案：**
+
 ```bash
 # 确保在项目根目录运行
 cd /path/to/project
@@ -477,6 +511,7 @@ pnpm run config:generate
 **错误信息：** `缺少必需的环境变量: JWT_SECRET`
 
 **解决方案：**
+
 ```bash
 # 1. 检查 .env 文件是否存在
 ls -la .env
@@ -493,6 +528,7 @@ nano .env
 **错误信息：** `ports are not available: exposing port TCP 0.0.0.0:5432`
 
 **解决方案：**
+
 ```bash
 # 1. 修改端口配置
 # 编辑 config/ports.ts，将端口改为其他值
@@ -509,6 +545,7 @@ pnpm run start
 **错误信息：** `Property 'NEW_CONFIG' does not exist`
 
 **解决方案：**
+
 ```typescript
 // 确保在 env-config.ts 中正确定义了配置
 export const ENV_CONFIG = {
@@ -520,24 +557,31 @@ export const ENV_CONFIG = {
 ## ❓ 常见问题
 
 ### Q: 为什么需要两套配置系统？
+
 A: 统一配置管理端口等相对固定的配置，环境变量管理敏感信息和环境特定配置，各司其职。
 
 ### Q: 可以只用统一配置管理吗？
+
 A: 不建议，因为敏感信息不应该硬编码在代码中。
 
 ### Q: 可以只用环境变量吗？
+
 A: 可以，但会失去统一管理的便利性，端口配置分散在各个文件中。
 
 ### Q: 如何在不同环境使用不同配置？
+
 A: 创建不同的 .env 文件（如 .env.development, .env.production）或使用环境变量覆盖。
 
 ### Q: 如何批量修改多个端口？
+
 A: 编辑 `config/ports.ts` 文件，然后运行 `pnpm run config:generate`，所有相关文件会自动更新。
 
 ### Q: 配置验证失败怎么办？
+
 A: 检查 `.env` 文件中是否设置了所有必需的环境变量，特别是 `JWT_SECRET`、`DB_PASSWORD`、`LLM_API_KEY`。
 
 ### Q: 如何备份当前配置？
+
 A: 备份 `config/` 目录和 `.env` 文件即可，其他配置文件都是自动生成的。
 
 ## 🔄 迁移指南
@@ -621,6 +665,7 @@ A: 备份 `config/` 目录和 `.env` 文件即可，其他配置文件都是自�
 **总结：统一配置管理 + 环境变量 = 最佳实践！** 🎉
 
 通过这套配置管理系统，你可以：
+
 - 🎯 **集中管理** - 端口配置统一管理
 - 🔒 **安全可靠** - 敏感信息环境变量管理
 - 🚀 **高效便捷** - 一处修改，全局生效

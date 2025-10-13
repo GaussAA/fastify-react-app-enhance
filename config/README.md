@@ -68,38 +68,42 @@ if (issues.length > 0) {
 ### 配置分类
 
 #### A类 - 安全敏感配置（运行时注入）
+
 ```typescript
 interface SecurityConfig {
-  JWT_SECRET: string;        // JWT 密钥
-  DB_PASSWORD: string;       // 数据库密码
-  LLM_API_KEY: string;       // LLM API 密钥
-  API_KEY: string;           // 通用 API 密钥
-  VITE_API_KEY: string;      // 前端 API 密钥
+  JWT_SECRET: string; // JWT 密钥
+  DB_PASSWORD: string; // 数据库密码
+  LLM_API_KEY: string; // LLM API 密钥
+  API_KEY: string; // 通用 API 密钥
+  VITE_API_KEY: string; // 前端 API 密钥
 }
 ```
 
 #### B类 - 环境特定配置
+
 ```typescript
 interface EnvironmentConfig {
-  NODE_ENV: Environment;     // 环境标识
-  DATABASE_URL: string;      // 数据库连接字符串
-  REDIS_URL: string;         // Redis 连接字符串
-  API_BASE_URL: string;      // API 基础 URL
-  WEB_BASE_URL: string;      // Web 基础 URL
-  LOG_LEVEL: LogLevel;       // 日志级别
-  HOST: string;              // 服务器主机
-  PORT: number;              // 服务器端口
+  NODE_ENV: Environment; // 环境标识
+  DATABASE_URL: string; // 数据库连接字符串
+  REDIS_URL: string; // Redis 连接字符串
+  API_BASE_URL: string; // API 基础 URL
+  WEB_BASE_URL: string; // Web 基础 URL
+  LOG_LEVEL: LogLevel; // 日志级别
+  HOST: string; // 服务器主机
+  PORT: number; // 服务器端口
 }
 ```
 
 #### C类 - 共享业务配置
+
 ```typescript
 interface BusinessConfig {
-  PAGINATION_LIMIT: number;           // 分页限制
-  REQUEST_TIMEOUT: number;            // 请求超时
-  MAX_RETRIES: number;                // 最大重试次数
-  CACHE_TTL: number;                  // 缓存 TTL
-  FEATURE_FLAGS: {                    // 功能开关
+  PAGINATION_LIMIT: number; // 分页限制
+  REQUEST_TIMEOUT: number; // 请求超时
+  MAX_RETRIES: number; // 最大重试次数
+  CACHE_TTL: number; // 缓存 TTL
+  FEATURE_FLAGS: {
+    // 功能开关
     REGISTRATION: boolean;
     EMAIL_VERIFICATION: boolean;
     TWO_FACTOR_AUTH: boolean;
@@ -108,13 +112,14 @@ interface BusinessConfig {
 ```
 
 #### D类 - 开发工具配置
+
 ```typescript
 interface DevelopmentConfig {
-  DEBUG: boolean;                     // 调试模式
-  VERBOSE_LOGGING: boolean;           // 详细日志
-  MOCK_API: boolean;                  // 模拟 API
-  SEED_DATA: boolean;                 // 种子数据
-  HOT_RELOAD: boolean;                // 热重载
+  DEBUG: boolean; // 调试模式
+  VERBOSE_LOGGING: boolean; // 详细日志
+  MOCK_API: boolean; // 模拟 API
+  SEED_DATA: boolean; // 种子数据
+  HOT_RELOAD: boolean; // 热重载
 }
 ```
 
@@ -165,7 +170,7 @@ import { SensitiveDataFilter } from './config/utils.js';
 // 创建安全摘要
 const summary = SensitiveDataFilter.createConfigSummary(config, {
   includeSensitive: false,
-  includeEnvironment: true
+  includeEnvironment: true,
 });
 ```
 
@@ -190,8 +195,8 @@ ConfigDebugger.printValidationResults(config);
 
 ```typescript
 const config = loadConfig({
-  validate: true,                    // 启用验证
-  allowMissingRequired: false        // 不允许缺失必需配置
+  validate: true, // 启用验证
+  allowMissingRequired: false, // 不允许缺失必需配置
 });
 ```
 
@@ -232,16 +237,19 @@ const prodIssues = ConfigValidator.validateProductionConfig(config);
 ### 开发环境
 
 1. 复制环境文件模板：
+
 ```bash
 cp config/env/env-templates/development.env .env
 ```
 
 2. 修改配置：
+
 ```bash
 # 编辑 .env 文件，设置开发环境特定的配置
 ```
 
 3. 启动应用：
+
 ```bash
 npm run dev
 ```
@@ -249,6 +257,7 @@ npm run dev
 ### 生产环境
 
 1. 设置环境变量：
+
 ```bash
 export NODE_ENV=production
 export JWT_SECRET=your_secure_jwt_secret
@@ -257,6 +266,7 @@ export LLM_API_KEY=your_llm_api_key
 ```
 
 2. 或使用密钥管理服务：
+
 ```bash
 # AWS Secrets Manager
 aws secretsmanager get-secret-value --secret-id prod/app/config
@@ -266,6 +276,7 @@ az keyvault secret show --vault-name myvault --name app-config
 ```
 
 3. 部署应用：
+
 ```bash
 npm run build
 npm start

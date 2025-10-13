@@ -1,245 +1,112 @@
-import { prisma } from '../prisma-client.js';
-import { logger } from '../utils/logger.js';
+/**
+ * 重构后的权限服务
+ * 基于BaseService，减少重复代码
+ */
 
-export interface PermissionData {
+import { PrismaClient } from '@prisma/client';
+import { CrudService } from './base.service.js';
+import { ValidationRuleSets } from '../utils/validation.js';
+
+export interface PermissionQuery {
+    page?: number;
+    limit?: number;
+    search?: string;
+    isActive?: boolean;
+    resource?: string;
+    action?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+}
+
+export interface PermissionCreateData {
     name: string;
     displayName: string;
     description?: string;
     resource: string;
     action: string;
+    isActive?: boolean;
 }
 
-export interface RoleData {
+export interface PermissionUpdateData {
+    name?: string;
+    displayName?: string;
+    description?: string;
+    resource?: string;
+    action?: string;
+    isActive?: boolean;
+}
+
+export interface PermissionWithRoles {
+    id: number;
     name: string;
     displayName: string;
-    description?: string;
-    permissions?: string[]; // 权限名称数组
+    description: string | null;
+    resource: string;
+    action: string;
+    isActive: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    rolePermissions: Array<{
+        id: number;
+        role: {
+            id: number;
+            name: string;
+            displayName: string;
+        };
+    }>;
+    _count: {
+        rolePermissions: number;
+    };
 }
 
-export interface UserRoleData {
-    userId: number;
-    roleId: number;
-    assignedBy?: number;
-    expiresAt?: Date;
-}
+/**
+ * 重构后的权限服务类
+ */
+export class PermissionService extends CrudService<PermissionWithRoles> {
+    constructor(prisma: PrismaClient) {
+        super(prisma, prisma.permission, ValidationRuleSets.permission, {
+            enableEvents: true,
+            enableValidation: true,
+            enableAudit: true,
+            enableCache: true,
+            cacheTTL: 300000, // 5 minutes
+        });
+    }
 
-export const permissionService = {
     /**
-     * 检查用户是否有指定权限
+     * 获取所有权限（分页）
      */
-    async hasPermission(
-        userId: number,
-        resource: string,
-        action: string
-    ): Promise<boolean> {
-        try {
-            const userPermissions = await prisma.userRole.findMany({
-                where: {
-                    userId,
-                    role: {
-                        isActive: true,
-                    },
-                    OR: [
-                        { expiresAt: null },
-                        { expiresAt: { gt: new Date() } },
-                    ],
-                },
+    async getAllPermissions(query: PermissionQuery = {}) {
+        const {
+            page = 1,
+            limit = 20,
+            search,
+            isActive,
+            resource,
+            action,
+            sortBy,
+            sortOrder,
+        } = query;
+
+        const where: any = {};
+
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { displayName: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } },
+                { resource: { contains: search, mode: 'insensitive' } },
+                { action: { contains: search, mode: 'insensitive' } },
+            ];
+        }
+
+        if (isActive !== undefined) where.isActive = isActive;
+        if (resource) where.resource = { contains: resource, mode: 'insensitive' };
+        if (action) where.action = { contains: action, mode: 'insensitive' };
+
+        const include = {
+            rolePermissions: {
                 include: {
-                    role: {
-                        include: {
-                            rolePermissions: {
-                                include: {
-                                    permission: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
-
-            for (const userRole of userPermissions) {
-                for (const rolePermission of userRole.role.rolePermissions) {
-                    const permission = rolePermission.permission;
-                    if (
-                        permission.isActive &&
-                        permission.resource === resource &&
-                        permission.action === action
-                    ) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        } catch (error) {
-            logger.error('Error checking permission:', error);
-            return false;
-        }
-    },
-
-    /**
-     * 获取用户所有权限
-     */
-    async getUserPermissions(userId: number): Promise<string[]> {
-        try {
-            const userRoles = await prisma.userRole.findMany({
-                where: {
-                    userId,
-                    role: {
-                        isActive: true,
-                    },
-                    OR: [
-                        { expiresAt: null },
-                        { expiresAt: { gt: new Date() } },
-                    ],
-                },
-                include: {
-                    role: {
-                        include: {
-                            rolePermissions: {
-                                include: {
-                                    permission: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
-
-            const permissions = new Set<string>();
-
-            for (const userRole of userRoles) {
-                for (const rolePermission of userRole.role.rolePermissions) {
-                    const permission = rolePermission.permission;
-                    if (permission.isActive) {
-                        permissions.add(permission.name);
-                    }
-                }
-            }
-
-            return Array.from(permissions);
-        } catch (error) {
-            logger.error('Error getting user permissions:', error);
-            return [];
-        }
-    },
-
-    /**
-     * 获取用户角色
-     */
-    async getUserRoles(userId: number) {
-        try {
-            return await prisma.userRole.findMany({
-                where: {
-                    userId,
-                    role: {
-                        isActive: true,
-                    },
-                    OR: [
-                        { expiresAt: null },
-                        { expiresAt: { gt: new Date() } },
-                    ],
-                },
-                include: {
-                    role: {
-                        include: {
-                            rolePermissions: {
-                                include: {
-                                    permission: true,
-                                },
-                            },
-                        },
-                    },
-                },
-            });
-        } catch (error) {
-            logger.error('Error getting user roles:', error);
-            return [];
-        }
-    },
-
-    /**
-     * 创建权限
-     */
-    async createPermission(data: PermissionData) {
-        try {
-            const permission = await prisma.permission.create({
-                data: {
-                    name: data.name,
-                    displayName: data.displayName,
-                    description: data.description,
-                    resource: data.resource,
-                    action: data.action,
-                },
-            });
-
-            logger.info(`Permission created: ${permission.name}`);
-            return permission;
-        } catch (error) {
-            logger.error('Error creating permission:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * 创建角色
-     */
-    async createRole(data: RoleData) {
-        try {
-            const role = await prisma.role.create({
-                data: {
-                    name: data.name,
-                    displayName: data.displayName,
-                    description: data.description,
-                },
-            });
-
-            // 分配权限
-            if (data.permissions && data.permissions.length > 0) {
-                const permissions = await prisma.permission.findMany({
-                    where: {
-                        name: {
-                            in: data.permissions,
-                        },
-                    },
-                });
-
-                await prisma.rolePermission.createMany({
-                    data: permissions.map(permission => ({
-                        roleId: role.id,
-                        permissionId: permission.id,
-                    })),
-                });
-            }
-
-            logger.info(`Role created: ${role.name}`);
-            return role;
-        } catch (error) {
-            logger.error('Error creating role:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * 为用户分配角色
-     */
-    async assignRoleToUser(data: UserRoleData) {
-        try {
-            const userRole = await prisma.userRole.create({
-                data: {
-                    userId: data.userId,
-                    roleId: data.roleId,
-                    assignedBy: data.assignedBy,
-                    expiresAt: data.expiresAt,
-                },
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            email: true,
-                        },
-                    },
                     role: {
                         select: {
                             id: true,
@@ -248,437 +115,686 @@ export const permissionService = {
                         },
                     },
                 },
-            });
-
-            logger.info(`Role assigned to user: ${userRole.user.email} -> ${userRole.role.name}`);
-            return userRole;
-        } catch (error) {
-            logger.error('Error assigning role to user:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * 移除用户角色
-     */
-    async removeRoleFromUser(userId: number, roleId: number) {
-        try {
-            const result = await prisma.userRole.deleteMany({
-                where: {
-                    userId,
-                    roleId,
+            },
+            _count: {
+                select: {
+                    rolePermissions: true,
                 },
-            });
+            },
+        };
 
-            logger.info(`Role removed from user: ${userId} -> ${roleId}`);
-            return result;
-        } catch (error) {
-            logger.error('Error removing role from user:', error);
-            throw error;
-        }
-    },
+        const orderBy = sortBy
+            ? { [sortBy]: sortOrder || 'desc' }
+            : { createdAt: 'desc' };
 
-    /**
-     * 为角色分配权限
-     */
-    async assignPermissionToRole(roleId: number, permissionId: number, grantedBy?: number) {
-        try {
-            const rolePermission = await prisma.rolePermission.create({
-                data: {
-                    roleId,
-                    permissionId,
-                    grantedBy,
-                },
-                include: {
-                    role: {
-                        select: {
-                            name: true,
-                        },
-                    },
-                    permission: {
-                        select: {
-                            name: true,
-                        },
-                    },
-                },
-            });
-
-            logger.info(`Permission assigned to role: ${rolePermission.role.name} -> ${rolePermission.permission.name}`);
-            return rolePermission;
-        } catch (error) {
-            logger.error('Error assigning permission to role:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * 移除角色权限
-     */
-    async removePermissionFromRole(roleId: number, permissionId: number) {
-        try {
-            const result = await prisma.rolePermission.deleteMany({
-                where: {
-                    roleId,
-                    permissionId,
-                },
-            });
-
-            logger.info(`Permission removed from role: ${roleId} -> ${permissionId}`);
-            return result;
-        } catch (error) {
-            logger.error('Error removing permission from role:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * 获取所有权限
-     */
-    async getAllPermissions() {
-        try {
-            return await prisma.permission.findMany({
-                where: {
-                    isActive: true,
-                },
-                orderBy: [
-                    { resource: 'asc' },
-                    { action: 'asc' },
-                ],
-            });
-        } catch (error) {
-            logger.error('Error getting all permissions:', error);
-            throw error;
-        }
-    },
-
-    /**
-     * 获取所有角色
-     */
-    async getAllRoles() {
-        try {
-            return await prisma.role.findMany({
-                where: {
-                    isActive: true,
-                },
-                include: {
-                    rolePermissions: {
-                        include: {
-                            permission: true,
-                        },
-                    },
-                },
-                orderBy: {
-                    name: 'asc',
-                },
-            });
-        } catch (error) {
-            logger.error('Error getting all roles:', error);
-            throw error;
-        }
-    },
+        return this.findAll({
+            page,
+            limit,
+            where,
+            include,
+            orderBy,
+        });
+    }
 
     /**
      * 根据ID获取权限
      */
-    async getPermissionById(id: number) {
-        try {
-            return await prisma.permission.findUnique({
-                where: { id },
-            });
-        } catch (error) {
-            logger.error('Error getting permission by ID:', error);
-            throw error;
+    async getPermissionById(id: number): Promise<PermissionWithRoles | null> {
+        return this.findById(id, {
+            include: {
+                rolePermissions: {
+                    include: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        rolePermissions: true,
+                    },
+                },
+            },
+        });
+    }
+
+    /**
+     * 根据名称获取权限
+     */
+    async getPermissionByName(name: string): Promise<PermissionWithRoles | null> {
+        const cacheKey = this.getCacheKey('getPermissionByName', { name });
+
+        // 检查缓存
+        const cached = this.getFromCache(cacheKey);
+        if (cached) {
+            return cached;
         }
-    },
+
+        const permission = await this.model.findUnique({
+            where: { name },
+            include: {
+                rolePermissions: {
+                    include: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        rolePermissions: true,
+                    },
+                },
+            },
+        });
+
+        // 缓存结果
+        if (permission) {
+            this.setCache(cacheKey, permission);
+        }
+
+        return permission;
+    }
+
+    /**
+     * 根据资源和操作获取权限
+     */
+    async getPermissionByResourceAction(
+        resource: string,
+        action: string
+    ): Promise<PermissionWithRoles | null> {
+        const cacheKey = this.getCacheKey('getPermissionByResourceAction', {
+            resource,
+            action,
+        });
+
+        // 检查缓存
+        const cached = this.getFromCache(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const permission = await this.model.findFirst({
+            where: { resource, action },
+            include: {
+                rolePermissions: {
+                    include: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        rolePermissions: true,
+                    },
+                },
+            },
+        });
+
+        // 缓存结果
+        if (permission) {
+            this.setCache(cacheKey, permission);
+        }
+
+        return permission;
+    }
 
     /**
      * 创建权限
      */
-    async createPermission(data: PermissionData, createdBy?: number) {
-        try {
-            // 检查权限是否已存在
-            const existingPermission = await prisma.permission.findUnique({
-                where: { name: data.name }
-            });
-
-            if (existingPermission) {
-                throw new Error('权限名称已存在');
-            }
-
-            // 检查资源+操作组合是否已存在
-            const existingResourceAction = await prisma.permission.findFirst({
-                where: {
-                    resource: data.resource,
-                    action: data.action,
-                }
-            });
-
-            if (existingResourceAction) {
-                throw new Error('该资源操作组合已存在');
-            }
-
-            const permission = await prisma.permission.create({
-                data: {
-                    name: data.name,
-                    displayName: data.displayName,
-                    description: data.description,
-                    resource: data.resource,
-                    action: data.action,
-                },
-            });
-
-            // 记录审计日志
-            await auditService.log({
-                userId: createdBy,
-                action: 'create',
-                resource: 'permission',
-                resourceId: permission.id.toString(),
-                details: {
-                    name: permission.name,
-                    resource: permission.resource,
-                    action: permission.action,
-                },
-            });
-
-            logger.info(`Permission created: ${permission.name}`);
-            return permission;
-        } catch (error) {
-            logger.error('Error creating permission:', error);
-            throw error;
+    async createPermission(
+        data: PermissionCreateData,
+        _createdBy?: number
+    ): Promise<PermissionWithRoles> {
+        // 验证权限名称唯一性
+        const existingPermission = await this.getPermissionByName(data.name);
+        if (existingPermission) {
+            throw new Error('权限名称已存在');
         }
-    },
+
+        // 验证资源和操作组合唯一性
+        const existingResourceAction = await this.getPermissionByResourceAction(
+            data.resource,
+            data.action
+        );
+        if (existingResourceAction) {
+            throw new Error('该资源和操作的权限已存在');
+        }
+
+        // 创建权限
+        const permission = await this.create({
+            ...data,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        // 返回完整的权限信息
+        return this.getPermissionById(
+            permission.id
+        ) as Promise<PermissionWithRoles>;
+    }
 
     /**
      * 更新权限
      */
-    async updatePermission(id: number, data: Partial<PermissionData>, updatedBy?: number) {
-        try {
-            const oldPermission = await prisma.permission.findUnique({
-                where: { id },
-            });
-
-            if (!oldPermission) {
-                return null;
+    async updatePermission(
+        id: number,
+        data: PermissionUpdateData,
+        _updatedBy?: number
+    ): Promise<PermissionWithRoles | null> {
+        // 如果更新权限名称，检查唯一性
+        if (data.name) {
+            const existingPermission = await this.getPermissionByName(data.name);
+            if (existingPermission && existingPermission.id !== id) {
+                throw new Error('权限名称已存在');
             }
-
-            const permission = await prisma.permission.update({
-                where: { id },
-                data: {
-                    ...data,
-                    updatedAt: new Date(),
-                },
-            });
-
-            // 记录审计日志
-            await auditService.log({
-                userId: updatedBy,
-                action: 'update',
-                resource: 'permission',
-                resourceId: permission.id.toString(),
-                details: {
-                    old: oldPermission,
-                    new: permission,
-                },
-            });
-
-            logger.info(`Permission updated: ${permission.name}`);
-            return permission;
-        } catch (error) {
-            logger.error('Error updating permission:', error);
-            throw error;
         }
-    },
+
+        // 如果更新资源和操作，检查组合唯一性
+        if (data.resource && data.action) {
+            const existingResourceAction = await this.getPermissionByResourceAction(
+                data.resource,
+                data.action
+            );
+            if (existingResourceAction && existingResourceAction.id !== id) {
+                throw new Error('该资源和操作的权限已存在');
+            }
+        }
+
+        // 更新权限基本信息
+        const permission = await this.update(id, {
+            ...data,
+            updatedAt: new Date(),
+        });
+
+        if (!permission) {
+            return null;
+        }
+
+        // 返回完整的权限信息
+        return this.getPermissionById(id);
+    }
 
     /**
      * 删除权限
      */
-    async deletePermission(id: number, deletedBy?: number) {
-        try {
-            const permission = await prisma.permission.findUnique({
-                where: { id },
-            });
-
-            if (!permission) {
-                return null;
-            }
-
-            // 检查是否有角色使用此权限
-            const roleCount = await prisma.rolePermission.count({
-                where: { permissionId: id },
-            });
-
-            if (roleCount > 0) {
-                throw new Error('无法删除权限，仍有角色使用此权限');
-            }
-
-            // 软删除：设置为非激活状态
-            await prisma.permission.update({
-                where: { id },
-                data: { isActive: false },
-            });
-
-            // 记录审计日志
-            await auditService.log({
-                userId: deletedBy,
-                action: 'delete',
-                resource: 'permission',
-                resourceId: permission.id.toString(),
-                details: {
-                    name: permission.name,
-                    resource: permission.resource,
-                    action: permission.action,
-                },
-            });
-
-            logger.info(`Permission deleted: ${permission.name}`);
-            return { success: true };
-        } catch (error) {
-            logger.error('Error deleting permission:', error);
-            throw error;
+    async deletePermission(id: number, _deletedBy?: number): Promise<boolean> {
+        // 检查权限是否存在
+        const permission = await this.getPermissionById(id);
+        if (!permission) {
+            return false;
         }
-    },
+
+        // 检查是否有角色使用此权限
+        if (permission._count.rolePermissions > 0) {
+            throw new Error('无法删除正在使用的权限');
+        }
+
+        // 软删除权限
+        const result = await this.delete(id, { soft: true, audit: true });
+
+        return result;
+    }
 
     /**
-     * 按资源分组获取权限
+     * 激活权限
      */
-    async getPermissionsGroupedByResource() {
-        try {
-            const permissions = await prisma.permission.findMany({
+    async activatePermission(
+        id: number,
+        activatedBy?: number
+    ): Promise<PermissionWithRoles | null> {
+        return this.updatePermission(id, { isActive: true }, activatedBy);
+    }
+
+    /**
+     * 停用权限
+     */
+    async deactivatePermission(
+        id: number,
+        deactivatedBy?: number
+    ): Promise<PermissionWithRoles | null> {
+        return this.updatePermission(id, { isActive: false }, deactivatedBy);
+    }
+
+    /**
+     * 搜索权限
+     */
+    async searchPermissions(
+        query: string,
+        options: PermissionQuery = {}
+    ): Promise<{
+        data: PermissionWithRoles[];
+        pagination: any;
+    }> {
+        return this.search(
+            query,
+            ['name', 'displayName', 'description', 'resource', 'action'],
+            {
+                ...options,
+                include: {
+                    rolePermissions: {
+                        include: {
+                            role: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    displayName: true,
+                                },
+                            },
+                        },
+                    },
+                    _count: {
+                        select: {
+                            rolePermissions: true,
+                        },
+                    },
+                },
+            }
+        );
+    }
+
+    /**
+     * 按资源获取权限
+     */
+    async getPermissionsByResource(
+        resource: string
+    ): Promise<PermissionWithRoles[]> {
+        const cacheKey = this.getCacheKey('getPermissionsByResource', { resource });
+
+        // 检查缓存
+        const cached = this.getFromCache(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const permissions = await this.model.findMany({
+            where: { resource },
+            include: {
+                rolePermissions: {
+                    include: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        rolePermissions: true,
+                    },
+                },
+            },
+            orderBy: { action: 'asc' },
+        });
+
+        // 缓存结果
+        this.setCache(cacheKey, permissions);
+
+        return permissions;
+    }
+
+    /**
+     * 按操作获取权限
+     */
+    async getPermissionsByAction(action: string): Promise<PermissionWithRoles[]> {
+        const cacheKey = this.getCacheKey('getPermissionsByAction', { action });
+
+        // 检查缓存
+        const cached = this.getFromCache(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const permissions = await this.model.findMany({
+            where: { action },
+            include: {
+                rolePermissions: {
+                    include: {
+                        role: {
+                            select: {
+                                id: true,
+                                name: true,
+                                displayName: true,
+                            },
+                        },
+                    },
+                },
+                _count: {
+                    select: {
+                        rolePermissions: true,
+                    },
+                },
+            },
+            orderBy: { resource: 'asc' },
+        });
+
+        // 缓存结果
+        this.setCache(cacheKey, permissions);
+
+        return permissions;
+    }
+
+    /**
+     * 获取所有资源列表
+     */
+    async getResources(): Promise<string[]> {
+        const cacheKey = this.getCacheKey('getResources', {});
+
+        // 检查缓存
+        const cached = this.getFromCache(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const resources = await this.model.findMany({
+            select: { resource: true },
+            distinct: ['resource'],
+            orderBy: { resource: 'asc' },
+        });
+
+        const resourceList = resources.map((r: any) => r.resource);
+
+        // 缓存结果
+        this.setCache(cacheKey, resourceList);
+
+        return resourceList;
+    }
+
+    /**
+     * 获取所有操作列表
+     */
+    async getActions(): Promise<string[]> {
+        const cacheKey = this.getCacheKey('getActions', {});
+
+        // 检查缓存
+        const cached = this.getFromCache(cacheKey);
+        if (cached) {
+            return cached;
+        }
+
+        const actions = await this.model.findMany({
+            select: { action: true },
+            distinct: ['action'],
+            orderBy: { action: 'asc' },
+        });
+
+        const actionList = actions.map((a: any) => a.action);
+
+        // 缓存结果
+        this.setCache(cacheKey, actionList);
+
+        return actionList as string[];
+    }
+
+    /**
+     * 获取权限统计信息
+     */
+    async getPermissionStats(): Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        withRoles: number;
+        withoutRoles: number;
+        byResource: Array<{ resource: string; count: number }>;
+        byAction: Array<{ action: string; count: number }>;
+    }> {
+        const [total, active, inactive] = await Promise.all([
+            this.count(),
+            this.count({ isActive: true }),
+            this.count({ isActive: false }),
+        ]);
+
+        // 统计有角色和没有角色的权限
+        const [withRoles, withoutRoles] = await Promise.all([
+            this.prisma.permission.count({
                 where: {
+                    rolePermissions: {
+                        some: {},
+                    },
+                },
+            }),
+            this.prisma.permission.count({
+                where: {
+                    rolePermissions: {
+                        none: {},
+                    },
+                },
+            }),
+        ]);
+
+        // 按资源统计
+        const resourceStats = await this.prisma.permission.groupBy({
+            by: ['resource'],
+            _count: { id: true },
+        });
+
+        const byResource = resourceStats.map((stat: any) => ({
+            resource: stat.resource,
+            count: stat._count.id,
+        }));
+
+        // 按操作统计
+        const actionStats = await this.prisma.permission.groupBy({
+            by: ['action'],
+            _count: { id: true },
+        });
+
+        const byAction = actionStats.map((stat: any) => ({
+            action: stat.action,
+            count: stat._count.id,
+        }));
+
+        return {
+            total,
+            active,
+            inactive,
+            withRoles,
+            withoutRoles,
+            byResource,
+            byAction,
+        };
+    }
+
+    /**
+     * 批量创建权限
+     */
+    async createPermissionsBatch(
+        permissionsData: PermissionCreateData[],
+        createdBy?: number
+    ): Promise<{
+        count: number;
+        data?: PermissionWithRoles[];
+    }> {
+        const result = await this.createMany(
+            permissionsData.map((data: any) => ({
+                ...data,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            }))
+        );
+
+        return result;
+    }
+
+    /**
+     * 批量更新权限状态
+     */
+    async updatePermissionsStatus(
+        permissionIds: number[],
+        isActive: boolean,
+        _updatedBy?: number
+    ): Promise<{ count: number }> {
+        return this.updateMany(
+            { id: { in: permissionIds } },
+            { isActive, updatedAt: new Date() }
+        );
+    }
+
+    /**
+     * 获取用户权限
+     */
+    async getUserPermissions(userId: number): Promise<
+        Array<{
+            id: number;
+            name: string;
+            displayName: string;
+            resource: string;
+            action: string;
+        }>
+    > {
+        const userPermissions = await this.prisma.userRole.findMany({
+            where: { userId },
+            include: {
+                role: {
+                    include: {
+                        rolePermissions: {
+                            include: {
+                                permission: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        displayName: true,
+                                        resource: true,
+                                        action: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const permissions: Array<{
+            id: number;
+            name: string;
+            displayName: string;
+            resource: string;
+            action: string;
+        }> = [];
+        userPermissions.forEach((userRole: any) => {
+            userRole.role.rolePermissions.forEach((rolePermission: any) => {
+                permissions.push(rolePermission.permission);
+            });
+        });
+
+        // 去重
+        return permissions.filter(
+            (permission, index, self) =>
+                index === self.findIndex((p: any) => p.id === permission.id)
+        );
+    }
+
+    /**
+     * 获取用户角色
+     */
+    async getUserRoles(
+        userId: number
+    ): Promise<Array<{ id: number; name: string; displayName: string }>> {
+        const userRoles = await this.prisma.userRole.findMany({
+            where: { userId },
+            include: {
+                role: {
+                    select: {
+                        id: true,
+                        name: true,
+                        displayName: true,
+                    },
+                },
+            },
+        });
+
+        return userRoles.map((ur: any) => ur.role);
+    }
+
+    /**
+     * 检查用户是否有特定权限
+     */
+    async hasPermission(
+        userId: number,
+        resource: string,
+        action: string
+    ): Promise<boolean> {
+        const userPermission = await this.prisma.userRole.findFirst({
+            where: {
+                userId,
+                role: {
                     isActive: true,
+                    rolePermissions: {
+                        some: {
+                            permission: {
+                                resource,
+                                action,
+                                isActive: true,
+                            },
+                        },
+                    },
                 },
-                orderBy: [
-                    { resource: 'asc' },
-                    { action: 'asc' },
-                ],
-            });
+            },
+        });
 
-            const grouped = permissions.reduce((acc, permission) => {
-                if (!acc[permission.resource]) {
-                    acc[permission.resource] = [];
-                }
-                acc[permission.resource].push(permission);
-                return acc;
-            }, {} as Record<string, typeof permissions>);
-
-            return grouped;
-        } catch (error) {
-            logger.error('Error getting permissions grouped by resource:', error);
-            throw error;
-        }
-    },
+        return !!userPermission;
+    }
 
     /**
-     * 初始化默认权限和角色
+     * 获取服务统计信息（重写父类方法）
      */
-    async initializeDefaultPermissionsAndRoles() {
-        try {
-            // 创建默认权限
-            const defaultPermissions = [
-                // 用户管理权限
-                { name: 'user:create', displayName: '创建用户', resource: 'user', action: 'create' },
-                { name: 'user:read', displayName: '查看用户', resource: 'user', action: 'read' },
-                { name: 'user:update', displayName: '更新用户', resource: 'user', action: 'update' },
-                { name: 'user:delete', displayName: '删除用户', resource: 'user', action: 'delete' },
-
-                // 角色管理权限
-                { name: 'role:create', displayName: '创建角色', resource: 'role', action: 'create' },
-                { name: 'role:read', displayName: '查看角色', resource: 'role', action: 'read' },
-                { name: 'role:update', displayName: '更新角色', resource: 'role', action: 'update' },
-                { name: 'role:delete', displayName: '删除角色', resource: 'role', action: 'delete' },
-
-                // 权限管理权限
-                { name: 'permission:create', displayName: '创建权限', resource: 'permission', action: 'create' },
-                { name: 'permission:read', displayName: '查看权限', resource: 'permission', action: 'read' },
-                { name: 'permission:update', displayName: '更新权限', resource: 'permission', action: 'update' },
-                { name: 'permission:delete', displayName: '删除权限', resource: 'permission', action: 'delete' },
-
-                // 审计日志权限
-                { name: 'audit:read', displayName: '查看审计日志', resource: 'audit', action: 'read' },
-            ];
-
-            for (const permData of defaultPermissions) {
-                await prisma.permission.upsert({
-                    where: { name: permData.name },
-                    update: permData,
-                    create: permData,
-                });
-            }
-
-            // 创建默认角色
-            const adminRole = await prisma.role.upsert({
-                where: { name: 'admin' },
-                update: {
-                    displayName: '系统管理员',
-                    description: '拥有系统所有权限',
-                },
-                create: {
-                    name: 'admin',
-                    displayName: '系统管理员',
-                    description: '拥有系统所有权限',
-                },
-            });
-
-            const userRole = await prisma.role.upsert({
-                where: { name: 'user' },
-                update: {
-                    displayName: '普通用户',
-                    description: '基础用户权限',
-                },
-                create: {
-                    name: 'user',
-                    displayName: '普通用户',
-                    description: '基础用户权限',
-                },
-            });
-
-            // 为管理员角色分配所有权限
-            const allPermissions = await prisma.permission.findMany();
-            for (const permission of allPermissions) {
-                await prisma.rolePermission.upsert({
-                    where: {
-                        roleId_permissionId: {
-                            roleId: adminRole.id,
-                            permissionId: permission.id,
-                        },
-                    },
-                    update: {},
-                    create: {
-                        roleId: adminRole.id,
-                        permissionId: permission.id,
-                    },
-                });
-            }
-
-            // 为普通用户角色分配基础权限
-            const basicPermissions = await prisma.permission.findMany({
+    async getStats(): Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        cacheSize: number;
+        withRoles: number;
+        withoutRoles: number;
+    }> {
+        const baseStats = await super.getStats();
+        const [withRoles, withoutRoles] = await Promise.all([
+            this.prisma.permission.count({
                 where: {
-                    name: {
-                        in: ['user:read', 'audit:read'],
+                    rolePermissions: {
+                        some: {},
                     },
                 },
-            });
-
-            for (const permission of basicPermissions) {
-                await prisma.rolePermission.upsert({
-                    where: {
-                        roleId_permissionId: {
-                            roleId: userRole.id,
-                            permissionId: permission.id,
-                        },
+            }),
+            this.prisma.permission.count({
+                where: {
+                    rolePermissions: {
+                        none: {},
                     },
-                    update: {},
-                    create: {
-                        roleId: userRole.id,
-                        permissionId: permission.id,
-                    },
-                });
-            }
+                },
+            }),
+        ]);
 
-            logger.info('Default permissions and roles initialized');
-        } catch (error) {
-            logger.error('Error initializing default permissions and roles:', error);
-            throw error;
-        }
-    },
-};
+        return {
+            ...baseStats,
+            withRoles,
+            withoutRoles,
+        };
+    }
+}
+
+// 导出单例实例
+let permissionServiceInstance: PermissionService | null = null;
+
+export function getPermissionService(prisma: PrismaClient): PermissionService {
+    if (!permissionServiceInstance) {
+        permissionServiceInstance = new PermissionService(prisma);
+    }
+    return permissionServiceInstance;
+}

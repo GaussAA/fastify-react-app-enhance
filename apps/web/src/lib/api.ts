@@ -1,14 +1,27 @@
 // API客户端配置和请求处理
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ApiResponse, AuthResult, LoginData, RegisterData, RefreshTokenData, User, Role, Permission, UserSession, AuditLog, PaginatedResponse } from '@/types/auth';
+import {
+  ApiResponse,
+  AuthResult,
+  LoginData,
+  RegisterData,
+  RefreshTokenData,
+  User,
+  Role,
+  Permission,
+  UserSession,
+  AuditLog,
+  PaginatedResponse,
+} from '@/types/auth';
 
 class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
 
   constructor() {
-    this.baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api';
+    this.baseURL =
+      import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api';
 
     this.client = axios.create({
       baseURL: this.baseURL,
@@ -24,22 +37,22 @@ class ApiClient {
   private setupInterceptors() {
     // 请求拦截器 - 添加认证token
     this.client.interceptors.request.use(
-      (config) => {
+      config => {
         const token = localStorage.getItem('accessToken');
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
       },
-      (error) => {
+      error => {
         return Promise.reject(error);
       }
     );
 
     // 响应拦截器 - 处理token刷新
     this.client.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      response => response,
+      async error => {
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
@@ -168,7 +181,10 @@ class ApiClient {
     });
   }
 
-  async updateUser(id: number, data: Partial<User>): Promise<ApiResponse<{ user: User }>> {
+  async updateUser(
+    id: number,
+    data: Partial<User>
+  ): Promise<ApiResponse<{ user: User }>> {
     return this.request<ApiResponse<{ user: User }>>({
       method: 'PUT',
       url: `/users/${id}`,
@@ -218,7 +234,10 @@ class ApiClient {
     });
   }
 
-  async updateRole(id: number, data: Partial<Role>): Promise<ApiResponse<{ role: Role }>> {
+  async updateRole(
+    id: number,
+    data: Partial<Role>
+  ): Promise<ApiResponse<{ role: Role }>> {
     return this.request<ApiResponse<{ role: Role }>>({
       method: 'PUT',
       url: `/roles/${id}`,
@@ -241,7 +260,10 @@ class ApiClient {
     });
   }
 
-  async removeRoleFromUser(userId: number, roleId: number): Promise<ApiResponse> {
+  async removeRoleFromUser(
+    userId: number,
+    roleId: number
+  ): Promise<ApiResponse> {
     return this.request<ApiResponse>({
       method: 'DELETE',
       url: `/roles/${roleId}/unassign`,
@@ -249,7 +271,10 @@ class ApiClient {
     });
   }
 
-  async assignPermissionsToRole(roleId: number, permissionIds: number[]): Promise<ApiResponse> {
+  async assignPermissionsToRole(
+    roleId: number,
+    permissionIds: number[]
+  ): Promise<ApiResponse> {
     return this.request<ApiResponse>({
       method: 'POST',
       url: `/roles/${roleId}/permissions`,
@@ -265,7 +290,9 @@ class ApiClient {
     });
   }
 
-  async getPermissionById(id: number): Promise<ApiResponse<{ permission: Permission }>> {
+  async getPermissionById(
+    id: number
+  ): Promise<ApiResponse<{ permission: Permission }>> {
     return this.request<ApiResponse<{ permission: Permission }>>({
       method: 'GET',
       url: `/permissions/${id}`,
@@ -285,7 +312,10 @@ class ApiClient {
     });
   }
 
-  async updatePermission(id: number, data: Partial<Permission>): Promise<ApiResponse<{ permission: Permission }>> {
+  async updatePermission(
+    id: number,
+    data: Partial<Permission>
+  ): Promise<ApiResponse<{ permission: Permission }>> {
     return this.request<ApiResponse<{ permission: Permission }>>({
       method: 'PUT',
       url: `/permissions/${id}`,
@@ -317,7 +347,9 @@ class ApiClient {
     });
   }
 
-  async getAuditLogById(id: number): Promise<ApiResponse<{ auditLog: AuditLog }>> {
+  async getAuditLogById(
+    id: number
+  ): Promise<ApiResponse<{ auditLog: AuditLog }>> {
     return this.request<ApiResponse<{ auditLog: AuditLog }>>({
       method: 'GET',
       url: `/audit-logs/${id}`,

@@ -324,7 +324,8 @@ class ProjectDeployer {
       // 检查是否存在默认角色
       const result = execSync('npx prisma db execute --stdin', {
         cwd: this.apiDir,
-        input: 'SELECT COUNT(*) FROM "roles" WHERE name IN (\'admin\', \'user\');',
+        input:
+          "SELECT COUNT(*) FROM \"roles\" WHERE name IN ('admin', 'user');",
         stdio: 'pipe',
       });
 

@@ -227,16 +227,19 @@ class DatabaseSetup {
     });
 
     return new Promise(resolve => {
-      rl.question('是否初始化RBAC系统（创建默认权限、角色和管理员用户）？(y/n): ', async answer => {
-        rl.close();
+      rl.question(
+        '是否初始化RBAC系统（创建默认权限、角色和管理员用户）？(y/n): ',
+        async answer => {
+          rl.close();
 
-        if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
-          await this.executeRBACInit();
-        } else {
-          console.log('  ⏭️ 跳过RBAC初始化');
+          if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
+            await this.executeRBACInit();
+          } else {
+            console.log('  ⏭️ 跳过RBAC初始化');
+          }
+          resolve();
         }
-        resolve();
-      });
+      );
     });
   }
 

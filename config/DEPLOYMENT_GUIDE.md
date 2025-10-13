@@ -257,36 +257,36 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run tests
-      run: npm test
-      env:
-        NODE_ENV: test
-        JWT_SECRET: test_jwt_secret
-        DB_PASSWORD: test_password
-        LLM_API_KEY: test_llm_api_key
-        
-    - name: Build application
-      run: npm run build
-      
-    - name: Deploy to production
-      run: npm run deploy:production
-      env:
-        NODE_ENV: production
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test_jwt_secret
+          DB_PASSWORD: test_password
+          LLM_API_KEY: test_llm_api_key
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy to production
+        run: npm run deploy:production
+        env:
+          NODE_ENV: production
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
 ```
 
 ### 2. GitLab CI
@@ -379,7 +379,7 @@ services:
   app:
     build: .
     ports:
-      - "8001:8001"
+      - '8001:8001'
     environment:
       - NODE_ENV=production
       - JWT_SECRET=${JWT_SECRET}
@@ -437,12 +437,12 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  NODE_ENV: "production"
-  HOST: "0.0.0.0"
-  PORT: "8001"
-  LOG_LEVEL: "warn"
-  DATABASE_URL: "postgresql://postgres:password@postgres:5432/app"
-  REDIS_URL: "redis://redis:6379"
+  NODE_ENV: 'production'
+  HOST: '0.0.0.0'
+  PORT: '8001'
+  LOG_LEVEL: 'warn'
+  DATABASE_URL: 'postgresql://postgres:password@postgres:5432/app'
+  REDIS_URL: 'redis://redis:6379'
 ```
 
 ### 2. Secret
@@ -479,34 +479,34 @@ spec:
         app: app
     spec:
       containers:
-      - name: app
-        image: your-registry/app:latest
-        ports:
-        - containerPort: 8001
-        envFrom:
-        - configMapRef:
-            name: app-config
-        - secretRef:
-            name: app-secrets
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8001
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8001
-          initialDelaySeconds: 5
-          periodSeconds: 5
+        - name: app
+          image: your-registry/app:latest
+          ports:
+            - containerPort: 8001
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8001
+            initialDelaySeconds: 5
+            periodSeconds: 5
 ```
 
 ### 4. Service
@@ -521,9 +521,9 @@ spec:
   selector:
     app: app
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8001
+    - protocol: TCP
+      port: 80
+      targetPort: 8001
   type: LoadBalancer
 ```
 
@@ -550,6 +550,7 @@ kubectl logs -f deployment/app
 **问题**: `Configuration validation failed`
 
 **解决方案**:
+
 ```bash
 # 检查环境变量
 echo $NODE_ENV
@@ -567,6 +568,7 @@ DEBUG=true npm start
 **问题**: `Database connection failed`
 
 **解决方案**:
+
 ```bash
 # 检查数据库服务
 docker-compose ps postgres
@@ -583,6 +585,7 @@ telnet db-host 5432
 **问题**: `Redis connection failed`
 
 **解决方案**:
+
 ```bash
 # 检查 Redis 服务
 docker-compose ps redis
@@ -599,6 +602,7 @@ redis-cli -u $REDIS_URL config get "*"
 **问题**: `Port 8001 is already in use`
 
 **解决方案**:
+
 ```bash
 # 查找占用端口的进程
 lsof -i :8001

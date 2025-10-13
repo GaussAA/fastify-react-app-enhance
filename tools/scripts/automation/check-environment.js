@@ -561,14 +561,27 @@ class EnvironmentChecker {
       if (rbacFilesExist === rbacFiles.length) {
         this.checks.push('RBAC系统文件完整');
       } else {
-        this.warnings.push(`RBAC系统文件不完整 (${rbacFilesExist}/${rbacFiles.length})`);
+        this.warnings.push(
+          `RBAC系统文件不完整 (${rbacFilesExist}/${rbacFiles.length})`
+        );
       }
 
       // 检查Prisma schema中的RBAC模型
-      const schemaPath = path.join(this.projectRoot, 'apps/api/prisma/schema.prisma');
+      const schemaPath = path.join(
+        this.projectRoot,
+        'apps/api/prisma/schema.prisma'
+      );
       if (fs.existsSync(schemaPath)) {
         const schemaContent = fs.readFileSync(schemaPath, 'utf-8');
-        const rbacModels = ['User', 'Role', 'Permission', 'UserRole', 'RolePermission', 'AuditLog', 'UserSession'];
+        const rbacModels = [
+          'User',
+          'Role',
+          'Permission',
+          'UserRole',
+          'RolePermission',
+          'AuditLog',
+          'UserSession',
+        ];
 
         let modelsExist = 0;
         for (const model of rbacModels) {
@@ -580,12 +593,17 @@ class EnvironmentChecker {
         if (modelsExist === rbacModels.length) {
           this.checks.push('RBAC数据库模型完整');
         } else {
-          this.warnings.push(`RBAC数据库模型不完整 (${modelsExist}/${rbacModels.length})`);
+          this.warnings.push(
+            `RBAC数据库模型不完整 (${modelsExist}/${rbacModels.length})`
+          );
         }
       }
 
       // 检查RBAC管理脚本
-      const rbacManagerPath = path.join(this.projectRoot, 'tools/scripts/automation/rbac-manager.js');
+      const rbacManagerPath = path.join(
+        this.projectRoot,
+        'tools/scripts/automation/rbac-manager.js'
+      );
       if (fs.existsSync(rbacManagerPath)) {
         this.checks.push('RBAC管理脚本存在');
       } else {
@@ -597,7 +615,8 @@ class EnvironmentChecker {
         const apiDir = path.join(this.projectRoot, 'apps/api');
         const result = execSync('npx prisma db execute --stdin', {
           cwd: apiDir,
-          input: 'SELECT COUNT(*) FROM "roles" WHERE name IN (\'admin\', \'user\');',
+          input:
+            "SELECT COUNT(*) FROM \"roles\" WHERE name IN ('admin', 'user');",
           stdio: 'pipe',
         });
 
@@ -610,7 +629,6 @@ class EnvironmentChecker {
       } catch (error) {
         this.warnings.push('无法检查RBAC系统状态，请确保数据库已启动');
       }
-
     } catch (error) {
       this.warnings.push(`RBAC系统检查失败: ${error.message}`);
     }
@@ -631,7 +649,7 @@ class EnvironmentChecker {
         successRate: Math.round(
           (this.checks.length /
             (this.checks.length + this.warnings.length + this.errors.length)) *
-          100
+            100
         ),
       },
       checks: this.checks,

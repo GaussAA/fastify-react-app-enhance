@@ -312,7 +312,7 @@ class ScriptManager {
         await this.executeScript(params[0], params.slice(1));
         break;
 
-      case 'batch':
+      case 'batch': {
         if (params.length === 0) {
           console.error('❌ 请指定要批量执行的脚本名（用逗号分隔）');
           return;
@@ -320,6 +320,7 @@ class ScriptManager {
         const scriptNames = params[0].split(',').map(s => s.trim());
         await this.executeBatch(scriptNames, params.slice(1));
         break;
+      }
 
       case 'category':
         if (params.length === 0) {
@@ -329,7 +330,7 @@ class ScriptManager {
         await this.executeCategory(params[0], params.slice(1));
         break;
 
-      case 'search':
+      case 'search': {
         if (params.length === 0) {
           console.error('❌ 请指定搜索关键词');
           return;
@@ -342,6 +343,7 @@ class ScriptManager {
           );
         });
         break;
+      }
 
       case 'info':
         if (params.length === 0) {

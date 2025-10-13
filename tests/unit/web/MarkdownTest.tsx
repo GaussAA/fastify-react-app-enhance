@@ -128,41 +128,41 @@ $$
 `;
 
 export function MarkdownTest() {
-    return (
-        <div className="h-full overflow-y-auto p-6 space-y-6">
-            {/* 实时流式渲染测试 */}
-            <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    实时流式Markdown渲染测试
-                </h2>
-                <StreamingTest />
-            </div>
+  return (
+    <div className="h-full overflow-y-auto p-6 space-y-6">
+      {/* 实时流式渲染测试 */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
+          实时流式Markdown渲染测试
+        </h2>
+        <StreamingTest />
+      </div>
 
-            {/* 列表渲染测试 */}
-            <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    列表渲染测试（修复数字列表换行问题）
-                </h2>
-                <ListTest />
-            </div>
+      {/* 列表渲染测试 */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
+          列表渲染测试（修复数字列表换行问题）
+        </h2>
+        <ListTest />
+      </div>
 
-            {/* AI回复演示 */}
-            <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    AI回复Markdown渲染演示
-                </h2>
-                <MarkdownDemo />
-            </div>
+      {/* AI回复演示 */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
+          AI回复Markdown渲染演示
+        </h2>
+        <MarkdownDemo />
+      </div>
 
-            {/* 完整语法测试 */}
-            <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                    完整Markdown语法测试
-                </h2>
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                    <MarkdownRenderer content={testMarkdownContent} />
-                </div>
-            </div>
+      {/* 完整语法测试 */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
+          完整Markdown语法测试
+        </h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <MarkdownRenderer content={testMarkdownContent} />
         </div>
-    );
+      </div>
+    </div>
+  );
 }

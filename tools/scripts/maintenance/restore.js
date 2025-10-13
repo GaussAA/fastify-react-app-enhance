@@ -90,7 +90,10 @@ function createEnvFiles() {
     }
 
     // 生成 Docker Compose 配置文件
-    const dockerComposePath = join(projectRoot, 'infrastructure/docker/docker-compose.yml');
+    const dockerComposePath = join(
+      projectRoot,
+      'infrastructure/docker/docker-compose.yml'
+    );
     if (!existsSync(dockerComposePath)) {
       envManager.generateDockerCompose();
       log('✅ 创建 Docker Compose 配置文件', 'green');
@@ -176,7 +179,7 @@ async function restoreEnvironment() {
     // 检查是否需要初始化RBAC
     const result = execSync('npx prisma db execute --stdin', {
       cwd: join(projectRoot, 'apps/api'),
-      input: 'SELECT COUNT(*) FROM "roles" WHERE name IN (\'admin\', \'user\');',
+      input: "SELECT COUNT(*) FROM \"roles\" WHERE name IN ('admin', 'user');",
       stdio: 'pipe',
     });
 

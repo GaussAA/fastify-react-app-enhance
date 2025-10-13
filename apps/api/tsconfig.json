@@ -18,10 +18,7 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": [
-    "src/**/*",
-    "src/types/**/*"
-  ],
+  "include": ["src/**/*", "src/types/**/*"],
   "exclude": [
     "node_modules",
     "dist",
