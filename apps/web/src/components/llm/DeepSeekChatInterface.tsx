@@ -31,7 +31,7 @@ export function DeepSeekChatInterface() {
     const [charCount, setCharCount] = useState(0);
     const MAX_MESSAGE_LENGTH = 4000; // 最大消息长度
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLTextAreaElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement | null>(null);
     const inputContainerRef = useRef<HTMLDivElement>(null);
 
     // 初始化会话
@@ -97,14 +97,15 @@ export function DeepSeekChatInterface() {
 
     // 处理全局键盘快捷键
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
+        const handleKeyDown = (e: Event) => {
+            const keyboardEvent = e as KeyboardEvent;
             // Ctrl/Cmd + K: 新建会话
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === 'k') {
                 e.preventDefault();
                 handleNewSession();
             }
             // Ctrl/Cmd + /: 清空对话
-            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+            if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === '/') {
                 e.preventDefault();
                 if (currentSession && currentSession.messages.length > 0) {
                     handleClearMessages();
@@ -216,9 +217,9 @@ export function DeepSeekChatInterface() {
     };
 
     // 防抖函数
-    const debounce = (func: Function, wait: number) => {
+    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number) => {
         let timeout: NodeJS.Timeout;
-        return function executedFunction(...args: any[]) {
+        return function executedFunction(...args: Parameters<T>) {
             const later = () => {
                 clearTimeout(timeout);
                 func(...args);

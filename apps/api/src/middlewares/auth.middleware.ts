@@ -11,7 +11,7 @@ interface AuthenticatedRequest extends FastifyRequest {
     permissions?: string[];
     roles?: string[];
   };
-  headers: any;
+  headers: Record<string, string | string[] | undefined>;
   ip: string;
   url: string;
   method: string;
@@ -28,7 +28,7 @@ export async function authenticateToken(
 ) {
   try {
     const authHeader = request.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    const token = authHeader && typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined; // Bearer TOKEN
 
     if (!token) {
       return reply.status(401).send({
@@ -45,10 +45,16 @@ export async function authenticateToken(
       return reply.status(401).send({ message: 'JWT configuration error' });
     }
 
-    const decoded = jwt.verify(token, jwtSecret) as any;
+    const decoded = jwt.verify(token, jwtSecret) as {
+      userId: number;
+      email: string;
+      name: string;
+      iat: number;
+      exp: number;
+    };
 
     // 获取prisma实例
-    const prisma = (request as any).server.prisma;
+    const prisma = (request as FastifyRequest & { server: { prisma: any } }).server.prisma;
     const permissionService = getPermissionService(prisma);
 
     // 获取用户权限和角色
@@ -98,28 +104,34 @@ export async function optionalAuth(
 ) {
   try {
     const authHeader = request.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = authHeader && typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
 
     if (token) {
       const jwtSecret = process.env.JWT_SECRET;
 
       if (jwtSecret) {
         try {
-          const decoded = jwt.verify(token, jwtSecret) as any;
+          const decoded = jwt.verify(token, jwtSecret) as {
+      userId: number;
+      email: string;
+      name: string;
+      iat: number;
+      exp: number;
+    };
           request.user = {
             id: decoded.userId,
             email: decoded.email,
             name: decoded.name,
           };
-        } catch (error) {
+        } catch (_error) {
           // 可选认证失败时不返回错误，继续执行
-          // request.log.warn('Optional authentication failed:', error);
+          // request.log.warn('Optional authentication failed:', _error);
         }
       }
     }
-  } catch (error) {
+  } catch (_error) {
     // 可选认证失败时不返回错误，继续执行
-    // request.log.warn('Optional authentication failed:', error);
+    // request.log.warn('Optional authentication failed:', _error);
   }
 }
 
@@ -153,7 +165,7 @@ export function requireRole(roles: string[]) {
           method: request.method,
         },
         ipAddress: request.ip,
-        userAgent: request.headers['user-agent'],
+        userAgent: typeof request.headers['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
       });
 
       return reply.status(403).send({
@@ -181,7 +193,7 @@ export function requirePermission(resource: string, action: string) {
       });
     }
 
-    const prisma = (request as any).server.prisma;
+    const prisma = (request as FastifyRequest & { server: { prisma: any } }).server.prisma;
     const permissionService = getPermissionService(prisma);
     const hasPermission = await permissionService.hasPermission(
       request.user.id,
@@ -202,7 +214,7 @@ export function requirePermission(resource: string, action: string) {
           method: request.method,
         },
         ipAddress: request.ip,
-        userAgent: request.headers['user-agent'],
+        userAgent: typeof request.headers['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
       });
 
       return reply.status(403).send({
@@ -233,7 +245,7 @@ export function requirePermissions(
       });
     }
 
-    const prisma = (request as any).server.prisma;
+    const prisma = (request as FastifyRequest & { server: { prisma: any } }).server.prisma;
     const permissionService = getPermissionService(prisma);
     const permissionChecks = await Promise.all(
       permissions.map(p =>
@@ -260,7 +272,7 @@ export function requirePermissions(
           method: request.method,
         },
         ipAddress: request.ip,
-        userAgent: request.headers['user-agent'],
+        userAgent: typeof request.headers['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
       });
 
       return reply.status(403).send({
@@ -339,27 +351,53 @@ export function generateRefreshToken(payload: {
 /**
  * 验证JWT token
  */
-export function verifyToken(token: string): any {
+export function verifyToken(token: string): {
+  userId: number;
+  email: string;
+  name: string;
+  iat: number;
+  exp: number;
+} {
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
     throw new Error('JWT_SECRET environment variable is not set');
   }
 
-  return jwt.verify(token, jwtSecret);
+  return jwt.verify(token, jwtSecret) as {
+    userId: number;
+    email: string;
+    name: string;
+    iat: number;
+    exp: number;
+  };
 }
 
 /**
  * 验证Refresh Token
  */
-export function verifyRefreshToken(token: string): any {
+export function verifyRefreshToken(token: string): {
+  userId: number;
+  email: string;
+  name: string;
+  type: string;
+  iat: number;
+  exp: number;
+} {
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
     throw new Error('JWT_SECRET environment variable is not set');
   }
 
-  const decoded = jwt.verify(token, jwtSecret) as any;
+  const decoded = jwt.verify(token, jwtSecret) as {
+    userId: number;
+    email: string;
+    name: string;
+    type: string;
+    iat: number;
+    exp: number;
+  };
   if (decoded.type !== 'refresh') {
     throw new Error('Invalid token type');
   }
