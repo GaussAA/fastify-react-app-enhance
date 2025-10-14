@@ -54,6 +54,13 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error: any) {
+          console.error('登录失败:', error);
+
+          // 清除本地存储
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+
           set({
             user: null,
             accessToken: null,
@@ -87,6 +94,13 @@ export const useAuthStore = create<AuthStore>()(
           // 返回认证信息供确认对话框使用
           return { user, token, refreshToken };
         } catch (error: any) {
+          console.error('注册失败:', error);
+
+          // 清除本地存储
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+
           set({
             user: null,
             accessToken: null,
@@ -168,6 +182,8 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error: any) {
+          console.error('Token刷新失败:', error);
+
           // 刷新失败，清除所有认证信息
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
@@ -201,6 +217,13 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error: any) {
+          console.error('获取用户信息失败:', error);
+
+          // 清除本地存储
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+
           set({
             user: null,
             isAuthenticated: false,

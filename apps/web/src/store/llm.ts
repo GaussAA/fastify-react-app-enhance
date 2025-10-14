@@ -185,7 +185,7 @@ export const useLLMStore = create<LLMState>()(
 
         const updatedSession = {
           ...currentSession,
-          messages: [...currentSession.messages, message],
+          messages: [...(currentSession.messages || []), message],
           updatedAt: new Date(),
         };
 
@@ -199,7 +199,7 @@ export const useLLMStore = create<LLMState>()(
 
       updateMessage: (messageId: string, content: string) => {
         const { currentSession } = get();
-        if (!currentSession) return;
+        if (!currentSession || !currentSession.messages) return;
 
         const messageIndex = parseInt(messageId);
         if (
@@ -265,17 +265,41 @@ export const useLLMStore = create<LLMState>()(
           config,
           currentUserId,
           backendSessionId,
+          createSession,
         } = get();
 
-        if (!currentSession || !currentUserId) {
-          setError('没有活跃的会话或用户未登录');
+        if (!currentUserId) {
+          setError('用户未登录');
           return;
+        }
+
+        // 如果没有活跃会话，自动创建一个新会话
+        if (!currentSession) {
+          try {
+            await createSession();
+            // 重新获取状态，确保新会话已创建
+            const { currentSession: newSession } = get();
+            if (!newSession) {
+              setError('创建会话失败');
+              return;
+            }
+          } catch (error: any) {
+            setError(error.message || '创建会话失败');
+            return;
+          }
         }
 
         setLoading(true);
         setError(null);
 
         try {
+          // 重新获取当前会话，确保使用最新的状态
+          const { currentSession: activeSession, backendSessionId: activeBackendSessionId } = get();
+          if (!activeSession) {
+            setError('会话状态异常');
+            return;
+          }
+
           // 添加用户消息
           const userMessage: LLMMessage = {
             id: Date.now().toString(),
@@ -287,17 +311,17 @@ export const useLLMStore = create<LLMState>()(
 
           // 发送到AI对话系统
           const response = await aiSessionApiClient.processConversation({
-            sessionId: backendSessionId || undefined,
+            sessionId: activeBackendSessionId || undefined,
             userId: currentUserId,
             message: message,
             options: {
               model: config.model,
               temperature: config.temperature,
               context:
-                currentSession.messages.length > 0
+                (activeSession.messages?.length ?? 0) > 0
                   ? {
-                      previousMessages: currentSession.messages.slice(-5), // 只保留最近5条消息作为上下文
-                    }
+                    previousMessages: activeSession.messages?.slice(-5) ?? [], // 只保留最近5条消息作为上下文
+                  }
                   : undefined,
             },
           });
@@ -326,12 +350,23 @@ export const useLLMStore = create<LLMState>()(
         message: string,
         onChunk: (chunk: string) => void
       ) => {
-        const { currentSession, config, addMessage, setLoading, setError } =
+        const { currentSession, config, addMessage, setLoading, setError, createSession } =
           get();
 
+        // 如果没有活跃会话，自动创建一个新会话
         if (!currentSession) {
-          setError('没有活跃的对话会话');
-          return;
+          try {
+            await createSession();
+            // 重新获取状态，确保新会话已创建
+            const { currentSession: newSession } = get();
+            if (!newSession) {
+              setError('创建会话失败');
+              return;
+            }
+          } catch (error: any) {
+            setError(error.message || '创建会话失败');
+            return;
+          }
         }
 
         setLoading(true);
@@ -339,6 +374,13 @@ export const useLLMStore = create<LLMState>()(
         set({ isInterrupted: false }); // 重置中断状态
 
         try {
+          // 重新获取当前会话，确保使用最新的状态
+          const { currentSession: activeSession } = get();
+          if (!activeSession) {
+            setError('会话状态异常');
+            return;
+          }
+
           // 添加用户消息
           const userMessage: LLMMessage = {
             role: 'user',
@@ -348,7 +390,7 @@ export const useLLMStore = create<LLMState>()(
 
           // 准备请求
           const request = {
-            messages: [...currentSession.messages, userMessage],
+            messages: [...(activeSession.messages || []), userMessage],
             model: config.model,
             temperature: config.temperature,
             max_tokens: config.max_tokens,
@@ -381,7 +423,7 @@ export const useLLMStore = create<LLMState>()(
               const delta = chunk.choices[0].delta;
               if (delta?.content) {
                 fullContent += delta.content;
-                onChunk(delta.content);
+                onChunk(fullContent); // 传递累积的内容而不是单个chunk
               }
             }
           }

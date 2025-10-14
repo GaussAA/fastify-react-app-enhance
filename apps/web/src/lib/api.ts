@@ -20,8 +20,9 @@ class ApiClient {
   private baseURL: string;
 
   constructor() {
-    this.baseURL =
-      import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api';
+    // 确保API基础URL包含/api路径
+    const envBaseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
+    this.baseURL = envBaseURL.endsWith('/api') ? envBaseURL : `${envBaseURL}/api`;
 
     this.client = axios.create({
       baseURL: this.baseURL,
@@ -94,10 +95,40 @@ class ApiClient {
       const response: AxiosResponse<T> = await this.client(config);
       return response.data;
     } catch (error: any) {
-      if (error.response?.data?.message) {
-        throw new Error(error.response.data.message);
+      // 处理网络错误
+      if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+        throw new Error('无法连接到服务器，请检查网络连接');
       }
-      throw error;
+
+      // 处理超时错误
+      if (error.code === 'ECONNABORTED') {
+        throw new Error('请求超时，请稍后重试');
+      }
+
+      // 处理HTTP错误响应
+      if (error.response) {
+        const { status, data } = error.response;
+
+        // 处理404错误
+        if (status === 404) {
+          throw new Error('请求的资源不存在');
+        }
+
+        // 处理500错误
+        if (status >= 500) {
+          throw new Error('服务器内部错误，请稍后重试');
+        }
+
+        // 处理其他HTTP错误
+        if (data?.message) {
+          throw new Error(data.message);
+        }
+
+        throw new Error(`请求失败 (${status})`);
+      }
+
+      // 处理其他错误
+      throw new Error(error.message || '请求失败');
     }
   }
 

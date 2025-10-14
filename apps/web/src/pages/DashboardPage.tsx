@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuthStore } from '@/store/auth';
+import { useLLMStore } from '@/store/llm';
 import { PermissionGuard } from '@/components/auth/PermissionGuard';
 import { UserProfile } from '@/components/auth/UserProfile';
 import { RoleManagement } from '@/components/auth/RoleManagement';
@@ -32,6 +33,7 @@ export function DashboardPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout } = useAuthStore();
+  const { serviceStatus } = useLLMStore();
 
   const handleLogout = async () => {
     if (confirm('确定要退出登录吗？')) {
@@ -82,7 +84,7 @@ export function DashboardPage() {
       )}
 
       {/* 统一顶部栏 */}
-      <header className="bg-white shadow-sm border-b border-slate-200 h-16 flex items-center justify-between px-4 lg:px-6">
+      <header className="bg-white shadow-sm h-16 flex items-center justify-between px-4 lg:px-6">
         <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
@@ -107,18 +109,16 @@ export function DashboardPage() {
         <div className="flex items-center space-x-4">
           <Badge
             variant={user?.isActive ? 'default' : 'secondary'}
-            className={`px-3 py-1 ${
-              user?.isActive
-                ? 'bg-green-100 text-green-800 border-green-200'
-                : 'bg-gray-100 text-gray-600 border-gray-200'
-            }`}
+            className={`px-3 py-1 ${user?.isActive
+              ? 'bg-green-100 text-green-800 border-green-200'
+              : 'bg-gray-100 text-gray-600 border-gray-200'
+              }`}
           >
             <div
-              className={`w-2 h-2 rounded-full mr-2 ${
-                user?.isActive ? 'bg-green-500' : 'bg-gray-400'
-              }`}
+              className={`w-2 h-2 rounded-full mr-2 ${serviceStatus?.status === 'healthy' ? 'bg-green-500' : 'bg-gray-400'
+                }`}
             ></div>
-            {user?.isActive ? '在线' : '离线'}
+            {serviceStatus?.status === 'healthy' ? '在线' : '离线'}
           </Badge>
         </div>
       </header>
@@ -126,11 +126,10 @@ export function DashboardPage() {
       <div className="flex">
         {/* 侧边栏 */}
         <div
-          className={`fixed top-16 left-0 z-50 w-80 h-[calc(100vh-4rem)] bg-gradient-to-b from-slate-50 to-white shadow-xl border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-[calc(100vh-4rem)] lg:top-16 overflow-y-auto ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`fixed top-16 left-0 z-50 w-80 h-[calc(100vh-4rem)] bg-gradient-to-b from-slate-50 to-white shadow-xl border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-[calc(100vh-4rem)] lg:top-16 overflow-y-auto xl:w-80 lg:w-72 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
         >
-          <div className="flex items-center justify-between h-16 px-6 border-b border-slate-200 lg:hidden">
+          <div className="flex items-center justify-between h-16 px-6 lg:hidden">
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               管理系统
             </h1>
@@ -145,7 +144,7 @@ export function DashboardPage() {
           </div>
 
           {/* 用户信息 */}
-          <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+          <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12 ring-2 ring-blue-200 ring-offset-2">
                 <AvatarImage src={user?.avatar} alt={user?.name} />
@@ -184,24 +183,43 @@ export function DashboardPage() {
                   <li key={tab.id}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start h-12 px-4 transition-all duration-200 ${
-                        isActive
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25'
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700 hover:shadow-sm'
-                      }`}
+                      className={`w-full justify-start h-12 px-4 transition-all duration-300 ease-out relative overflow-hidden group ${isActive
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 border-l-4 border-white'
+                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-md hover:border-l-4 hover:border-blue-300'
+                        }`}
                       onClick={() => {
                         setActiveTab(tab.id);
                         setIsSidebarOpen(false);
                       }}
                     >
-                      <Icon
-                        className={`mr-3 h-5 w-5 transition-transform duration-200 ${
-                          isActive ? 'scale-110' : ''
-                        }`}
-                      />
-                      <span className="font-medium">{tab.label}</span>
+                      {/* 背景光效 */}
                       {isActive && (
-                        <div className="ml-auto w-2 h-2 bg-white rounded-full"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-50"></div>
+                      )}
+
+                      <Icon
+                        className={`mr-3 h-5 w-5 transition-all duration-300 ${isActive
+                          ? 'scale-110 text-white drop-shadow-sm'
+                          : 'group-hover:scale-105 group-hover:text-blue-600'
+                          }`}
+                      />
+                      <span className={`font-medium relative z-10 ${isActive ? 'text-white' : 'group-hover:text-blue-700'}`}>
+                        {tab.label}
+                      </span>
+
+                      {/* 选中状态指示器 */}
+                      {isActive && (
+                        <div className="ml-auto flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                          <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                        </div>
+                      )}
+
+                      {/* 悬停时的箭头指示 */}
+                      {!isActive && (
+                        <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="w-0 h-0 border-l-4 border-l-blue-400 border-y-4 border-y-transparent"></div>
+                        </div>
                       )}
                     </Button>
                   </li>
@@ -211,7 +229,7 @@ export function DashboardPage() {
           </nav>
 
           {/* 退出按钮 */}
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4">
             <Button
               variant="ghost"
               className="w-full justify-start h-12 px-4 text-red-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 transition-all duration-200 hover:shadow-lg hover:shadow-red-500/25"
@@ -229,115 +247,172 @@ export function DashboardPage() {
           <main className="p-3 lg:p-4 bg-gradient-to-br from-slate-50 to-blue-50 h-full">
             {activeTab === 'dashboard' && (
               <div className="space-y-4 h-full flex flex-col">
-                {/* 欢迎区域 - 超紧凑布局 */}
-                <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-3 lg:p-4">
-                  <div className="flex items-center justify-between">
+                {/* 欢迎区域 - 增强视觉层次 */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-slate-200/60 p-4 lg:p-6 relative overflow-hidden">
+                  {/* 背景装饰 */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100/30 to-indigo-100/30 rounded-full -translate-y-16 translate-x-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-slate-100/40 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
+
+                  <div className="flex items-center justify-between relative z-10">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h2 className="text-lg lg:text-xl font-bold text-gray-900">
-                          欢迎回来，
-                          <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            {user?.name}
-                          </span>
-                          ！
-                        </h2>
+                      <div className="flex items-center gap-4 mb-2">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                            <LayoutDashboard className="h-6 w-6 text-white" />
+                          </div>
+                          <div>
+                            <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
+                              欢迎回来，
+                              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent ml-2">
+                                {user?.name}
+                              </span>
+                              ！
+                            </h2>
+                            <p className="text-slate-600 text-sm lg:text-base mt-1">
+                              系统概览和快速操作入口
+                            </p>
+                          </div>
+                        </div>
+
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-7 px-2 text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                          className="h-8 px-3 text-sm hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
                           onClick={() => window.location.reload()}
                         >
-                          <LayoutDashboard className="h-3 w-3 mr-1" />
-                          刷新
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          刷新数据
                         </Button>
                       </div>
-                      <p className="text-gray-600 text-xs lg:text-sm">
-                        系统概览和快速操作入口
-                      </p>
+
+                      {/* 快速状态概览 */}
+                      <div className="flex items-center space-x-4 mt-3">
+                        <div className="flex items-center space-x-2 text-sm">
+                          <div className={`w-2 h-2 rounded-full ${user?.isActive ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                          <span className="text-slate-600">
+                            {user?.isActive ? '账户活跃' : '账户待激活'}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-2 text-sm">
+                          <div className={`w-2 h-2 rounded-full ${user?.isVerified ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                          <span className="text-slate-600">
+                            {user?.isVerified ? '邮箱已验证' : '邮箱待验证'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
+
                     <div className="hidden lg:block">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                        <LayoutDashboard className="h-5 w-5 text-white" />
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl">
+                        <LayoutDashboard className="h-8 w-8 text-white" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* 数据概览卡片 */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 flex-1">
-                  <Card className="bg-white border-slate-200 shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer group">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-                      <CardTitle className="text-xs font-medium text-gray-700">
+                {/* 数据概览卡片 - 增强视觉层次 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 flex-1">
+                  {/* 用户角色卡片 */}
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                      <CardTitle className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         用户角色
                       </CardTitle>
-                      <div className="p-1 bg-blue-100 rounded group-hover:bg-blue-200 transition-colors">
-                        <Shield className="h-3 w-3 text-blue-600" />
+                      <div className="p-2 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl group-hover:from-blue-200 group-hover:to-blue-300 transition-all duration-300 shadow-sm">
+                        <Shield className="h-4 w-4 text-blue-600" />
                       </div>
                     </CardHeader>
-                    <CardContent className="pb-2">
-                      <div className="text-lg lg:text-2xl font-bold text-blue-600 mb-0.5">
+                    <CardContent className="pb-3 relative z-10">
+                      <div className="text-2xl lg:text-3xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors">
                         {user?.roles?.length || 0}
                       </div>
-                      <p className="text-xs text-gray-500">个角色</p>
+                      <p className="text-sm text-slate-500 font-medium">个角色</p>
+                      {(!user?.roles || user.roles.length === 0) && (
+                        <div className="mt-2">
+                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-blue-200 text-blue-600 hover:bg-blue-50">
+                            申请角色
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-white border-slate-200 shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer group">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-                      <CardTitle className="text-xs font-medium text-gray-700">
+                  {/* 权限数量卡片 */}
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                      <CardTitle className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         权限数量
                       </CardTitle>
-                      <div className="p-1 bg-green-100 rounded group-hover:bg-green-200 transition-colors">
-                        <Shield className="h-3 w-3 text-green-600" />
+                      <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-xl group-hover:from-green-200 group-hover:to-green-300 transition-all duration-300 shadow-sm">
+                        <Shield className="h-4 w-4 text-green-600" />
                       </div>
                     </CardHeader>
-                    <CardContent className="pb-2">
-                      <div className="text-lg lg:text-2xl font-bold text-green-600 mb-0.5">
+                    <CardContent className="pb-3 relative z-10">
+                      <div className="text-2xl lg:text-3xl font-bold text-green-600 mb-1 group-hover:text-green-700 transition-colors">
                         {user?.permissions?.length || 0}
                       </div>
-                      <p className="text-xs text-gray-500">个权限</p>
+                      <p className="text-sm text-slate-500 font-medium">个权限</p>
+                      {(!user?.permissions || user.permissions.length === 0) && (
+                        <div className="mt-2">
+                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-green-200 text-green-600 hover:bg-green-50">
+                            查看权限
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-white border-slate-200 shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer group">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-                      <CardTitle className="text-xs font-medium text-gray-700">
+                  {/* 账户状态卡片 */}
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${user?.isActive ? 'from-green-50/50' : 'from-orange-50/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                      <CardTitle className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         账户状态
                       </CardTitle>
-                      <div className="p-1 bg-orange-100 rounded group-hover:bg-orange-200 transition-colors">
-                        <Users className="h-3 w-3 text-orange-600" />
+                      <div className={`p-2 bg-gradient-to-br ${user?.isActive ? 'from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300' : 'from-orange-100 to-orange-200 group-hover:from-orange-200 group-hover:to-orange-300'} rounded-xl transition-all duration-300 shadow-sm`}>
+                        <Users className={`h-4 w-4 ${user?.isActive ? 'text-green-600' : 'text-orange-600'}`} />
                       </div>
                     </CardHeader>
-                    <CardContent className="pb-2">
-                      <div
-                        className={`text-lg lg:text-2xl font-bold mb-0.5 ${
-                          user?.isActive ? 'text-green-600' : 'text-orange-600'
-                        }`}
-                      >
+                    <CardContent className="pb-3 relative z-10">
+                      <div className={`text-2xl lg:text-3xl font-bold mb-1 group-hover:opacity-80 transition-opacity ${user?.isActive ? 'text-green-600' : 'text-orange-600'}`}>
                         {user?.isActive ? '活跃' : '非活跃'}
                       </div>
-                      <p className="text-xs text-gray-500">账户状态</p>
+                      <p className="text-sm text-slate-500 font-medium">账户状态</p>
+                      {!user?.isActive && (
+                        <div className="mt-2">
+                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-orange-200 text-orange-600 hover:bg-orange-50">
+                            激活账户
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-white border-slate-200 shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer group">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
-                      <CardTitle className="text-xs font-medium text-gray-700">
+                  {/* 验证状态卡片 */}
+                  <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${user?.isVerified ? 'from-green-50/50' : 'from-red-50/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                      <CardTitle className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         验证状态
                       </CardTitle>
-                      <div className="p-1 bg-red-100 rounded group-hover:bg-red-200 transition-colors">
-                        <Shield className="h-3 w-3 text-red-600" />
+                      <div className={`p-2 bg-gradient-to-br ${user?.isVerified ? 'from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300' : 'from-red-100 to-red-200 group-hover:from-red-200 group-hover:to-red-300'} rounded-xl transition-all duration-300 shadow-sm`}>
+                        <Shield className={`h-4 w-4 ${user?.isVerified ? 'text-green-600' : 'text-red-600'}`} />
                       </div>
                     </CardHeader>
-                    <CardContent className="pb-2">
-                      <div
-                        className={`text-lg lg:text-2xl font-bold mb-0.5 ${
-                          user?.isVerified ? 'text-green-600' : 'text-red-600'
-                        }`}
-                      >
+                    <CardContent className="pb-3 relative z-10">
+                      <div className={`text-2xl lg:text-3xl font-bold mb-1 group-hover:opacity-80 transition-opacity ${user?.isVerified ? 'text-green-600' : 'text-red-600'}`}>
                         {user?.isVerified ? '已验证' : '未验证'}
                       </div>
-                      <p className="text-xs text-gray-500">邮箱验证</p>
+                      <p className="text-sm text-slate-500 font-medium">邮箱验证</p>
+                      {!user?.isVerified && (
+                        <div className="mt-2">
+                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-red-200 text-red-600 hover:bg-red-50">
+                            验证邮箱
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </div>
@@ -372,8 +447,8 @@ export function DashboardPage() {
                           <p className="text-xs text-green-600 truncate">
                             {user?.lastLoginAt
                               ? new Date(user.lastLoginAt).toLocaleString(
-                                  'zh-CN'
-                                )
+                                'zh-CN'
+                              )
                               : '从未登录'}
                           </p>
                         </div>

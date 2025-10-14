@@ -755,7 +755,7 @@ export class AICoreService extends EventEmitter {
    */
   private async recordIntentRecognition(
     sessionId: string,
-    text: string,
+    _text: string,
     result: IntentRecognitionResult
   ): Promise<void> {
     try {

@@ -30,12 +30,10 @@ export interface OptimizedQuery {
  * 查询优化器类
  */
 export class QueryOptimizer {
-  private prisma: PrismaClient;
   private cache: Map<string, any> = new Map();
   private options: QueryOptimizationOptions;
 
-  constructor(prisma: PrismaClient, options: QueryOptimizationOptions = {}) {
-    this.prisma = prisma;
+  constructor(_prisma: PrismaClient, options: QueryOptimizationOptions = {}) {
     this.options = {
       enableSelect: true,
       enableInclude: true,
@@ -53,7 +51,7 @@ export class QueryOptimizer {
    * 优化查询参数
    */
   optimizeQuery(
-    model: string,
+    _model: string,
     query: any,
     options: {
       selectFields?: string[];

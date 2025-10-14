@@ -504,17 +504,22 @@ export class RoleService extends CrudService<RoleWithPermissions> {
     const permissionStats = await this.prisma.rolePermission.groupBy({
       by: ['permissionId'],
       _count: { roleId: true },
-      include: {
-        permission: {
-          select: { name: true },
-        },
-      },
     });
 
-    const byPermission = permissionStats.map((stat: any) => ({
-      permission: stat.permission.name,
-      count: stat._count.roleId,
-    }));
+    // 获取权限名称
+    const permissionIds = permissionStats.map(stat => stat.permissionId);
+    const permissions = await this.prisma.permission.findMany({
+      where: { id: { in: permissionIds } },
+      select: { id: true, name: true },
+    });
+
+    const byPermission = permissionStats.map((stat: any) => {
+      const permission = permissions.find(p => p.id === stat.permissionId);
+      return {
+        permission: permission?.name || 'Unknown',
+        count: stat._count.roleId,
+      };
+    });
 
     return {
       total,

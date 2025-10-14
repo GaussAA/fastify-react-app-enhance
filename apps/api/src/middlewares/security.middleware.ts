@@ -132,7 +132,7 @@ export function bodySizeLimit(maxSize: number = 1024 * 1024) {
  * 安全头中间件
  */
 export function securityHeaders() {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
+  return async (_request: FastifyRequest, reply: FastifyReply) => {
     // 设置安全相关的HTTP头
     reply.header('X-Content-Type-Options', 'nosniff');
     reply.header('X-Frame-Options', 'DENY');

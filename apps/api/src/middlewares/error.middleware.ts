@@ -11,7 +11,7 @@ export function errorHandler(
   reply: FastifyReply
 ) {
   // 记录错误日志
-  logger.error('API Error:', {
+  logger.error({
     error: error.message,
     stack: error.stack,
     url: request.url,
@@ -19,7 +19,7 @@ export function errorHandler(
     ip: request.ip,
     userAgent: request.headers['user-agent'],
     body: request.body,
-  });
+  }, 'API Error');
 
   // 根据错误类型返回不同的响应
   if (error instanceof Prisma.PrismaClientKnownRequestError) {

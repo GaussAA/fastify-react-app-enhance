@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from 'react';
-import { ChatInterface } from '@/components/llm/ChatInterface';
+import { DeepSeekChatInterface } from '@/components/llm/DeepSeekChatInterface';
 import { useLLMStore } from '@/store/llm';
 
 export function LLMPage() {
@@ -30,7 +30,7 @@ export function LLMPage() {
 
       {/* 主内容区域 */}
       <div className="flex-1 overflow-hidden">
-        <ChatInterface />
+        <DeepSeekChatInterface />
       </div>
     </div>
   );

@@ -616,7 +616,7 @@ export class PermissionService extends CrudService<PermissionWithRoles> {
      */
     async createPermissionsBatch(
         permissionsData: PermissionCreateData[],
-        createdBy?: number
+        _createdBy?: number
     ): Promise<{
         count: number;
         data?: PermissionWithRoles[];

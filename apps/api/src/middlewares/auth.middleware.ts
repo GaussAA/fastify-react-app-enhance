@@ -1,7 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
-// @ts-expect-error - Dynamic import from config
-import { getConfig } from '../../../../config/env-loader.mjs';
 import { getPermissionService } from '../services/service-factory.js';
 import { auditService } from '../services/audit.service.js';
 
@@ -41,8 +39,13 @@ export async function authenticateToken(
     }
 
     // 验证JWT token
-    const config = getConfig();
-    const decoded = jwt.verify(token, config.security.JWT_SECRET) as any;
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      return reply.status(401).send({ message: 'JWT configuration error' });
+    }
+
+    const decoded = jwt.verify(token, jwtSecret) as any;
 
     // 获取prisma实例
     const prisma = (request as any).server.prisma;
@@ -98,15 +101,23 @@ export async function optionalAuth(
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token) {
-      const config = getConfig();
-      const decoded = jwt.verify(token, config.security.JWT_SECRET) as any;
-      request.user = {
-        id: decoded.userId,
-        email: decoded.email,
-        name: decoded.name,
-      };
+      const jwtSecret = process.env.JWT_SECRET;
+
+      if (jwtSecret) {
+        try {
+          const decoded = jwt.verify(token, jwtSecret) as any;
+          request.user = {
+            id: decoded.userId,
+            email: decoded.email,
+            name: decoded.name,
+          };
+        } catch (error) {
+          // 可选认证失败时不返回错误，继续执行
+          // request.log.warn('Optional authentication failed:', error);
+        }
+      }
     }
-  } catch {
+  } catch (error) {
     // 可选认证失败时不返回错误，继续执行
     // request.log.warn('Optional authentication failed:', error);
   }
@@ -271,7 +282,13 @@ export function generateToken(payload: {
   email: string;
   name: string;
 }): string {
-  const config = getConfig();
+  const jwtSecret = process.env.JWT_SECRET;
+  const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d';
+
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+
   return jwt.sign(
     {
       userId: payload.userId,
@@ -279,12 +296,12 @@ export function generateToken(payload: {
       name: payload.name,
       iat: Math.floor(Date.now() / 1000),
     },
-    config.security.JWT_SECRET,
+    jwtSecret,
     {
-      expiresIn: config.business.JWT_EXPIRES_IN,
+      expiresIn: jwtExpiresIn,
       issuer: 'fastify-react-app',
       audience: 'fastify-react-app-users',
-    }
+    } as jwt.SignOptions
   );
 }
 
@@ -296,7 +313,12 @@ export function generateRefreshToken(payload: {
   email: string;
   name: string;
 }): string {
-  const config = getConfig();
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+
   return jwt.sign(
     {
       userId: payload.userId,
@@ -305,12 +327,12 @@ export function generateRefreshToken(payload: {
       type: 'refresh',
       iat: Math.floor(Date.now() / 1000),
     },
-    config.security.JWT_SECRET,
+    jwtSecret,
     {
       expiresIn: '7d', // Refresh token有效期7天
       issuer: 'fastify-react-app',
       audience: 'fastify-react-app-users',
-    }
+    } as jwt.SignOptions
   );
 }
 
@@ -318,16 +340,26 @@ export function generateRefreshToken(payload: {
  * 验证JWT token
  */
 export function verifyToken(token: string): any {
-  const config = getConfig();
-  return jwt.verify(token, config.security.JWT_SECRET);
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+
+  return jwt.verify(token, jwtSecret);
 }
 
 /**
  * 验证Refresh Token
  */
 export function verifyRefreshToken(token: string): any {
-  const config = getConfig();
-  const decoded = jwt.verify(token, config.security.JWT_SECRET) as any;
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET environment variable is not set');
+  }
+
+  const decoded = jwt.verify(token, jwtSecret) as any;
   if (decoded.type !== 'refresh') {
     throw new Error('Invalid token type');
   }

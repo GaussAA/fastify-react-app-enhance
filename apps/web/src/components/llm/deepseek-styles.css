@@ -1,0 +1,627 @@
+/* DeepSeek官网风格样式 */
+
+/* 全局样式重置 */
+.deepseek-chat * {
+    box-sizing: border-box;
+}
+
+/* 主容器样式 */
+.deepseek-chat {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #ffffff;
+    color: #1f2937;
+}
+
+/* 输入框样式 */
+.deepseek-input-container {
+    position: relative;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease-in-out;
+}
+
+/* 隐藏textarea的所有浏览器默认UI元素 */
+textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* 完全移除所有焦点样式 */
+textarea:focus,
+textarea:focus-visible,
+textarea:focus-within {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+}
+
+textarea::-webkit-resizer,
+textarea::-webkit-scrollbar,
+textarea::-webkit-search-cancel-button,
+textarea::-webkit-search-decoration,
+textarea::-webkit-inner-spin-button,
+textarea::-webkit-outer-spin-button {
+    display: none !important;
+    -webkit-appearance: none !important;
+}
+
+/* 隐藏所有可能的浏览器默认按钮和装饰 */
+textarea::before,
+textarea::after {
+    display: none !important;
+    content: none !important;
+}
+
+.deepseek-input-container:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    animation: inputFocus 0.2s ease-out;
+}
+
+.deepseek-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1f2937;
+    min-height: 24px;
+    max-height: 120px;
+    font-family: inherit;
+}
+
+.deepseek-textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* 发送按钮样式 */
+.deepseek-send-button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    background: #3b82f6;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    color: white;
+}
+
+.deepseek-send-button:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-50%) scale(1.05);
+    animation: buttonHover 0.2s ease-out;
+}
+
+.deepseek-send-button:active:not(:disabled) {
+    animation: sendClick 0.1s ease-out;
+}
+
+.deepseek-send-button:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+}
+
+/* 功能按钮样式 */
+.deepseek-function-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.deepseek-function-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 14px;
+    color: #374151;
+}
+
+.deepseek-function-button:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.deepseek-function-button svg {
+    width: 16px;
+    height: 16px;
+    color: #6b7280;
+}
+
+/* 消息样式 */
+.deepseek-message {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+.deepseek-message-user {
+    background: #3b82f6;
+    color: white;
+    margin-left: auto;
+}
+
+.deepseek-message-assistant {
+    background: #f3f4f6;
+    color: #1f2937;
+    margin-right: auto;
+}
+
+/* 消息动画 */
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 输入框聚焦动画 */
+@keyframes inputFocus {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.02);
+    }
+}
+
+/* 按钮悬停动画 */
+@keyframes buttonHover {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-1px);
+    }
+}
+
+/* 发送按钮点击动画 */
+@keyframes sendClick {
+    0% {
+        transform: translateY(-50%) scale(1);
+    }
+
+    50% {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    100% {
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+/* 流式内容光标动画 */
+.deepseek-streaming-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    background: #6b7280;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* 加载动画 */
+.deepseek-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 50%;
+    border-top-color: #3b82f6;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 欢迎区域样式 */
+.deepseek-welcome {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.deepseek-logo {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.deepseek-logo svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.deepseek-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* 错误提示样式 */
+.deepseek-error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 16px;
+}
+
+.deepseek-error-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #dc2626;
+}
+
+.deepseek-error-dot {
+    width: 8px;
+    height: 8px;
+    background: #dc2626;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.deepseek-error-close {
+    margin-left: auto;
+    cursor: pointer;
+    color: #dc2626;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.deepseek-error-close:hover {
+    color: #b91c1c;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .deepseek-chat {
+        padding: 16px;
+    }
+
+    .deepseek-input-container {
+        padding: 12px;
+    }
+
+    .deepseek-textarea {
+        font-size: 16px;
+        /* 防止iOS缩放 */
+    }
+
+    .deepseek-message {
+        max-width: 90%;
+        font-size: 14px;
+    }
+
+    .deepseek-function-button {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .deepseek-function-button svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .deepseek-welcome {
+        margin-bottom: 24px;
+    }
+
+    .deepseek-logo {
+        width: 40px;
+        height: 40px;
+    }
+
+    .deepseek-logo svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .deepseek-title {
+        font-size: 20px;
+    }
+
+    .deepseek-message {
+        max-width: 95%;
+        padding: 10px 14px;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    .deepseek-chat {
+        background: #111827;
+        color: #f9fafb;
+    }
+
+    .deepseek-input-container {
+        background: #1f2937;
+        border-color: #374151;
+    }
+
+    .deepseek-input-container:focus-within {
+        border-color: #3b82f6;
+    }
+
+    .deepseek-textarea {
+        color: #f9fafb;
+    }
+
+    .deepseek-textarea::placeholder {
+        color: #6b7280;
+    }
+
+    .deepseek-function-button {
+        background: #374151;
+        border-color: #4b5563;
+        color: #d1d5db;
+    }
+
+    .deepseek-function-button:hover {
+        background: #4b5563;
+    }
+
+    .deepseek-function-button svg {
+        color: #9ca3af;
+    }
+
+    .deepseek-message-assistant {
+        background: #374151;
+        color: #f9fafb;
+    }
+
+    .deepseek-title {
+        color: #f9fafb;
+    }
+}
+
+/* 滚动条样式 */
+.deepseek-chat ::-webkit-scrollbar {
+    width: 6px;
+}
+
+.deepseek-chat ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.deepseek-chat ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.deepseek-chat ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* 焦点样式 */
+.deepseek-chat *:focus {
+    outline: none;
+}
+
+.deepseek-chat button:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* 选择文本样式 */
+.deepseek-chat ::selection {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+/* 平滑滚动 */
+.deepseek-chat {
+    scroll-behavior: smooth;
+}
+
+/* 建议问题样式 */
+.deepseek-suggestions {
+    margin-top: 16px;
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.deepseek-suggestions-title {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+
+.deepseek-suggestions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+@media (min-width: 640px) {
+    .deepseek-suggestions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.deepseek-suggestion-item {
+    text-align: left;
+    padding: 12px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 14px;
+    color: #374151;
+}
+
+.deepseek-suggestion-item:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 淡入动画 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 输入框状态指示器 */
+.deepseek-input-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 侧边栏样式 */
+.deepseek-sidebar {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    transition: all 0.3s ease-in-out;
+}
+
+.deepseek-new-session-btn {
+    width: 100%;
+    background: #1e293b;
+    color: white;
+    border-radius: 8px;
+    height: 40px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.deepseek-new-session-btn:hover {
+    background: #334155;
+    transform: translateY(-1px);
+}
+
+.deepseek-session-item {
+    position: relative;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.deepseek-session-item:hover {
+    background: #f1f5f9;
+    transform: translateX(2px);
+}
+
+.deepseek-session-item.active {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.deepseek-session-delete {
+    opacity: 0;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    color: #ef4444;
+}
+
+.deepseek-session-item:hover .deepseek-session-delete {
+    opacity: 1;
+}
+
+.deepseek-session-delete:hover {
+    background: #fef2f2;
+}

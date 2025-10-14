@@ -134,16 +134,21 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
 
   return (
     <div className="space-y-4 h-full flex flex-col">
-      {/* 用户头像和基本信息 - 紧凑布局 */}
-      <Card className="bg-white border-slate-200 shadow-sm">
-        <CardHeader className="p-4 lg:p-6">
+      {/* 用户头像和基本信息 - 增强视觉层次 */}
+      <Card className="bg-white/90 backdrop-blur-sm border-slate-200/60 shadow-lg relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-blue-100/30 to-indigo-100/30 rounded-full -translate-y-12 translate-x-12"></div>
+
+        <CardHeader className="p-4 lg:p-6 relative z-10">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                <User className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-xl font-bold text-gray-900 flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <User className="h-5 w-5 text-white" />
+                </div>
                 <span>个人资料</span>
               </CardTitle>
-              <CardDescription className="text-sm text-gray-600">
+              <CardDescription className="text-sm text-slate-600 mt-1">
                 管理您的个人信息和账户设置
               </CardDescription>
             </div>
@@ -152,10 +157,10 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
                 onClick={() => setIsEditing(true)}
                 variant="outline"
                 size="sm"
-                className="h-8 px-3 text-xs hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                className="h-9 px-4 text-sm hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
               >
-                <Edit className="mr-1 h-3 w-3" />
-                编辑
+                <Edit className="mr-2 h-4 w-4" />
+                编辑资料
               </Button>
             )}
           </div>
@@ -174,27 +179,51 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
                 {user.name}
               </h3>
               <p className="text-sm text-gray-600 mb-2">{user.email}</p>
-              <div className="flex items-center space-x-2">
-                <Badge
-                  variant={user.isActive ? 'default' : 'secondary'}
-                  className={`text-xs px-2 py-0.5 ${
-                    user.isActive
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <Badge
+                    variant={user.isActive ? 'default' : 'secondary'}
+                    className={`text-xs px-3 py-1 ${user.isActive
                       ? 'bg-green-100 text-green-800 border-green-200'
-                      : 'bg-gray-100 text-gray-600 border-gray-200'
-                  }`}
-                >
-                  {user.isActive ? '活跃' : '非活跃'}
-                </Badge>
-                <Badge
-                  variant={user.isVerified ? 'default' : 'outline'}
-                  className={`text-xs px-2 py-0.5 ${
-                    user.isVerified
+                      : 'bg-orange-100 text-orange-800 border-orange-200'
+                      }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full mr-1 ${user.isActive ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                    {user.isActive ? '活跃' : '非活跃'}
+                  </Badge>
+                  <Badge
+                    variant={user.isVerified ? 'default' : 'outline'}
+                    className={`text-xs px-3 py-1 ${user.isVerified
                       ? 'bg-green-100 text-green-800 border-green-200'
                       : 'bg-red-100 text-red-800 border-red-200'
-                  }`}
-                >
-                  {user.isVerified ? '已验证' : '未验证'}
-                </Badge>
+                      }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full mr-1 ${user.isVerified ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    {user.isVerified ? '已验证' : '未验证'}
+                  </Badge>
+                </div>
+
+                {/* CTA按钮 */}
+                <div className="flex items-center space-x-2">
+                  {!user.isActive && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-6 px-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+                    >
+                      激活账户
+                    </Button>
+                  )}
+                  {!user.isVerified && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-6 px-2 border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      验证邮箱
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -315,11 +344,16 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
         </CardContent>
       </Card>
 
-      {/* 账户信息和权限 - 合并紧凑布局 */}
-      <Card className="bg-white border-slate-200 shadow-sm flex-1">
-        <CardHeader className="p-4 lg:p-6">
-          <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-            <Shield className="h-5 w-5 text-blue-600" />
+      {/* 账户信息和权限 - 增强视觉层次 */}
+      <Card className="bg-white/90 backdrop-blur-sm border-slate-200/60 shadow-lg flex-1 relative overflow-hidden">
+        {/* 背景装饰 */}
+        <div className="absolute top-0 left-0 w-20 h-20 bg-gradient-to-br from-slate-100/40 to-transparent rounded-full -translate-y-10 -translate-x-10"></div>
+
+        <CardHeader className="p-4 lg:p-6 relative z-10">
+          <CardTitle className="text-xl font-bold text-gray-900 flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Shield className="h-5 w-5 text-white" />
+            </div>
             <span>账户信息与权限</span>
           </CardTitle>
         </CardHeader>
@@ -360,41 +394,74 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
             </div>
           </div>
 
-          <Separator />
 
           {/* 角色和权限 */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-3 block">
-                角色
-              </Label>
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-sm font-semibold text-gray-700 flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span>角色</span>
+                </Label>
+                {(!user.roles || user.roles.length === 0) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs h-6 px-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                  >
+                    申请角色
+                  </Button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {user.roles?.map(role => (
                   <Badge
                     key={role.id}
                     variant="secondary"
-                    className="bg-blue-100 text-blue-800 border-blue-200 text-xs px-2 py-1"
+                    className="bg-blue-100 text-blue-800 border-blue-200 text-xs px-3 py-1 shadow-sm"
                   >
                     {role.displayName}
                   </Badge>
-                )) || <span className="text-sm text-gray-500">无角色</span>}
+                )) || (
+                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                      <span>暂无角色</span>
+                    </div>
+                  )}
               </div>
             </div>
 
             <div>
-              <Label className="text-sm font-medium text-gray-700 mb-3 block">
-                权限
-              </Label>
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-sm font-semibold text-gray-700 flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>权限</span>
+                </Label>
+                {(!user.permissions || user.permissions.length === 0) && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-xs h-6 px-2 border-green-200 text-green-600 hover:bg-green-50"
+                  >
+                    查看权限
+                  </Button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {user.permissions?.map(permission => (
                   <Badge
                     key={permission.id}
                     variant="outline"
-                    className="bg-green-50 text-green-700 border-green-200 text-xs px-2 py-1"
+                    className="bg-green-50 text-green-700 border-green-200 text-xs px-3 py-1 shadow-sm"
                   >
                     {permission.resource}:{permission.action}
                   </Badge>
-                )) || <span className="text-sm text-gray-500">无权限</span>}
+                )) || (
+                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                      <span>暂无权限</span>
+                    </div>
+                  )}
               </div>
             </div>
           </div>

@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/auth';
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { DashboardPage } from '@/pages/DashboardPage';
+import { LLMPage } from '@/pages/LLMPage';
 
 function App() {
   const { isAuthenticated, getCurrentUser, isLoading } = useAuthStore();
@@ -73,6 +74,12 @@ function App() {
               <Navigate to="/login" replace />
             )
           }
+        />
+
+        {/* 测试路由 - 直接访问AI助手页面 */}
+        <Route
+          path="/test-llm"
+          element={<LLMPage />}
         />
 
         {/* 默认重定向 */}

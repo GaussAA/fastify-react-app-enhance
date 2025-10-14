@@ -66,7 +66,7 @@ export function MarkdownRenderer({
           // 段落样式
           p: ({ children, ...props }) => (
             <p
-              className="text-sm leading-relaxed text-gray-800 mb-3 last:mb-0"
+              className="text-base leading-relaxed text-gray-800 mb-3 last:mb-0"
               {...props}
             >
               {children}
@@ -92,7 +92,7 @@ export function MarkdownRenderer({
 
           // 代码块样式
           pre: ({ children, ...props }) => (
-            <pre className="markdown-code-block" {...props}>
+            <pre className="markdown-code-block code-block" {...props}>
               {children}
             </pre>
           ),
@@ -106,7 +106,7 @@ export function MarkdownRenderer({
               );
             }
             return (
-              <code className={cn('markdown-code', className)} {...props}>
+              <code className={cn('markdown-code code-block', className)} {...props}>
                 {children}
               </code>
             );

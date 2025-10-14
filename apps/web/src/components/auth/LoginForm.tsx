@@ -76,11 +76,21 @@ export function LoginForm({
         navigate(redirectTo);
       }
     } catch (error: any) {
+      console.error('登录错误:', error);
+
       // 处理特定错误
-      if (error.message.includes('邮箱')) {
+      if (error.message.includes('邮箱') || error.message.includes('用户不存在')) {
         setError('email', { message: error.message });
-      } else if (error.message.includes('密码')) {
+      } else if (error.message.includes('密码') || error.message.includes('密码错误')) {
         setError('password', { message: error.message });
+      } else if (error.message.includes('无法连接到服务器')) {
+        setError('root', { message: '无法连接到服务器，请检查网络连接' });
+      } else if (error.message.includes('请求超时')) {
+        setError('root', { message: '请求超时，请稍后重试' });
+      } else if (error.message.includes('服务器内部错误')) {
+        setError('root', { message: '服务器内部错误，请稍后重试' });
+      } else {
+        setError('root', { message: error.message || '登录失败，请重试' });
       }
     }
   };

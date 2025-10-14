@@ -7,7 +7,7 @@ import {
 } from '../middlewares/auth.middleware.js';
 import { logger } from '../utils/logger.js';
 import { auditService } from './audit.service.js';
-import { getUserService } from './service-factory.js';
+// import { getUserService } from './service-factory.js';
 
 export interface CreateUserData {
   name: string;
@@ -82,10 +82,13 @@ export const authService = {
       const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
 
       // 创建用户
-      const userService = getUserService(prisma);
-      const user = await userService.createUser({
-        ...userData,
-        password: hashedPassword,
+      const user = await prisma.user.create({
+        data: {
+          ...userData,
+          password: hashedPassword,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       });
 
       // 为新用户分配默认角色
@@ -170,7 +173,10 @@ export const authService = {
    */
   async login(loginData: LoginData): Promise<AuthResult> {
     try {
+      logger.info('开始登录流程，邮箱:');
+
       // 查找用户
+      logger.info('查找用户...');
       const user = await prisma.user.findUnique({
         where: { email: loginData.email },
         include: {
@@ -223,10 +229,12 @@ export const authService = {
       }
 
       // 验证密码
+      logger.info('验证密码...');
       const isPasswordValid = await bcrypt.compare(
         loginData.password,
         user.password
       );
+      logger.info('密码验证结果:');
 
       if (!isPasswordValid) {
         await auditService.log({
@@ -272,24 +280,34 @@ export const authService = {
       );
 
       // 更新最后登录时间
-      const userService = getUserService(prisma);
-      await userService.updateUser(user.id, {
-        updatedAt: new Date(),
-      });
+      try {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { updatedAt: new Date() },
+        });
+      } catch (updateError) {
+        logger.warn('更新用户最后登录时间失败:', updateError as any);
+        // 不影响登录流程，继续执行
+      }
 
       // 记录成功的登录
-      await auditService.log({
-        userId: user.id,
-        action: 'login',
-        resource: 'user',
-        resourceId: user.id.toString(),
-        details: {
-          email: user.email,
-          deviceInfo: loginData.deviceInfo,
-        },
-        ipAddress: loginData.ipAddress,
-        userAgent: loginData.userAgent,
-      });
+      try {
+        await auditService.log({
+          userId: user.id,
+          action: 'login',
+          resource: 'user',
+          resourceId: user.id.toString(),
+          details: {
+            email: user.email,
+            deviceInfo: loginData.deviceInfo,
+          },
+          ipAddress: loginData.ipAddress,
+          userAgent: loginData.userAgent,
+        });
+      } catch (auditError) {
+        logger.warn('记录审计日志失败:', auditError as any);
+        // 不影响登录流程，继续执行
+      }
 
       logger.info(`用户登录成功: ${user.email}`);
 
@@ -311,6 +329,8 @@ export const authService = {
       };
     } catch (error) {
       logger.error('用户登录失败:', error as any);
+      logger.error('登录数据:', { email: loginData.email, hasPassword: !!loginData.password } as any);
+      logger.error('错误堆栈:', (error as any).stack);
       return {
         success: false,
         message: '登录失败，请稍后重试',

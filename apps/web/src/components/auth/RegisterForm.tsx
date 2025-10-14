@@ -137,13 +137,23 @@ export function RegisterForm({
         setShowLoginDialog(true);
       }, 100);
     } catch (error: any) {
+      console.error('注册错误:', error);
+
       // 处理特定错误
-      if (error.message.includes('邮箱')) {
+      if (error.message.includes('邮箱') || error.message.includes('已存在')) {
         setError('email', { message: error.message });
       } else if (error.message.includes('密码')) {
         setError('password', { message: error.message });
       } else if (error.message.includes('姓名')) {
         setError('name', { message: error.message });
+      } else if (error.message.includes('无法连接到服务器')) {
+        setError('root', { message: '无法连接到服务器，请检查网络连接' });
+      } else if (error.message.includes('请求超时')) {
+        setError('root', { message: '请求超时，请稍后重试' });
+      } else if (error.message.includes('服务器内部错误')) {
+        setError('root', { message: '服务器内部错误，请稍后重试' });
+      } else {
+        setError('root', { message: error.message || '注册失败，请重试' });
       }
     }
   };

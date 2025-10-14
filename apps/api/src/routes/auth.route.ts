@@ -178,7 +178,13 @@ export async function authRoutes(app: FastifyInstance) {
         });
       }
 
-      const result = await authService.login({ email, password });
+      const result = await authService.login({
+        email,
+        password,
+        ipAddress: request.ip,
+        userAgent: request.headers['user-agent'],
+        deviceInfo: request.headers['user-agent']
+      });
 
       if (result.success) {
         return reply.send(result);

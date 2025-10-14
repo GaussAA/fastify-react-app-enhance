@@ -156,7 +156,7 @@ export function ChatInterface() {
                       {session.title}
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
-                      {session.messages.length} 条消息
+                      {session.messages?.length ?? 0} 条消息
                     </p>
                   </div>
                   <Button
@@ -192,7 +192,7 @@ export function ChatInterface() {
                   onClick={handleClearMessages}
                   size="sm"
                   variant="ghost"
-                  disabled={currentSession.messages.length === 0}
+                  disabled={(currentSession.messages?.length ?? 0) === 0}
                   className="text-slate-500 hover:text-slate-700 disabled:opacity-50"
                 >
                   清空
@@ -207,19 +207,19 @@ export function ChatInterface() {
           <div className="max-w-4xl mx-auto px-4 py-6">
             {currentSession ? (
               <>
-                {currentSession.messages.map((message, index) => (
+                {currentSession.messages?.map((message, index) => (
                   <ChatMessage
                     key={index}
                     message={message}
-                    isLast={index === currentSession.messages.length - 1}
+                    isLast={index === (currentSession.messages?.length ?? 0) - 1}
                     streamingContent={streamingContent}
                     isStreaming={
                       isLoading &&
-                      index === currentSession.messages.length - 1 &&
+                      index === (currentSession.messages?.length ?? 0) - 1 &&
                       message.role === 'assistant'
                     }
                   />
-                ))}
+                )) ?? []}
                 <div ref={messagesEndRef} />
               </>
             ) : (
