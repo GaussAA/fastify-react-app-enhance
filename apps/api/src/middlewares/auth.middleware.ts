@@ -112,26 +112,26 @@ export async function optionalAuth(
       if (jwtSecret) {
         try {
           const decoded = jwt.verify(token, jwtSecret) as {
-      userId: number;
-      email: string;
-      name: string;
-      iat: number;
-      exp: number;
-    };
+            userId: number;
+            email: string;
+            name: string;
+            iat: number;
+            exp: number;
+          };
           request.user = {
             id: decoded.userId,
             email: decoded.email,
             name: decoded.name,
           };
-        } catch (_error) {
+        } catch {
           // 可选认证失败时不返回错误，继续执行
-          // request.log.warn('Optional authentication failed:', _error);
+          // request.log.warn('Optional authentication failed:', error);
         }
       }
     }
-  } catch (_error) {
+  } catch {
     // 可选认证失败时不返回错误，继续执行
-    // request.log.warn('Optional authentication failed:', _error);
+    // request.log.warn('Optional authentication failed:', error);
   }
 }
 

@@ -10,6 +10,9 @@ import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { LLMPage } from '@/pages/LLMPage';
+import { TestPage } from '@/pages/TestPage';
+import { RegisterTestPage } from '@/pages/RegisterTestPage';
+import { AnimationTestPage } from '@/pages/AnimationTestPage';
 
 function App() {
   const { isAuthenticated, getCurrentUser, isLoading } = useAuthStore();
@@ -80,6 +83,24 @@ function App() {
         <Route
           path="/test-llm"
           element={<LLMPage />}
+        />
+
+        {/* 测试路由 - 简单测试页面 */}
+        <Route
+          path="/test"
+          element={<TestPage />}
+        />
+
+        {/* 测试路由 - 注册页面测试 */}
+        <Route
+          path="/test-register"
+          element={<RegisterTestPage />}
+        />
+
+        {/* 测试路由 - 动画效果测试 */}
+        <Route
+          path="/test-animations"
+          element={<AnimationTestPage />}
         />
 
         {/* 默认重定向 */}

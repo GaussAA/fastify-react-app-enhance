@@ -5,13 +5,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -19,9 +17,14 @@ import {
 } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
+import { EnhancedLiquidGlassCard } from '@/components/ui/enhanced-liquid-glass';
+import { LiquidGlassButton } from '@/components/ui/animated-button';
+import { AnimatedInput } from '@/components/ui/animated-input';
 
 import { useAuthStore } from '@/store/auth';
 import { LoginData } from '@/types/auth';
+import { useLoginSuccess } from '@/hooks/useLoginSuccess';
+import { LoginSuccessTransition } from '@/components/ui/login-success-transition';
 
 // 表单验证模式
 const loginSchema = z.object({
@@ -44,6 +47,7 @@ export function LoginForm({
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login, isLoading, error, clearError } = useAuthStore();
+  const loginSuccess = useLoginSuccess();
 
   const {
     register,
@@ -70,12 +74,18 @@ export function LoginForm({
 
       await login(loginData);
 
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        navigate(redirectTo);
-      }
-    } catch (error: any) {
+      // 显示登录成功动画
+      loginSuccess.show();
+
+      // 延迟导航，让动画完成
+      setTimeout(() => {
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate(redirectTo);
+        }
+      }, 1000);
+    } catch (error: unknown) {
       console.error('登录错误:', error);
 
       // 处理特定错误
@@ -96,102 +106,108 @@ export function LoginForm({
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">登录</CardTitle>
-        <CardDescription className="text-center">
-          输入您的邮箱和密码以登录您的账户
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+    <>
+      {/* 登录成功动画 */}
+      <LoginSuccessTransition
+        isVisible={loginSuccess.isVisible}
+        onComplete={loginSuccess.onAnimationComplete}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      >
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">登录成功！</h2>
+          <p className="text-white/80">正在跳转到主页面...</p>
+        </div>
+      </LoginSuccessTransition>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">邮箱地址</Label>
-            <Input
+      <EnhancedLiquidGlassCard className="w-full max-w-lg mx-auto" size="lg" hover>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center text-white drop-shadow-lg">登录</CardTitle>
+          <CardDescription className="text-center text-white/90 drop-shadow-md">
+            输入您的邮箱和密码以登录您的账户
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <AnimatedInput
               id="email"
               type="email"
+              label="邮箱地址"
               placeholder="请输入邮箱地址"
+              variant="glass"
+              error={errors.email?.message}
               {...register('email')}
-              className={errors.email ? 'border-red-500' : ''}
             />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">密码</Label>
             <div className="relative">
-              <Input
+              <AnimatedInput
                 id="password"
                 type={showPassword ? 'text' : 'password'}
+                label="密码"
                 placeholder="请输入密码"
+                variant="glass"
+                error={errors.password?.message}
                 {...register('password')}
-                className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                className="absolute right-3 top-10 h-6 w-6 p-0 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
+                  <EyeOff className="h-5 w-5 text-white/70" />
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-5 w-5 text-white/70" />
                 )}
               </Button>
             </div>
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="rememberMe" {...register('rememberMe')} />
-              <Label htmlFor="rememberMe" className="text-sm">
-                记住我
-              </Label>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Checkbox id="rememberMe" {...register('rememberMe')} />
+                <Label htmlFor="rememberMe" className="text-sm text-white/90 drop-shadow-sm">
+                  记住我
+                </Label>
+              </div>
+              <Link
+                to="/forgot-password"
+                className="text-sm text-cyan-300 hover:text-cyan-500 hover:underline drop-shadow-md font-medium transition-colors duration-200"
+              >
+                忘记密码？
+              </Link>
             </div>
-            <Link
-              to="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              忘记密码？
-            </Link>
-          </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                登录中...
-              </>
-            ) : (
-              '登录'
-            )}
-          </Button>
-
-          <div className="text-center text-sm">
-            还没有账户？{' '}
-            <Link
-              to="/register"
-              className="text-blue-600 hover:text-blue-800 hover:underline"
+            <LiquidGlassButton
+              type="submit"
+              className="w-full"
+              variant="glass-primary"
+              size="lg"
+              loading={isLoading}
+              disabled={isLoading}
             >
-              立即注册
-            </Link>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+              {isLoading ? '登录中...' : '登录'}
+            </LiquidGlassButton>
+
+            <div className="text-center text-sm text-white/90 drop-shadow-sm">
+              还没有账户？{' '}
+              <Link
+                to="/register"
+                className="text-cyan-300 hover:text-cyan-500 hover:underline drop-shadow-md font-medium transition-colors duration-200"
+              >
+                立即注册
+              </Link>
+            </div>
+          </form>
+        </CardContent>
+      </EnhancedLiquidGlassCard>
+    </>
   );
 }

@@ -3,7 +3,14 @@
  * 精确复刻DeepSeek官网的AI聊天界面设计
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
+
+// 类型声明
+declare global {
+    interface Window {
+        IntersectionObserver: typeof IntersectionObserver;
+    }
+}
 import {
     Send,
     Sparkles,
@@ -28,6 +35,7 @@ export function DeepSeekChatInterface() {
     const [filteredMessages, setFilteredMessages] = useState<any[]>([]);
     const [textColor, setTextColor] = useState('text-slate-700');
     const [placeholderColor, setPlaceholderColor] = useState('placeholder:text-slate-500/80');
+    const [lastColorState, setLastColorState] = useState({ hasDarkContent: false, isHovered: false });
     const [charCount, setCharCount] = useState(0);
     const MAX_MESSAGE_LENGTH = 4000; // 最大消息长度
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -74,8 +82,8 @@ export function DeepSeekChatInterface() {
         try {
             // 如果没有活跃会话，sendStreamMessage会自动创建一个新会话
             await sendStreamMessage(message, setStreamingContent);
-        } catch (error: any) {
-            setError(error.message || '发送消息失败');
+        } catch (error: unknown) {
+            setError((error as Error).message || '发送消息失败');
             // 恢复输入内容，让用户可以重试
             setInputMessage(message);
         }
@@ -97,15 +105,14 @@ export function DeepSeekChatInterface() {
 
     // 处理全局键盘快捷键
     useEffect(() => {
-        const handleKeyDown = (e: Event) => {
-            const keyboardEvent = e as KeyboardEvent;
+        const handleKeyDown = (e: KeyboardEvent) => {
             // Ctrl/Cmd + K: 新建会话
-            if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === 'k') {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 handleNewSession();
             }
             // Ctrl/Cmd + /: 清空对话
-            if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === '/') {
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
                 e.preventDefault();
                 if (currentSession && currentSession.messages.length > 0) {
                     handleClearMessages();
@@ -113,8 +120,8 @@ export function DeepSeekChatInterface() {
             }
         };
 
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
+        document.addEventListener('keydown', handleKeyDown as any);
+        return () => document.removeEventListener('keydown', handleKeyDown as any);
     }, [currentSession]);
 
     // 处理输入框变化
@@ -166,16 +173,16 @@ export function DeepSeekChatInterface() {
     const handleNewSession = async () => {
         try {
             await createSession();
-        } catch (error: any) {
-            setError(error.message || '创建会话失败');
+        } catch (error: unknown) {
+            setError((error as Error).message || '创建会话失败');
         }
     };
 
     const handleDeleteSession = async (sessionId: string) => {
         try {
             await deleteSession(sessionId);
-        } catch (error: any) {
-            setError(error.message || '删除会话失败');
+        } catch (error: unknown) {
+            setError((error as Error).message || '删除会话失败');
         }
     };
 
@@ -217,7 +224,7 @@ export function DeepSeekChatInterface() {
     };
 
     // 防抖函数
-    const debounce = <T extends (...args: any[]) => any>(func: T, wait: number) => {
+    const debounce = <T extends (...args: unknown[]) => unknown>(func: T, wait: number) => {
         let timeout: NodeJS.Timeout;
         return function executedFunction(...args: Parameters<T>) {
             const later = () => {
@@ -229,34 +236,45 @@ export function DeepSeekChatInterface() {
         };
     };
 
-    // 动态调整文字颜色以适应背景
+    // 精确检测文字区域背景颜色
     const adjustTextColorForBackground = () => {
-        if (!inputContainerRef.current) return;
+        if (!inputContainerRef.current || !inputRef.current) return;
 
-        // 获取输入框位置
-        const inputRect = inputContainerRef.current.getBoundingClientRect();
-        const inputTop = inputRect.top;
-        const inputBottom = inputRect.bottom;
+        // 获取输入框文字区域的位置（更精确）
+        const inputRect = inputRef.current.getBoundingClientRect();
+        const textAreaTop = inputRect.top;
+        const textAreaBottom = inputRect.bottom;
+        const textAreaLeft = inputRect.left;
+        const textAreaRight = inputRect.right;
 
-        // 检测输入框下方是否有深色内容
+        // 创建文字区域的检测范围（稍微扩大一点以确保覆盖）
+        const detectionMargin = 20; // 20px的检测边距
+        const detectionTop = textAreaTop - detectionMargin;
+        const detectionBottom = textAreaBottom + detectionMargin;
+        const detectionLeft = textAreaLeft - detectionMargin;
+        const detectionRight = textAreaRight + detectionMargin;
+
         let hasDarkContent = false;
-        let maxDarkness = 0; // 记录最深色的程度
+        let maxDarkness = 0;
 
-        // 检查所有消息元素
-        const messageElements = document.querySelectorAll('.chat-message');
-        messageElements.forEach(element => {
-            const messageRect = element.getBoundingClientRect();
+        // 精确检测：只检查文字区域下方的背景内容
+        const allElements = document.querySelectorAll('*');
+        for (let i = 0; i < allElements.length; i++) {
+            const element = allElements[i];
+            const elementRect = element.getBoundingClientRect();
 
-            // 检查消息是否在输入框下方且可能影响输入框背景
-            if (messageRect.top < inputBottom && messageRect.bottom > inputTop) {
-                // 检查消息内容是否包含深色元素
-                const codeBlocks = element.querySelectorAll('pre, code, .code-block, .bg-slate-900, .bg-gray-900, .bg-black');
-                if (codeBlocks.length > 0) {
-                    hasDarkContent = true;
-                    maxDarkness = Math.max(maxDarkness, 0.8); // 代码块通常很暗
+            // 检查元素是否在文字检测范围内
+            if (elementRect.top < detectionBottom &&
+                elementRect.bottom > detectionTop &&
+                elementRect.left < detectionRight &&
+                elementRect.right > detectionLeft) {
+
+                // 跳过输入框本身和其子元素
+                if (inputContainerRef.current.contains(element) || element.contains(inputRef.current)) {
+                    continue;
                 }
 
-                // 检查消息背景色
+                // 检查元素背景色
                 const computedStyle = window.getComputedStyle(element);
                 const backgroundColor = computedStyle.backgroundColor;
 
@@ -269,17 +287,118 @@ export function DeepSeekChatInterface() {
                         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
                         const darkness = (255 - brightness) / 255;
 
-                        if (brightness < 150) { // 深色背景阈值
+                        // 浅色背景优化：降低深色检测阈值，更容易检测到深色内容
+                        if (brightness < 180) { // 从150提高到180，更容易检测深色
                             hasDarkContent = true;
                             maxDarkness = Math.max(maxDarkness, darkness);
+
+                            console.log('🎯 文字区域发现深色背景:', {
+                                element: element.tagName,
+                                className: element.className,
+                                backgroundColor,
+                                brightness,
+                                darkness,
+                                position: { top: elementRect.top, bottom: elementRect.bottom }
+                            });
+                        }
+                    }
+                }
+
+                // 检查元素内是否有深色子元素
+                const darkChildren = element.querySelectorAll('pre, code, .code-block, .bg-slate-900, .bg-gray-900, .bg-black, .bg-gray-800, .bg-slate-800');
+                if (darkChildren.length > 0) {
+                    hasDarkContent = true;
+                    maxDarkness = Math.max(maxDarkness, 0.8);
+
+                    console.log('🎯 文字区域发现深色子元素:', {
+                        parentElement: element.tagName,
+                        parentClassName: element.className,
+                        darkChildrenCount: darkChildren.length
+                    });
+                }
+            }
+        }
+
+        // 检查液态玻璃容器的hover状态
+        const liquidGlassContainer = inputContainerRef.current;
+        const isHovered = liquidGlassContainer.matches(':hover');
+
+        // 字体颜色判断：基于文字区域背景检测结果
+        // 浅色背景优化：默认使用深色文字，只有确认有深色背景时才使用白色文字
+        let shouldUseWhiteText = false;
+
+        if (hasDarkContent) {
+            // 有深色内容时，根据黑暗程度决定
+            if (maxDarkness > 0.3) {
+                shouldUseWhiteText = true;
+            }
+        } else {
+            // 没有检测到深色内容时，检查页面整体背景
+            const bodyStyle = window.getComputedStyle(document.body);
+            const bodyBg = bodyStyle.backgroundColor;
+
+            if (bodyBg && bodyBg !== 'rgba(0, 0, 0, 0)') {
+                const rgb = bodyBg.match(/\d+/g);
+                if (rgb && rgb.length >= 3) {
+                    const r = parseInt(rgb[0]);
+                    const g = parseInt(rgb[1]);
+                    const b = parseInt(rgb[2]);
+                    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+                    // 如果页面背景是深色，使用白色文字
+                    if (brightness < 150) {
+                        shouldUseWhiteText = true;
+                        console.log('🎯 页面背景为深色，使用白色文字:', { bodyBg, brightness });
+                    }
+                }
+            }
+
+            // 浅色背景优化：检查输入框容器的实际背景色
+            if (!shouldUseWhiteText && inputContainerRef.current) {
+                const containerStyle = window.getComputedStyle(inputContainerRef.current);
+                const containerBg = containerStyle.backgroundColor;
+
+                if (containerBg && containerBg !== 'rgba(0, 0, 0, 0)') {
+                    const rgb = containerBg.match(/\d+/g);
+                    if (rgb && rgb.length >= 3) {
+                        const r = parseInt(rgb[0]);
+                        const g = parseInt(rgb[1]);
+                        const b = parseInt(rgb[2]);
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+                        // 如果输入框容器背景是深色，使用白色文字
+                        if (brightness < 150) {
+                            shouldUseWhiteText = true;
+                            console.log('🎯 输入框容器背景为深色，使用白色文字:', { containerBg, brightness });
                         }
                     }
                 }
             }
+        }
+
+        // 检查状态是否真的改变了
+        const stateChanged = lastColorState.hasDarkContent !== shouldUseWhiteText;
+
+        if (!stateChanged) {
+            return; // 状态没有改变，不需要更新
+        }
+
+        // 详细调试日志
+        console.log('🎨 精确文字区域检测:', {
+            hasDarkContent,
+            maxDarkness,
+            shouldUseWhiteText,
+            stateChanged,
+            textAreaRect: { top: textAreaTop, bottom: textAreaBottom, left: textAreaLeft, right: textAreaRight },
+            detectionArea: { top: detectionTop, bottom: detectionBottom, left: detectionLeft, right: detectionRight },
+            isHovered,
+            note: '精确检测文字区域背景，浅色背景优化'
         });
 
-        // 根据检测结果调整文字颜色
-        if (hasDarkContent && maxDarkness > 0.3) {
+        // 更新状态缓存
+        setLastColorState({ hasDarkContent: shouldUseWhiteText, isHovered });
+
+        if (shouldUseWhiteText) {
             setTextColor('text-white');
             setPlaceholderColor('placeholder:text-slate-300/80');
         } else {
@@ -288,24 +407,55 @@ export function DeepSeekChatInterface() {
         }
     };
 
-    // 创建防抖版本的颜色调整函数
-    const debouncedAdjustTextColor = debounce(adjustTextColorForBackground, 100);
+    // 创建防抖版本的颜色调整函数 - 减少延迟以提高响应速度
+    const debouncedAdjustTextColor = debounce(adjustTextColorForBackground, 8); // 约120fps，更快响应
+
+    // 创建超快速版本用于关键事件
+    const immediateAdjustTextColor = () => {
+        adjustTextColorForBackground();
+    };
 
     // 监听消息变化，重新调整颜色
     useEffect(() => {
         debouncedAdjustTextColor();
     }, [currentSession?.messages, streamingContent]);
 
-    // 监听滚动事件，动态调整颜色
+    // 监听滚动事件，动态调整颜色 - 使用更快的响应
     useEffect(() => {
         const handleScroll = () => {
+            // 滚动时使用快速响应，减少防抖延迟
             debouncedAdjustTextColor();
         };
 
         const scrollContainer = document.querySelector('.scroll-area');
         if (scrollContainer) {
-            scrollContainer.addEventListener('scroll', handleScroll);
-            return () => scrollContainer.removeEventListener('scroll', handleScroll);
+            scrollContainer.addEventListener('scroll', handleScroll as any);
+            return () => scrollContainer.removeEventListener('scroll', handleScroll as any);
+        }
+    }, []);
+
+    // 监听输入框容器的hover事件 - 仅用于背景效果，不影响字体颜色
+    useEffect(() => {
+        const handleMouseEnter = () => {
+            // hover时检查颜色，但字体颜色不再受hover影响
+            immediateAdjustTextColor();
+        };
+
+        const handleMouseLeave = () => {
+            // 离开时检查颜色，但字体颜色不再受hover影响
+            immediateAdjustTextColor();
+        };
+
+        if (inputContainerRef.current) {
+            inputContainerRef.current.addEventListener('mouseenter', handleMouseEnter);
+            inputContainerRef.current.addEventListener('mouseleave', handleMouseLeave);
+
+            return () => {
+                if (inputContainerRef.current) {
+                    inputContainerRef.current.removeEventListener('mouseenter', handleMouseEnter);
+                    inputContainerRef.current.removeEventListener('mouseleave', handleMouseLeave);
+                }
+            };
         }
     }, []);
 
@@ -317,6 +467,53 @@ export function DeepSeekChatInterface() {
 
         return () => clearTimeout(initTimeout);
     }, []);
+
+    // 使用Intersection Observer监控文字区域附近的深色元素
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            // 当深色元素进入或离开文字区域附近时，重新检测颜色
+            let shouldRecheck = false;
+            entries.forEach(entry => {
+                if (entry.isIntersecting || !entry.isIntersecting) {
+                    shouldRecheck = true;
+                }
+            });
+
+            if (shouldRecheck) {
+                setTimeout(() => {
+                    adjustTextColorForBackground();
+                }, 30); // 减少延迟，提高响应速度
+            }
+        }, {
+            root: null,
+            rootMargin: '50px', // 缩小监控范围，只监控文字区域附近
+            threshold: 0.1
+        });
+
+        // 只监控文字区域附近的深色元素
+        const darkElements = document.querySelectorAll('pre, code, .code-block, .bg-slate-900, .bg-gray-900, .bg-black, .bg-gray-800, .bg-slate-800');
+        darkElements.forEach(element => {
+            // 只监控在输入框附近的元素
+            const elementRect = element.getBoundingClientRect();
+            const inputRect = inputRef.current?.getBoundingClientRect();
+
+            if (inputRect) {
+                const distance = Math.min(
+                    Math.abs(elementRect.top - inputRect.bottom),
+                    Math.abs(elementRect.bottom - inputRect.top)
+                );
+
+                // 只监控距离输入框200px以内的深色元素
+                if (distance < 200) {
+                    observer.observe(element);
+                }
+            }
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [currentSession?.messages]); // 当消息变化时重新设置观察器
 
     // 监听输入内容变化，自动调整输入框高度
     useEffect(() => {
@@ -523,18 +720,24 @@ export function DeepSeekChatInterface() {
                 {/* 输入区域 - 固定在主聊天区域底部 */}
                 <div className="absolute bottom-0 left-0 right-0 px-4 lg:px-6 pb-4 lg:pb-6 z-30">
                     <div className="max-w-4xl mx-auto">
-                        {/* 主输入框容器 - 现代化圆角Liquid Glass效果 */}
+                        {/* 主输入框容器 - 增强的液态玻璃效果 */}
                         <div
                             ref={inputContainerRef}
-                            className="relative bg-white/15 backdrop-blur-2xl shadow-2xl border border-white/25 border-t-white/35 before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/25 before:via-white/10 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/5 after:to-transparent after:pointer-events-none hover:bg-white/20 hover:border-white/35 hover:border-t-white/45 hover:shadow-3xl transition-all duration-500 ease-out group"
-                            style={{ borderRadius: '24px' }}
+                            className="relative bg-white/15 backdrop-blur-2xl shadow-2xl border border-white/25 border-t-white/35 before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/25 before:via-white/10 before:to-transparent before:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/5 after:to-transparent after:pointer-events-none hover:bg-white/20 hover:border-white/35 hover:border-t-white/45 hover:shadow-3xl transition-all duration-500 ease-out group liquid-glass-container"
+                            style={{
+                                borderRadius: '24px',
+                                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%)',
+                                backdropFilter: 'blur(20px) saturate(180%)',
+                                WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                                boxShadow: '0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2)'
+                            }}
                         >
                             {/* 功能按钮区域 - 在输入框内部左下角 */}
                             <div className="absolute left-4 bottom-2 flex items-center gap-2 z-10">
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="hidden sm:flex items-center gap-2 px-4 py-2 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 hover:border-white/50 text-slate-600 hover:text-slate-800 transition-all duration-300 ease-out shadow-lg hover:shadow-xl hover:scale-105 text-xs group-hover:translate-y-[-1px]"
+                                    className={`hidden sm:flex items-center gap-2 px-4 py-2 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 hover:border-white/50 ${textColor} hover:${textColor === 'text-white' ? 'text-slate-200' : 'text-slate-800'} transition-all duration-300 ease-out shadow-lg hover:shadow-xl hover:scale-105 text-xs`}
                                     style={{ borderRadius: '16px' }}
                                 >
                                     <Brain className="w-3 h-3 transition-transform duration-300 group-hover:scale-110" />
@@ -544,7 +747,7 @@ export function DeepSeekChatInterface() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="hidden sm:flex items-center gap-2 px-4 py-2 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 hover:border-white/50 text-slate-600 hover:text-slate-800 transition-all duration-300 ease-out shadow-lg hover:shadow-xl hover:scale-105 text-xs group-hover:translate-y-[-1px]"
+                                    className={`hidden sm:flex items-center gap-2 px-4 py-2 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 hover:border-white/50 ${textColor} hover:${textColor === 'text-white' ? 'text-slate-200' : 'text-slate-800'} transition-all duration-300 ease-out shadow-lg hover:shadow-xl hover:scale-105 text-xs`}
                                     style={{ borderRadius: '16px' }}
                                 >
                                     <Search className="w-3 h-3 transition-transform duration-300 group-hover:scale-110" />
@@ -556,7 +759,7 @@ export function DeepSeekChatInterface() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="w-9 h-9 p-0 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 text-slate-600 hover:text-slate-800 transition-all duration-300 shadow-sm hover:shadow-md"
+                                        className={`w-9 h-9 p-0 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 ${textColor} hover:${textColor === 'text-white' ? 'text-slate-200' : 'text-slate-800'} transition-all duration-300 shadow-sm hover:shadow-md`}
                                         style={{ borderRadius: '16px' }}
                                     >
                                         <Brain className="w-4 h-4" />
@@ -564,7 +767,7 @@ export function DeepSeekChatInterface() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="w-9 h-9 p-0 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 text-slate-600 hover:text-slate-800 transition-all duration-300 shadow-sm hover:shadow-md"
+                                        className={`w-9 h-9 p-0 border-white/30 bg-white/15 backdrop-blur-md hover:bg-white/25 ${textColor} hover:${textColor === 'text-white' ? 'text-slate-200' : 'text-slate-800'} transition-all duration-300 shadow-sm hover:shadow-md`}
                                         style={{ borderRadius: '16px' }}
                                     >
                                         <Search className="w-4 h-4" />
@@ -600,7 +803,7 @@ export function DeepSeekChatInterface() {
 
                             {/* 字符计数 */}
                             {charCount > 0 && (
-                                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 pointer-events-none">
+                                <div className={`absolute bottom-1 left-1/2 transform -translate-x-1/2 text-xs ${textColor === 'text-white' ? 'text-slate-300' : 'text-slate-400'} pointer-events-none`}>
                                     {charCount}/{MAX_MESSAGE_LENGTH}
                                 </div>
                             )}
@@ -610,7 +813,7 @@ export function DeepSeekChatInterface() {
                                 onClick={isLoading ? handleInterrupt : handleSendMessage}
                                 disabled={!inputMessage.trim() && !isLoading}
                                 aria-label={isLoading ? "中断生成" : "发送消息"}
-                                className={`absolute right-4 bottom-2 h-10 w-10 p-0 transition-all duration-300 ease-out backdrop-blur-md hover:scale-110 active:scale-95 group-hover:translate-y-[-2px] ${isLoading
+                                className={`absolute right-4 bottom-2 h-10 w-10 p-0 transition-all duration-300 ease-out backdrop-blur-md hover:scale-110 active:scale-95 ${isLoading
                                     ? 'bg-red-500/85 hover:bg-red-600/85 text-white shadow-xl border border-red-400/60 hover:shadow-2xl hover:border-red-300/70'
                                     : 'bg-gradient-to-r from-purple-500/85 to-blue-500/85 hover:from-purple-600/85 hover:to-blue-600/85 text-white shadow-xl hover:shadow-2xl border border-purple-400/60 hover:border-purple-300/70'
                                     }`}

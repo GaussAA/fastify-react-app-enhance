@@ -31,7 +31,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator';
 
 import { useAuthStore } from '@/store/auth';
 import { apiClient } from '@/lib/api';
