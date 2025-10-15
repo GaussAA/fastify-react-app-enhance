@@ -294,7 +294,10 @@ export const useLLMStore = create<LLMState>()(
 
         try {
           // 重新获取当前会话，确保使用最新的状态
-          const { currentSession: activeSession, backendSessionId: activeBackendSessionId } = get();
+          const {
+            currentSession: activeSession,
+            backendSessionId: activeBackendSessionId,
+          } = get();
           if (!activeSession) {
             setError('会话状态异常');
             return;
@@ -320,8 +323,8 @@ export const useLLMStore = create<LLMState>()(
               context:
                 (activeSession.messages?.length ?? 0) > 0
                   ? {
-                    previousMessages: activeSession.messages?.slice(-5) ?? [], // 只保留最近5条消息作为上下文
-                  }
+                      previousMessages: activeSession.messages?.slice(-5) ?? [], // 只保留最近5条消息作为上下文
+                    }
                   : undefined,
             },
           });
@@ -350,8 +353,14 @@ export const useLLMStore = create<LLMState>()(
         message: string,
         onChunk: (chunk: string) => void
       ) => {
-        const { currentSession, config, addMessage, setLoading, setError, createSession } =
-          get();
+        const {
+          currentSession,
+          config,
+          addMessage,
+          setLoading,
+          setError,
+          createSession,
+        } = get();
 
         // 如果没有活跃会话，自动创建一个新会话
         if (!currentSession) {

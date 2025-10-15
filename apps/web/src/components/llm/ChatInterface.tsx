@@ -4,11 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  Send,
-  Trash2,
-  Plus,
-} from 'lucide-react';
+import { Send, Trash2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,6 +12,7 @@ import { useLLMStore } from '@/store/llm';
 import { ChatMessage } from '@/components/llm/ChatMessage';
 import { ChatSettings } from '@/components/llm/ChatSettings';
 import { useSessionInitialization } from '@/hooks/useSessionInitialization';
+import { useAuthSync } from '@/hooks/useAuthSync';
 
 export function ChatInterface() {
   const [inputMessage, setInputMessage] = useState('');
@@ -26,6 +23,9 @@ export function ChatInterface() {
 
   // 初始化会话
   const { currentUserId } = useSessionInitialization();
+
+  // 同步认证状态
+  useAuthSync();
 
   const {
     sessions,
@@ -135,7 +135,6 @@ export function ChatInterface() {
             <Plus className="h-4 w-4 mr-2" />
             新对话
           </Button>
-
         </div>
 
         {/* 会话列表 - ChatGPT风格 */}
@@ -211,7 +210,9 @@ export function ChatInterface() {
                   <ChatMessage
                     key={index}
                     message={message}
-                    isLast={index === (currentSession.messages?.length ?? 0) - 1}
+                    isLast={
+                      index === (currentSession.messages?.length ?? 0) - 1
+                    }
                     streamingContent={streamingContent}
                     isStreaming={
                       isLoading &&

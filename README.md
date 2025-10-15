@@ -42,43 +42,84 @@ pnpm run setup
 
 ### 3️⃣ 配置环境变量
 
-项目已提供环境变量模板，会自动创建：
+项目使用统一的环境配置管理系统，支持多环境、类型安全和完整验证：
 
 ```bash
 # 环境变量模板位置
-config/env-templates/root.env      # 根目录环境变量
-config/env-templates/api.env       # API 服务环境变量
-config/env-templates/web.env       # Web 前端环境变量
+config/env-templates/base.env           # 基础配置模板
+config/env-templates/development.env   # 开发环境模板
+config/env-templates/production.env    # 生产环境模板
+config/env-templates/staging.env       # 预发布环境模板
+config/env-templates/test.env          # 测试环境模板
+config/env-templates/ci.env            # CI 环境模板
 ```
 
 主要配置项：
 
-```
-DATABASE_URL="postgresql://dev:dev@localhost:5432/mydb"
+```env
+# 数据库配置
+DATABASE_URL="postgresql://postgres_user:postgres_123!@localhost:15432/fastify_react_app?schema=public"
+REDIS_URL="redis://localhost:6379"
+
+# JWT 配置
 JWT_SECRET="your-super-secret-jwt-key-change-in-production"
-PORT=8001
+JWT_EXPIRES_IN="7d"
+
+# 服务端口
+API_PORT=8001
+WEB_PORT=5173
+
+# LLM 配置（可选）
+LLM_API_KEY="your-llm-api-key"
+LLM_DEFAULT_PROVIDER="openai"
 ```
 
 ### 4️⃣ 启动开发环境
 
 ```bash
-# 方式一：使用 Docker（推荐）
+# 方式一：一键启动（推荐）
+pnpm run start           # 启动所有服务（数据库 + API + Web）
+
+# 方式二：分步启动
+pnpm run db:start        # 启动数据库服务
+pnpm run dev            # 启动开发服务器
+
+# 方式三：使用 Docker Compose
 docker-compose -f infrastructure/docker/docker-compose.yml up -d
 pnpm run dev
 
-# 方式二：使用自动化脚本
-pnpm run check:env        # 检查开发环境
-pnpm run setup           # 设置开发环境
-
-# 方式三：直接启动
-pnpm run dev
+# 方式四：环境检查和设置
+pnpm run check:env       # 检查开发环境
+pnpm run setup          # 设置开发环境
 ```
 
 服务启动后：
 
-- 后端 API: [http://localhost:8001/api](http://localhost:8001/api)
-- 前端 Web: [http://localhost:5173](http://localhost:5173)
-- Swagger 文档: [http://localhost:8001/docs](http://localhost:8001/docs)
+- 🌐 后端 API: [http://localhost:8001/api](http://localhost:8001/api)
+- 🎨 前端 Web: [http://localhost:5173](http://localhost:5173)
+- 📚 Swagger 文档: [http://localhost:8001/docs](http://localhost:8001/docs)
+- 🗄️ PostgreSQL: localhost:15432
+- 🔴 Redis: localhost:6379
+
+### 5️⃣ 常用命令
+
+```bash
+# 服务管理
+pnpm run start          # 启动所有服务
+pnpm run stop           # 停止所有服务
+pnpm run restart        # 重启所有服务
+
+# 开发命令
+pnpm run dev            # 启动开发服务器
+pnpm run dev:api        # 仅启动 API 服务器
+pnpm run dev:web        # 仅启动 Web 服务器
+
+# 数据库管理
+pnpm run db:start       # 启动数据库
+pnpm run db:stop        # 停止数据库
+pnpm run prisma:generate # 生成 Prisma 客户端
+pnpm run prisma:migrate  # 运行数据库迁移
+```
 
 ---
 
@@ -151,6 +192,8 @@ pnpm run test:coverage
 | `pnpm run check:quality`  | 代码质量检查               |
 | `pnpm run check:all`      | 综合检查（环境+安全+质量） |
 | `pnpm run maintenance`    | 系统维护（清理+优化）      |
+| `pnpm run clean`          | 清理临时文件和缓存         |
+| `pnpm run clean:force`    | 强制清理所有临时文件       |
 
 ### 📊 监控与测试
 
@@ -160,6 +203,8 @@ pnpm run test:coverage
 | `pnpm run monitor`          | 系统监控和日志分析 |
 | `pnpm run db:backup`        | 数据库备份         |
 | `pnpm run db:restore`       | 数据库恢复         |
+| `pnpm run db:reset`         | 重置数据库         |
+| `pnpm run db:setup`         | 设置数据库         |
 
 ### 📝 文档生成
 
@@ -168,15 +213,20 @@ pnpm run test:coverage
 | `pnpm run docs:generate`     | 生成 API 文档  |
 | `pnpm run docs:generate:all` | 生成所有文档   |
 | `pnpm run docs:analyze`      | 自动化任务分析 |
+| `pnpm run docs:serve`        | 启动文档服务器 |
+| `pnpm run api-docs`          | 生成 API 文档  |
 
 ### 🗂️ 项目管理
 
-| 命令                          | 说明           |
-| ----------------------------- | -------------- |
-| `pnpm run organize:files`     | 整理生成文件   |
-| `pnpm run update:paths`       | 更新路径引用   |
-| `pnpm run standardize:naming` | 标准化命名规范 |
-| `pnpm run fix:duplicate-dirs` | 修复重复目录   |
+| 命令                          | 说明             |
+| ----------------------------- | ---------------- |
+| `pnpm run organize:files`     | 整理生成文件     |
+| `pnpm run update:paths`       | 更新路径引用     |
+| `pnpm run standardize:naming` | 标准化命名规范   |
+| `pnpm run fix:duplicate-dirs` | 修复重复目录     |
+| `pnpm run config:generate`    | 生成环境配置模板 |
+| `pnpm run setup:env`          | 设置环境变量     |
+| `pnpm run sync:env`           | 同步环境变量     |
 
 执行方式：
 
@@ -188,13 +238,20 @@ pnpm run check:env
 pnpm run setup
 
 # 启动开发
-pnpm run dev
+pnpm run start          # 一键启动所有服务
+pnpm run dev           # 仅启动开发服务器
+
+# 服务管理
+pnpm run stop          # 停止所有服务
+pnpm run restart       # 重启所有服务
 
 # 运行测试
-pnpm run test
+pnpm run test          # API 测试
+pnpm run test:web      # Web 测试
 
 # 清理项目
-pnpm run clean
+pnpm run clean         # 清理临时文件
+pnpm run clean:force   # 强制清理
 
 # 生成文档
 pnpm run docs:generate:all
@@ -211,8 +268,13 @@ pnpm run docs:generate:all
 docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
 
 # 或使用自动化脚本
-pnpm run check:all        # 运行所有检查
-pnpm run maintenance      # 系统维护
+pnpm run start           # 一键启动所有服务
+pnpm run stop            # 停止所有服务
+pnpm run restart         # 重启所有服务
+
+# 环境检查
+pnpm run check:all       # 运行所有检查
+pnpm run maintenance     # 系统维护
 ```
 
 ### 云端方案

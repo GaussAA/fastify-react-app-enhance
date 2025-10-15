@@ -161,7 +161,7 @@ export abstract class BaseService<T = any> extends EventEmitter {
     }
 
     // 执行创建
-    const result = await createRecord(this.prisma, this.model, data) as any;
+    const result = (await createRecord(this.prisma, this.model, data)) as any;
 
     // 审计日志
     if (audit) {

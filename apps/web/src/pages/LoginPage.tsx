@@ -27,7 +27,7 @@ export function LoginPage() {
         backgroundImage: "url('/images/auth/login-bg.png')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* 背景遮罩层 */}

@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 import { getPermissionService } from '../services/service-factory.js';
 import { auditService } from '../services/audit.service.js';
+import { jwt as jwtConfig } from '../config/env.js';
 
 interface AuthenticatedRequest extends FastifyRequest {
   user?: {
@@ -28,7 +29,10 @@ export async function authenticateToken(
 ) {
   try {
     const authHeader = request.headers.authorization;
-    const token = authHeader && typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined; // Bearer TOKEN
+    const token =
+      authHeader && typeof authHeader === 'string'
+        ? authHeader.split(' ')[1]
+        : undefined; // Bearer TOKEN
 
     if (!token) {
       return reply.status(401).send({
@@ -39,7 +43,7 @@ export async function authenticateToken(
     }
 
     // 验证JWT token
-    const jwtSecret = process.env.JWT_SECRET;
+    const jwtSecret = jwtConfig.secret;
 
     if (!jwtSecret) {
       return reply.status(401).send({ message: 'JWT configuration error' });
@@ -54,14 +58,25 @@ export async function authenticateToken(
     };
 
     // 获取prisma实例
-    const prisma = (request as FastifyRequest & { server: { prisma: any } }).server.prisma;
+    const prisma = (request as FastifyRequest & { server: { prisma: any } })
+      .server.prisma;
     const permissionService = getPermissionService(prisma);
 
     // 获取用户权限和角色
-    const [permissions, userRoles] = await Promise.all([
-      permissionService.getUserPermissions(decoded.userId),
-      permissionService.getUserRoles(decoded.userId),
-    ]);
+    let permissions: any[] = [];
+    let userRoles: any[] = [];
+
+    try {
+      [permissions, userRoles] = await Promise.all([
+        permissionService.getUserPermissions(decoded.userId),
+        permissionService.getUserRoles(decoded.userId),
+      ]);
+    } catch (permissionError) {
+      // 如果权限查询失败，记录错误但不阻止认证
+      request.log.warn('权限查询失败，使用空权限:', permissionError);
+      permissions = [];
+      userRoles = [];
+    }
 
     // 将用户信息添加到请求对象
     request.user = {
@@ -69,9 +84,12 @@ export async function authenticateToken(
       email: decoded.email,
       name: decoded.name,
       permissions: permissions.map(p => p.name),
-      roles: userRoles.map((ur: any) => ur.role.name),
+      roles: userRoles.map((ur: any) => ur.role?.name).filter(Boolean),
     };
   } catch (error) {
+    // 记录详细错误信息用于调试
+    request.log.error('认证中间件错误:', error);
+
     if (error instanceof jwt.TokenExpiredError) {
       return reply.status(401).send({
         success: false,
@@ -89,6 +107,7 @@ export async function authenticateToken(
         success: false,
         message: '身份验证失败',
         code: 'AUTH_ERROR',
+        details: process.env.NODE_ENV === 'development' ? (error as any).message : undefined,
       });
     }
   }
@@ -104,10 +123,13 @@ export async function optionalAuth(
 ) {
   try {
     const authHeader = request.headers.authorization;
-    const token = authHeader && typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
+    const token =
+      authHeader && typeof authHeader === 'string'
+        ? authHeader.split(' ')[1]
+        : undefined;
 
     if (token) {
-      const jwtSecret = process.env.JWT_SECRET;
+      const jwtSecret = jwtConfig.secret;
 
       if (jwtSecret) {
         try {
@@ -165,7 +187,10 @@ export function requireRole(roles: string[]) {
           method: request.method,
         },
         ipAddress: request.ip,
-        userAgent: typeof request.headers['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
+        userAgent:
+          typeof request.headers['user-agent'] === 'string'
+            ? request.headers['user-agent']
+            : undefined,
       });
 
       return reply.status(403).send({
@@ -193,7 +218,8 @@ export function requirePermission(resource: string, action: string) {
       });
     }
 
-    const prisma = (request as FastifyRequest & { server: { prisma: any } }).server.prisma;
+    const prisma = (request as FastifyRequest & { server: { prisma: any } })
+      .server.prisma;
     const permissionService = getPermissionService(prisma);
     const hasPermission = await permissionService.hasPermission(
       request.user.id,
@@ -214,7 +240,10 @@ export function requirePermission(resource: string, action: string) {
           method: request.method,
         },
         ipAddress: request.ip,
-        userAgent: typeof request.headers['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
+        userAgent:
+          typeof request.headers['user-agent'] === 'string'
+            ? request.headers['user-agent']
+            : undefined,
       });
 
       return reply.status(403).send({
@@ -245,7 +274,8 @@ export function requirePermissions(
       });
     }
 
-    const prisma = (request as FastifyRequest & { server: { prisma: any } }).server.prisma;
+    const prisma = (request as FastifyRequest & { server: { prisma: any } })
+      .server.prisma;
     const permissionService = getPermissionService(prisma);
     const permissionChecks = await Promise.all(
       permissions.map(p =>
@@ -272,7 +302,10 @@ export function requirePermissions(
           method: request.method,
         },
         ipAddress: request.ip,
-        userAgent: typeof request.headers['user-agent'] === 'string' ? request.headers['user-agent'] : undefined,
+        userAgent:
+          typeof request.headers['user-agent'] === 'string'
+            ? request.headers['user-agent']
+            : undefined,
       });
 
       return reply.status(403).send({
@@ -294,8 +327,8 @@ export function generateToken(payload: {
   email: string;
   name: string;
 }): string {
-  const jwtSecret = process.env.JWT_SECRET;
-  const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d';
+  const jwtSecret = jwtConfig.secret;
+  const jwtExpiresIn = jwtConfig.expiresIn;
 
   if (!jwtSecret) {
     throw new Error('JWT_SECRET environment variable is not set');

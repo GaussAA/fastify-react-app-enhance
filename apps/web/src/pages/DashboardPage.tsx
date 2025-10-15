@@ -109,14 +109,18 @@ export function DashboardPage() {
         <div className="flex items-center space-x-4">
           <Badge
             variant={user?.isActive ? 'default' : 'secondary'}
-            className={`px-3 py-1 ${user?.isActive
-              ? 'bg-green-100 text-green-800 border-green-200'
-              : 'bg-gray-100 text-gray-600 border-gray-200'
-              }`}
+            className={`px-3 py-1 ${
+              user?.isActive
+                ? 'bg-green-100 text-green-800 border-green-200'
+                : 'bg-gray-100 text-gray-600 border-gray-200'
+            }`}
           >
             <div
-              className={`w-2 h-2 rounded-full mr-2 ${serviceStatus?.status === 'healthy' ? 'bg-green-500' : 'bg-gray-400'
-                }`}
+              className={`w-2 h-2 rounded-full mr-2 ${
+                serviceStatus?.status === 'healthy'
+                  ? 'bg-green-500'
+                  : 'bg-gray-400'
+              }`}
             ></div>
             {serviceStatus?.status === 'healthy' ? '在线' : '离线'}
           </Badge>
@@ -126,8 +130,9 @@ export function DashboardPage() {
       <div className="flex">
         {/* 侧边栏 */}
         <div
-          className={`fixed top-16 left-0 z-50 w-80 h-[calc(100vh-4rem)] bg-gradient-to-b from-slate-50 to-white shadow-xl border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-[calc(100vh-4rem)] lg:top-16 overflow-y-auto xl:w-80 lg:w-72 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}
+          className={`fixed top-16 left-0 z-50 w-80 h-[calc(100vh-4rem)] bg-gradient-to-b from-slate-50 to-white shadow-xl border-r border-slate-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:h-[calc(100vh-4rem)] lg:top-16 overflow-y-auto xl:w-80 lg:w-72 ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
         >
           <div className="flex items-center justify-between h-16 px-6 lg:hidden">
             <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -183,10 +188,11 @@ export function DashboardPage() {
                   <li key={tab.id}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start h-12 px-4 transition-all duration-300 ease-out relative overflow-hidden group ${isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 border-l-4 border-white'
-                        : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-md hover:border-l-4 hover:border-blue-300'
-                        }`}
+                      className={`w-full justify-start h-12 px-4 transition-all duration-300 ease-out relative overflow-hidden group ${
+                        isActive
+                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25 border-l-4 border-white'
+                          : 'text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:text-blue-700 hover:shadow-md hover:border-l-4 hover:border-blue-300'
+                      }`}
                       onClick={() => {
                         setActiveTab(tab.id);
                         setIsSidebarOpen(false);
@@ -198,12 +204,15 @@ export function DashboardPage() {
                       )}
 
                       <Icon
-                        className={`mr-3 h-5 w-5 transition-all duration-300 ${isActive
-                          ? 'scale-110 text-white drop-shadow-sm'
-                          : 'group-hover:scale-105 group-hover:text-blue-600'
-                          }`}
+                        className={`mr-3 h-5 w-5 transition-all duration-300 ${
+                          isActive
+                            ? 'scale-110 text-white drop-shadow-sm'
+                            : 'group-hover:scale-105 group-hover:text-blue-600'
+                        }`}
                       />
-                      <span className={`font-medium relative z-10 ${isActive ? 'text-white' : 'group-hover:text-blue-700'}`}>
+                      <span
+                        className={`font-medium relative z-10 ${isActive ? 'text-white' : 'group-hover:text-blue-700'}`}
+                      >
                         {tab.label}
                       </span>
 
@@ -288,13 +297,17 @@ export function DashboardPage() {
                       {/* 快速状态概览 */}
                       <div className="flex items-center space-x-4 mt-3">
                         <div className="flex items-center space-x-2 text-sm">
-                          <div className={`w-2 h-2 rounded-full ${user?.isActive ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                          <div
+                            className={`w-2 h-2 rounded-full ${user?.isActive ? 'bg-green-500' : 'bg-orange-500'}`}
+                          ></div>
                           <span className="text-slate-600">
                             {user?.isActive ? '账户活跃' : '账户待激活'}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm">
-                          <div className={`w-2 h-2 rounded-full ${user?.isVerified ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                          <div
+                            className={`w-2 h-2 rounded-full ${user?.isVerified ? 'bg-green-500' : 'bg-red-500'}`}
+                          ></div>
                           <span className="text-slate-600">
                             {user?.isVerified ? '邮箱已验证' : '邮箱待验证'}
                           </span>
@@ -327,10 +340,16 @@ export function DashboardPage() {
                       <div className="text-2xl lg:text-3xl font-bold text-blue-600 mb-1 group-hover:text-blue-700 transition-colors">
                         {user?.roles?.length || 0}
                       </div>
-                      <p className="text-sm text-slate-500 font-medium">个角色</p>
+                      <p className="text-sm text-slate-500 font-medium">
+                        个角色
+                      </p>
                       {(!user?.roles || user.roles.length === 0) && (
                         <div className="mt-2">
-                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-blue-200 text-blue-600 hover:bg-blue-50">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-6 px-2 border-blue-200 text-blue-600 hover:bg-blue-50"
+                          >
                             申请角色
                           </Button>
                         </div>
@@ -353,10 +372,17 @@ export function DashboardPage() {
                       <div className="text-2xl lg:text-3xl font-bold text-green-600 mb-1 group-hover:text-green-700 transition-colors">
                         {user?.permissions?.length || 0}
                       </div>
-                      <p className="text-sm text-slate-500 font-medium">个权限</p>
-                      {(!user?.permissions || user.permissions.length === 0) && (
+                      <p className="text-sm text-slate-500 font-medium">
+                        个权限
+                      </p>
+                      {(!user?.permissions ||
+                        user.permissions.length === 0) && (
                         <div className="mt-2">
-                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-green-200 text-green-600 hover:bg-green-50">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-6 px-2 border-green-200 text-green-600 hover:bg-green-50"
+                          >
                             查看权限
                           </Button>
                         </div>
@@ -366,23 +392,37 @@ export function DashboardPage() {
 
                   {/* 账户状态卡片 */}
                   <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${user?.isActive ? 'from-green-50/50' : 'from-orange-50/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${user?.isActive ? 'from-green-50/50' : 'from-orange-50/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                    ></div>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                       <CardTitle className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         账户状态
                       </CardTitle>
-                      <div className={`p-2 bg-gradient-to-br ${user?.isActive ? 'from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300' : 'from-orange-100 to-orange-200 group-hover:from-orange-200 group-hover:to-orange-300'} rounded-xl transition-all duration-300 shadow-sm`}>
-                        <Users className={`h-4 w-4 ${user?.isActive ? 'text-green-600' : 'text-orange-600'}`} />
+                      <div
+                        className={`p-2 bg-gradient-to-br ${user?.isActive ? 'from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300' : 'from-orange-100 to-orange-200 group-hover:from-orange-200 group-hover:to-orange-300'} rounded-xl transition-all duration-300 shadow-sm`}
+                      >
+                        <Users
+                          className={`h-4 w-4 ${user?.isActive ? 'text-green-600' : 'text-orange-600'}`}
+                        />
                       </div>
                     </CardHeader>
                     <CardContent className="pb-3 relative z-10">
-                      <div className={`text-2xl lg:text-3xl font-bold mb-1 group-hover:opacity-80 transition-opacity ${user?.isActive ? 'text-green-600' : 'text-orange-600'}`}>
+                      <div
+                        className={`text-2xl lg:text-3xl font-bold mb-1 group-hover:opacity-80 transition-opacity ${user?.isActive ? 'text-green-600' : 'text-orange-600'}`}
+                      >
                         {user?.isActive ? '活跃' : '非活跃'}
                       </div>
-                      <p className="text-sm text-slate-500 font-medium">账户状态</p>
+                      <p className="text-sm text-slate-500 font-medium">
+                        账户状态
+                      </p>
                       {!user?.isActive && (
                         <div className="mt-2">
-                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-orange-200 text-orange-600 hover:bg-orange-50">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-6 px-2 border-orange-200 text-orange-600 hover:bg-orange-50"
+                          >
                             激活账户
                           </Button>
                         </div>
@@ -392,23 +432,37 @@ export function DashboardPage() {
 
                   {/* 验证状态卡片 */}
                   <Card className="bg-white/80 backdrop-blur-sm border-slate-200/60 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${user?.isVerified ? 'from-green-50/50' : 'from-red-50/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${user?.isVerified ? 'from-green-50/50' : 'from-red-50/50'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                    ></div>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
                       <CardTitle className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
                         验证状态
                       </CardTitle>
-                      <div className={`p-2 bg-gradient-to-br ${user?.isVerified ? 'from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300' : 'from-red-100 to-red-200 group-hover:from-red-200 group-hover:to-red-300'} rounded-xl transition-all duration-300 shadow-sm`}>
-                        <Shield className={`h-4 w-4 ${user?.isVerified ? 'text-green-600' : 'text-red-600'}`} />
+                      <div
+                        className={`p-2 bg-gradient-to-br ${user?.isVerified ? 'from-green-100 to-green-200 group-hover:from-green-200 group-hover:to-green-300' : 'from-red-100 to-red-200 group-hover:from-red-200 group-hover:to-red-300'} rounded-xl transition-all duration-300 shadow-sm`}
+                      >
+                        <Shield
+                          className={`h-4 w-4 ${user?.isVerified ? 'text-green-600' : 'text-red-600'}`}
+                        />
                       </div>
                     </CardHeader>
                     <CardContent className="pb-3 relative z-10">
-                      <div className={`text-2xl lg:text-3xl font-bold mb-1 group-hover:opacity-80 transition-opacity ${user?.isVerified ? 'text-green-600' : 'text-red-600'}`}>
+                      <div
+                        className={`text-2xl lg:text-3xl font-bold mb-1 group-hover:opacity-80 transition-opacity ${user?.isVerified ? 'text-green-600' : 'text-red-600'}`}
+                      >
                         {user?.isVerified ? '已验证' : '未验证'}
                       </div>
-                      <p className="text-sm text-slate-500 font-medium">邮箱验证</p>
+                      <p className="text-sm text-slate-500 font-medium">
+                        邮箱验证
+                      </p>
                       {!user?.isVerified && (
                         <div className="mt-2">
-                          <Button size="sm" variant="outline" className="text-xs h-6 px-2 border-red-200 text-red-600 hover:bg-red-50">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-6 px-2 border-red-200 text-red-600 hover:bg-red-50"
+                          >
                             验证邮箱
                           </Button>
                         </div>
@@ -447,8 +501,8 @@ export function DashboardPage() {
                           <p className="text-xs text-green-600 truncate">
                             {user?.lastLoginAt
                               ? new Date(user.lastLoginAt).toLocaleString(
-                                'zh-CN'
-                              )
+                                  'zh-CN'
+                                )
                               : '从未登录'}
                           </p>
                         </div>

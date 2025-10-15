@@ -2,22 +2,29 @@
 
 /**
  * 一键启动项目脚本
- *
- * 快速启动所有必要的服务，包括数据库、开发服务器等
+ * 
+ * 功能：
+ * - 检查环境配置
+ * - 启动数据库服务
+ * - 启动开发服务器
+ * - 提供友好的用户界面
  */
 
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
-import { loadAppConfig } from '../../../config/config-loader.mjs';
+import { config as dotenvConfig } from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectRoot = join(__dirname, '../../../');
 
-// 加载统一配置
-const appConfig = loadAppConfig();
+// 加载环境变量
+const envFile = join(projectRoot, '.env');
+if (existsSync(envFile)) {
+  dotenvConfig({ path: envFile });
+}
 
 // 颜色定义
 const colors = {
@@ -34,15 +41,19 @@ function log(message, color = 'reset') {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-function runCommand(command, description, cwd = projectRoot) {
-  log(`🔄 ${description}...`, 'blue');
+function runCommand(command, description, cwd = projectRoot, silent = false) {
+  if (!silent) log(`🔄 ${description}...`, 'blue');
   try {
-    execSync(command, { stdio: 'inherit', cwd });
-    log(`✅ ${description}完成`, 'green');
-    return true;
+    const result = execSync(command, {
+      stdio: silent ? 'pipe' : 'inherit',
+      cwd,
+      encoding: 'utf8'
+    });
+    if (!silent) log(`✅ ${description}完成`, 'green');
+    return { success: true, output: result };
   } catch (error) {
-    log(`❌ ${description}失败: ${error.message}`, 'red');
-    return false;
+    if (!silent) log(`❌ ${description}失败: ${error.message}`, 'red');
+    return { success: false, error: error.message };
   }
 }
 
@@ -69,7 +80,11 @@ function waitForPort(port, serviceName, maxWait = 30) {
       return true;
     }
     // 等待1秒
-    execSync('sleep 1', { stdio: 'pipe' });
+    try {
+      execSync('timeout 1 > nul 2>&1', { stdio: 'pipe' });
+    } catch (error) {
+      // 忽略超时错误
+    }
   }
 
   log(`⚠️ ${serviceName}启动超时`, 'yellow');
@@ -88,35 +103,43 @@ function checkDocker() {
 function checkEnvironment() {
   log('🔍 检查环境配置...', 'blue');
 
-  const requiredFiles = ['.env', appConfig.DOCKER.COMPOSE_FILE];
-
-  let missingFiles = [];
-
-  for (const file of requiredFiles) {
-    if (!existsSync(join(projectRoot, file))) {
-      missingFiles.push(file);
-    }
-  }
-
-  if (missingFiles.length > 0) {
-    log('⚠️ 缺少环境配置文件:', 'yellow');
-    missingFiles.forEach(file => log(`  - ${file}`, 'yellow'));
-    log('💡 请运行: pnpm run setup:env', 'blue');
+  // 检查 .env 文件
+  const envFile = join(projectRoot, '.env');
+  if (!existsSync(envFile)) {
+    log('⚠️ 缺少 .env 文件', 'yellow');
+    log('💡 请复制 env.template 为 .env 并配置必要的环境变量', 'blue');
     return false;
   }
 
-  log('✅ 环境配置文件完整', 'green');
-  log('💡 使用根目录 .env 文件进行统一配置管理', 'cyan');
+  // 从环境变量或配置文件读取必需的环境变量列表
+  const requiredVarsEnv = process.env.REQUIRED_ENV_VARS;
+  let requiredVars = [];
 
-  // 同步环境变量到子项目
-  log('🔄 同步环境变量到子项目...', 'blue');
-  try {
-    execSync('pnpm run sync:env', { stdio: 'pipe', cwd: projectRoot });
-    log('✅ 环境变量同步完成', 'green');
-  } catch (error) {
-    log('⚠️ 环境变量同步失败，但继续执行', 'yellow');
+  if (requiredVarsEnv) {
+    // 从环境变量读取必需变量列表
+    requiredVars = requiredVarsEnv.split(',').map(v => v.trim()).filter(v => v);
+  } else {
+    // 默认必需变量（可以通过环境变量覆盖）
+    requiredVars = (process.env.DEFAULT_REQUIRED_VARS || 'JWT_SECRET,DATABASE_URL').split(',').map(v => v.trim()).filter(v => v);
   }
 
+  const missing = [];
+
+  for (const varName of requiredVars) {
+    if (!process.env[varName]) {
+      missing.push(varName);
+    }
+  }
+
+  if (missing.length > 0) {
+    log('⚠️ 缺少必需的环境变量:', 'yellow');
+    missing.forEach(varName => log(`  - ${varName}`, 'yellow'));
+    log('💡 请在 .env 文件中设置这些变量', 'blue');
+    log('💡 或通过 REQUIRED_ENV_VARS 环境变量自定义必需变量列表', 'blue');
+    return false;
+  }
+
+  log('✅ 环境配置检查通过', 'green');
   return true;
 }
 
@@ -126,7 +149,7 @@ function checkDependencies() {
   if (!existsSync(join(projectRoot, 'node_modules'))) {
     log('⚠️ 项目依赖未安装', 'yellow');
     log('💡 正在安装依赖...', 'blue');
-    if (!runCommand('pnpm install', '安装项目依赖')) {
+    if (!runCommand('pnpm install', '安装项目依赖').success) {
       log('❌ 依赖安装失败', 'red');
       return false;
     }
@@ -145,23 +168,38 @@ function startDatabase() {
     return false;
   }
 
+  // 检查 docker-compose.yml 文件
+  const composeFile = process.env.DOCKER_COMPOSE_FILE || 'infrastructure/docker/docker-compose.yml';
+  const fullComposePath = join(projectRoot, composeFile);
+  if (!existsSync(fullComposePath)) {
+    log(`⚠️ 缺少 ${composeFile} 文件`, 'yellow');
+    log('💡 请确保 Docker Compose 配置文件存在', 'blue');
+    return false;
+  }
+
+  // 从环境变量读取服务名称
+  const postgresService = process.env.POSTGRES_SERVICE || 'postgres';
+  const redisService = process.env.REDIS_SERVICE || 'redis';
+  const services = `${postgresService} ${redisService}`;
+
   // 启动数据库容器
-  if (
-    !runCommand(
-      `docker compose -f ${appConfig.DOCKER.COMPOSE_FILE} up -d postgres redis`,
-      '启动数据库容器'
-    )
-  ) {
+  if (!runCommand(`docker compose -f ${composeFile} up -d ${services}`, '启动数据库容器').success) {
     log('❌ 数据库启动失败', 'red');
     return false;
   }
 
+  // 从环境变量读取端口配置
+  const postgresPort = process.env.POSTGRES_PORT || '5432';
+  const redisPort = process.env.REDIS_PORT || '6379';
+  const postgresWaitTime = parseInt(process.env.POSTGRES_WAIT_TIME || '30');
+  const redisWaitTime = parseInt(process.env.REDIS_WAIT_TIME || '15');
+
   // 等待数据库启动
-  if (!waitForPort(appConfig.PORTS.POSTGRES, 'PostgreSQL', 30)) {
+  if (!waitForPort(postgresPort, 'PostgreSQL', postgresWaitTime)) {
     log('⚠️ PostgreSQL启动超时，但继续执行', 'yellow');
   }
 
-  if (!waitForPort(appConfig.PORTS.REDIS, 'Redis', 15)) {
+  if (!waitForPort(redisPort, 'Redis', redisWaitTime)) {
     log('⚠️ Redis启动超时，但继续执行', 'yellow');
   }
 
@@ -173,47 +211,16 @@ function setupDatabase() {
 
   try {
     // 生成Prisma客户端
-    if (!runCommand('pnpm run prisma:generate', '生成Prisma客户端')) {
+    if (!runCommand('pnpm -w run prisma:generate', '生成Prisma客户端', projectRoot).success) {
       log('⚠️ Prisma客户端生成失败，但继续执行', 'yellow');
     }
 
     // 运行数据库迁移
-    if (!runCommand('pnpm run prisma:migrate', '运行数据库迁移')) {
+    if (!runCommand('pnpm -w run prisma:migrate', '运行数据库迁移', projectRoot).success) {
       log('⚠️ 数据库迁移失败，尝试部署现有迁移', 'yellow');
-      if (
-        !runCommand(
-          'npx prisma migrate deploy',
-          '部署数据库迁移',
-          join(projectRoot, 'apps/api')
-        )
-      ) {
+      if (!runCommand('npx prisma migrate deploy', '部署数据库迁移', join(projectRoot, 'apps/api')).success) {
         log('⚠️ 数据库迁移失败，但继续执行', 'yellow');
       }
-    }
-
-    // 检查RBAC系统
-    log('🔐 检查RBAC系统...', 'blue');
-    try {
-      const result = execSync('npx prisma db execute --stdin', {
-        cwd: join(projectRoot, 'apps/api'),
-        input:
-          "SELECT COUNT(*) FROM \"roles\" WHERE name IN ('admin', 'user');",
-        stdio: 'pipe',
-      });
-
-      const count = parseInt(result.toString().trim());
-      if (count === 0) {
-        log('🔐 初始化RBAC系统...', 'blue');
-        if (runCommand('pnpm run init:rbac', '初始化RBAC系统')) {
-          log('✅ RBAC系统初始化完成', 'green');
-        } else {
-          log('⚠️ RBAC系统初始化失败，但继续执行', 'yellow');
-        }
-      } else {
-        log('✅ RBAC系统已初始化', 'green');
-      }
-    } catch (error) {
-      log('⚠️ 无法检查RBAC状态，跳过RBAC初始化', 'yellow');
     }
 
     return true;
@@ -226,19 +233,17 @@ function setupDatabase() {
 function startDevelopmentServers() {
   log('🚀 启动开发服务器...', 'blue');
 
+  // 从环境变量读取端口配置
+  const apiPort = process.env.API_PORT || '8001';
+  const webPort = process.env.WEB_PORT || '5173';
+
   // 检查端口是否被占用
-  if (checkPort(appConfig.PORTS.API)) {
-    log(
-      `⚠️ 端口${appConfig.PORTS.API}已被占用，API服务器可能已在运行`,
-      'yellow'
-    );
+  if (checkPort(apiPort)) {
+    log(`⚠️ 端口${apiPort}已被占用，API服务器可能已在运行`, 'yellow');
   }
 
-  if (checkPort(appConfig.PORTS.WEB)) {
-    log(
-      `⚠️ 端口${appConfig.PORTS.WEB}已被占用，Web服务器可能已在运行`,
-      'yellow'
-    );
+  if (checkPort(webPort)) {
+    log(`⚠️ 端口${webPort}已被占用，Web服务器可能已在运行`, 'yellow');
   }
 
   // 启动开发环境
@@ -248,14 +253,36 @@ function startDevelopmentServers() {
   log('', 'reset');
 
   try {
-    // 使用concurrently启动所有服务
-    runCommand('pnpm run dev', '启动开发环境');
+    // 从环境变量读取启动命令
+    const devCommand = process.env.DEV_COMMAND || 'dev';
+    const packageManager = process.env.PACKAGE_MANAGER || 'pnpm';
+
+    // 使用配置的包管理器和命令启动开发环境
+    const child = spawn(packageManager, ['run', devCommand], {
+      cwd: projectRoot,
+      stdio: 'inherit',
+      shell: true
+    });
+
+    // 处理进程退出
+    child.on('exit', (code) => {
+      if (code !== 0) {
+        log(`❌ 开发服务器异常退出 (代码: ${code})`, 'red');
+      }
+    });
+
+    // 处理信号
+    process.on('SIGINT', () => {
+      log('\n🛑 正在停止开发服务器...', 'yellow');
+      child.kill('SIGINT');
+      process.exit(0);
+    });
+
+    return true;
   } catch (error) {
     log('❌ 开发服务器启动失败', 'red');
     return false;
   }
-
-  return true;
 }
 
 function showStartupInfo() {
@@ -263,17 +290,32 @@ function showStartupInfo() {
   log('🎉 项目启动完成！', 'green');
   log('', 'reset');
   log('📋 服务信息：', 'cyan');
-  log(`  🌐 API服务器: ${appConfig.URLS.API}`, 'blue');
-  log(`  📚 API文档: ${appConfig.URLS.API}/docs`, 'blue');
-  log(`  🎨 Web应用: ${appConfig.URLS.WEB}`, 'blue');
-  log(`  🗄️ PostgreSQL: localhost:${appConfig.PORTS.POSTGRES}`, 'blue');
-  log(`  🔴 Redis: localhost:${appConfig.PORTS.REDIS}`, 'blue');
+
+  // 从环境变量读取服务信息
+  const apiPort = process.env.API_PORT || '8001';
+  const webPort = process.env.WEB_PORT || '5173';
+  const postgresPort = process.env.POSTGRES_PORT || '5432';
+  const redisPort = process.env.REDIS_PORT || '6379';
+  const apiHost = process.env.API_HOST || 'localhost';
+  const webHost = process.env.WEB_HOST || 'localhost';
+  const dbHost = process.env.DB_HOST || 'localhost';
+  const redisHost = process.env.REDIS_HOST || 'localhost';
+
+  log(`  🌐 API服务器: http://${apiHost}:${apiPort}`, 'blue');
+  log(`  📚 API文档: http://${apiHost}:${apiPort}/docs`, 'blue');
+  log(`  🎨 Web应用: http://${webHost}:${webPort}`, 'blue');
+  log(`  🗄️ PostgreSQL: ${dbHost}:${postgresPort}`, 'blue');
+  log(`  🔴 Redis: ${redisHost}:${redisPort}`, 'blue');
   log('', 'reset');
   log('🛠️ 常用命令：', 'cyan');
-  log('  pnpm run stop     - 停止所有服务', 'blue');
-  log('  pnpm run test     - 运行测试', 'blue');
-  log('  pnpm run lint     - 代码检查', 'blue');
-  log('  pnpm run rbac:status - 检查RBAC状态', 'blue');
+
+  // 从环境变量读取包管理器
+  const packageManager = process.env.PACKAGE_MANAGER || 'pnpm';
+
+  log(`  ${packageManager} run stop     - 停止所有服务`, 'blue');
+  log(`  ${packageManager} run test     - 运行测试`, 'blue');
+  log(`  ${packageManager} run lint     - 代码检查`, 'blue');
+  log(`  ${packageManager} run build    - 构建项目`, 'blue');
   log('', 'reset');
 }
 
@@ -283,7 +325,7 @@ async function startProject() {
 
   // 1. 检查环境配置
   if (!checkEnvironment()) {
-    log('❌ 环境配置检查失败，请先运行: pnpm run restore', 'red');
+    log('❌ 环境配置检查失败', 'red');
     process.exit(1);
   }
 

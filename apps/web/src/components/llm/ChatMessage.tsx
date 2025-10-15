@@ -38,15 +38,20 @@ export function ChatMessage({
   const isSystem = message.role === 'system';
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 chat-message`}>
-      <div className={`${isUser ? 'max-w-xs' : 'max-w-4xl w-full'} message-container`}>
+    <div
+      className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 chat-message`}
+    >
+      <div
+        className={`${isUser ? 'max-w-xs' : 'max-w-4xl w-full'} message-container`}
+      >
         <div
-          className={`rounded-2xl px-4 py-3 ${isUser ? 'inline-block' : 'w-full'} ${isUser
-            ? 'bg-slate-200 text-slate-900'
-            : isSystem
-              ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
-              : 'text-slate-900'
-            }`}
+          className={`rounded-2xl px-4 py-3 ${isUser ? 'inline-block' : 'w-full'} ${
+            isUser
+              ? 'bg-slate-200 text-slate-900'
+              : isSystem
+                ? 'bg-yellow-50 border border-yellow-200 text-yellow-800'
+                : 'text-slate-900'
+          }`}
         >
           {isUser || isSystem ? (
             // 用户和系统消息使用普通文本渲染

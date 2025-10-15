@@ -33,7 +33,6 @@ import { PasswordStrengthIndicator } from '@/components/ui/password-strength-ind
 import { useAuthStore } from '@/store/auth';
 import { RegisterData } from '@/types/auth';
 
-
 // 表单验证模式
 const registerSchema = z
   .object({
@@ -120,7 +119,7 @@ export function RegisterForm({
       setTimeout(() => {
         setShowLoginDialog(true);
       }, 100);
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('注册错误:', error);
 
       // 处理特定错误
@@ -142,7 +141,6 @@ export function RegisterForm({
     }
   };
 
-
   // 处理用户选择自动登录
   const handleAutoLogin = () => {
     setShowLoginDialog(false);
@@ -162,9 +160,15 @@ export function RegisterForm({
 
   return (
     <div className="relative">
-      <EnhancedLiquidGlassCard className="w-full max-w-lg mx-auto" size="lg" hover>
+      <EnhancedLiquidGlassCard
+        className="w-full max-w-lg mx-auto"
+        size="lg"
+        hover
+      >
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-white drop-shadow-lg">注册</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-white drop-shadow-lg">
+            注册
+          </CardTitle>
           <CardDescription className="text-center text-white/90 drop-shadow-md">
             创建您的新账户以开始使用我们的服务
           </CardDescription>
@@ -223,8 +227,6 @@ export function RegisterForm({
               </Button>
             </div>
 
-
-
             <div className="relative">
               <AnimatedInput
                 id="confirmPassword"
@@ -255,16 +257,27 @@ export function RegisterForm({
                 <Checkbox
                   id="agreeToTerms"
                   checked={agreeToTerms}
-                  onCheckedChange={checked => setValue('agreeToTerms', !!checked)}
+                  onCheckedChange={checked =>
+                    setValue('agreeToTerms', !!checked)
+                  }
                   className="mt-1"
                 />
-                <Label htmlFor="agreeToTerms" className="text-sm leading-relaxed text-white/90 drop-shadow-sm">
+                <Label
+                  htmlFor="agreeToTerms"
+                  className="text-sm leading-relaxed text-white/90 drop-shadow-sm"
+                >
                   我同意{' '}
-                  <Link to="/terms" className="text-cyan-300 hover:text-cyan-500 hover:underline drop-shadow-md font-medium transition-colors duration-200">
+                  <Link
+                    to="/terms"
+                    className="text-cyan-300 hover:text-cyan-500 hover:underline drop-shadow-md font-medium transition-colors duration-200"
+                  >
                     服务条款
                   </Link>{' '}
                   和{' '}
-                  <Link to="/privacy" className="text-cyan-300 hover:text-cyan-500 hover:underline drop-shadow-md font-medium transition-colors duration-200">
+                  <Link
+                    to="/privacy"
+                    className="text-cyan-300 hover:text-cyan-500 hover:underline drop-shadow-md font-medium transition-colors duration-200"
+                  >
                     隐私政策
                   </Link>
                 </Label>

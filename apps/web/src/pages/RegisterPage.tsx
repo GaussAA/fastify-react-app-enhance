@@ -27,7 +27,7 @@ export function RegisterPage() {
         backgroundImage: "url('/images/auth/register-bg.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* 背景遮罩层 */}

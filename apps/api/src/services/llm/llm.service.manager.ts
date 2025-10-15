@@ -14,6 +14,7 @@ import {
   LLMServiceStatus,
 } from '../../types/llm.js';
 import { LLMServiceFactory } from './llm.service.factory.js';
+import { llm as llmConfig } from '../../config/env.js';
 
 export class LLMServiceManager {
   private factory: LLMServiceFactory;
@@ -118,29 +119,24 @@ export class LLMServiceManager {
 
   // 获取默认配置
   private getDefaultConfig(): LLMServiceConfig | null {
-    const provider = process.env.LLM_DEFAULT_PROVIDER || 'deepseek';
-    const apiKey = process.env.LLM_API_KEY;
-    const model = process.env.LLM_DEFAULT_MODEL;
-    const baseURL = process.env.LLM_BASE_URL;
-
-    if (!apiKey) {
+    if (!llmConfig.apiKey) {
       this.fastify.log.warn('No LLM API key configured');
       return null;
     }
 
     const config: LLMServiceConfig = {
-      provider: provider as any,
-      apiKey,
-      model: model || this.getDefaultModel(provider),
-      baseURL,
-      timeout: parseInt(process.env.LLM_TIMEOUT || '30000'),
-      maxRetries: parseInt(process.env.LLM_MAX_RETRIES || '3'),
+      provider: llmConfig.defaultProvider as any,
+      apiKey: llmConfig.apiKey,
+      model: llmConfig.defaultModel || this.getDefaultModel(llmConfig.defaultProvider),
+      baseURL: llmConfig.baseUrl,
+      timeout: llmConfig.timeout,
+      maxRetries: llmConfig.maxRetries,
       defaultParams: {
-        temperature: parseFloat(process.env.LLM_TEMPERATURE || '0.7'),
-        max_tokens: parseInt(process.env.LLM_MAX_TOKENS || '2000'),
-        top_p: parseFloat(process.env.LLM_TOP_P || '1'),
-        frequency_penalty: parseFloat(process.env.LLM_FREQUENCY_PENALTY || '0'),
-        presence_penalty: parseFloat(process.env.LLM_PRESENCE_PENALTY || '0'),
+        temperature: llmConfig.temperature,
+        max_tokens: llmConfig.maxTokens,
+        top_p: llmConfig.topP,
+        frequency_penalty: llmConfig.frequencyPenalty,
+        presence_penalty: llmConfig.presencePenalty,
       },
     };
 

@@ -85,13 +85,19 @@ export function LoginForm({
           navigate(redirectTo);
         }
       }, 1000);
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error('登录错误:', error);
 
       // 处理特定错误
-      if (error.message.includes('邮箱') || error.message.includes('用户不存在')) {
+      if (
+        error.message.includes('邮箱') ||
+        error.message.includes('用户不存在')
+      ) {
         setError('email', { message: error.message });
-      } else if (error.message.includes('密码') || error.message.includes('密码错误')) {
+      } else if (
+        error.message.includes('密码') ||
+        error.message.includes('密码错误')
+      ) {
         setError('password', { message: error.message });
       } else if (error.message.includes('无法连接到服务器')) {
         setError('root', { message: '无法连接到服务器，请检查网络连接' });
@@ -119,9 +125,15 @@ export function LoginForm({
         </div>
       </LoginSuccessTransition>
 
-      <EnhancedLiquidGlassCard className="w-full max-w-lg mx-auto" size="lg" hover>
+      <EnhancedLiquidGlassCard
+        className="w-full max-w-lg mx-auto"
+        size="lg"
+        hover
+      >
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center text-white drop-shadow-lg">登录</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center text-white drop-shadow-lg">
+            登录
+          </CardTitle>
           <CardDescription className="text-center text-white/90 drop-shadow-md">
             输入您的邮箱和密码以登录您的账户
           </CardDescription>
@@ -173,7 +185,10 @@ export function LoginForm({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Checkbox id="rememberMe" {...register('rememberMe')} />
-                <Label htmlFor="rememberMe" className="text-sm text-white/90 drop-shadow-sm">
+                <Label
+                  htmlFor="rememberMe"
+                  className="text-sm text-white/90 drop-shadow-sm"
+                >
                   记住我
                 </Label>
               </div>

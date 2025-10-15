@@ -80,28 +80,16 @@ function App() {
         />
 
         {/* 测试路由 - 直接访问AI助手页面 */}
-        <Route
-          path="/test-llm"
-          element={<LLMPage />}
-        />
+        <Route path="/test-llm" element={<LLMPage />} />
 
         {/* 测试路由 - 简单测试页面 */}
-        <Route
-          path="/test"
-          element={<TestPage />}
-        />
+        <Route path="/test" element={<TestPage />} />
 
         {/* 测试路由 - 注册页面测试 */}
-        <Route
-          path="/test-register"
-          element={<RegisterTestPage />}
-        />
+        <Route path="/test-register" element={<RegisterTestPage />} />
 
         {/* 测试路由 - 动画效果测试 */}
-        <Route
-          path="/test-animations"
-          element={<AnimationTestPage />}
-        />
+        <Route path="/test-animations" element={<AnimationTestPage />} />
 
         {/* 默认重定向 */}
         <Route

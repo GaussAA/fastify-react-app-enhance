@@ -135,12 +135,94 @@ interface DevelopmentConfig {
 
 项目提供了完整的环境文件模板：
 
-- `config/env/env-templates/base.env` - 基础配置模板
-- `config/env/env-templates/development.env` - 开发环境模板
-- `config/env/env-templates/production.env` - 生产环境模板
-- `config/env/env-templates/staging.env` - 预发布环境模板
-- `config/env/env-templates/test.env` - 测试环境模板
-- `config/env/env-templates/ci.env` - CI 环境模板
+- `config/env-templates/base.env` - 基础配置模板
+- `config/env-templates/development.env` - 开发环境模板
+- `config/env-templates/production.env` - 生产环境模板
+- `config/env-templates/staging.env` - 预发布环境模板
+- `config/env-templates/test.env` - 测试环境模板
+- `config/env-templates/ci.env` - CI 环境模板
+
+## 实际项目配置
+
+### 统一配置系统
+
+项目使用 `apps/api/src/config/env.ts` 作为统一配置入口，提供：
+
+- **类型安全**：完整的 TypeScript 类型定义
+- **环境检测**：自动检测当前环境
+- **配置验证**：使用 Zod 进行运行时验证
+- **分层加载**：支持 5 层环境文件优先级
+- **敏感信息管理**：运行时注入敏感配置
+
+### 配置加载流程
+
+```typescript
+// apps/api/src/config/env.ts
+import { config as dotenvConfig } from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const PROJECT_ROOT = join(__dirname, '../../../../');
+
+// 加载根目录 .env 文件
+dotenvConfig({ path: join(PROJECT_ROOT, '.env') });
+```
+
+### 实际配置结构
+
+```typescript
+interface AppConfig {
+  // 环境配置
+  environment: {
+    NODE_ENV: string;
+    PORT: number;
+    HOST: string;
+  };
+  
+  // 数据库配置
+  database: {
+    url: string;
+    host: string;
+    port: number;
+    name: string;
+    user: string;
+    password: string;
+  };
+  
+  // JWT 配置
+  jwt: {
+    secret: string;
+    expiresIn: string;
+  };
+  
+  // LLM 配置
+  llm: {
+    apiKey: string;
+    defaultProvider: string;
+    defaultModel: string;
+    baseUrl: string;
+    timeout: number;
+    maxRetries: number;
+    temperature: number;
+    maxTokens: number;
+    topP: number;
+    frequencyPenalty: number;
+    presencePenalty: number;
+  };
+  
+  // 日志配置
+  logging: {
+    level: string;
+  };
+  
+  // CORS 配置
+  cors: {
+    origin: string;
+  };
+}
+```
 
 ## 工具函数
 
@@ -239,19 +321,30 @@ const prodIssues = ConfigValidator.validateProductionConfig(config);
 1. 复制环境文件模板：
 
 ```bash
-cp config/env/env-templates/development.env .env
+cp config/env-templates/development.env .env
 ```
 
 2. 修改配置：
 
 ```bash
 # 编辑 .env 文件，设置开发环境特定的配置
+# 主要配置项：
+DATABASE_URL="postgresql://postgres_user:postgres_123!@localhost:15432/fastify_react_app?schema=public"
+REDIS_URL="redis://localhost:6379"
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+API_PORT=8001
+WEB_PORT=5173
 ```
 
 3. 启动应用：
 
 ```bash
-npm run dev
+# 一键启动所有服务
+pnpm run start
+
+# 或分步启动
+pnpm run db:start    # 启动数据库
+pnpm run dev        # 启动开发服务器
 ```
 
 ### 生产环境
@@ -261,8 +354,11 @@ npm run dev
 ```bash
 export NODE_ENV=production
 export JWT_SECRET=your_secure_jwt_secret
-export DB_PASSWORD=your_secure_db_password
+export DATABASE_URL=postgresql://user:password@host:port/database
+export REDIS_URL=redis://host:port
 export LLM_API_KEY=your_llm_api_key
+export API_PORT=8001
+export WEB_PORT=5173
 ```
 
 2. 或使用密钥管理服务：
@@ -278,8 +374,11 @@ az keyvault secret show --vault-name myvault --name app-config
 3. 部署应用：
 
 ```bash
-npm run build
-npm start
+# 使用 Docker Compose
+docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
+
+# 或使用项目脚本
+pnpm run start
 ```
 
 ## 故障排除

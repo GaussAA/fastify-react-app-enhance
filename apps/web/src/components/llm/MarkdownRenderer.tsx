@@ -106,7 +106,10 @@ export function MarkdownRenderer({
               );
             }
             return (
-              <code className={cn('markdown-code code-block', className)} {...props}>
+              <code
+                className={cn('markdown-code code-block', className)}
+                {...props}
+              >
                 {children}
               </code>
             );

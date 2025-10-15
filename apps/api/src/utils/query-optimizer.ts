@@ -81,12 +81,15 @@ export class QueryOptimizer {
 
     // 优化 where
     if (this.options.enableWhere && query.where) {
-      optimized.where = this.optimizeWhere(query.where as Record<string, unknown>);
+      optimized.where = this.optimizeWhere(
+        query.where as Record<string, unknown>
+      );
     }
 
     // 优化 orderBy
     if (this.options.enableOrderBy) {
-      optimized.orderBy = (query.orderBy as Record<string, 'asc' | 'desc'>) || defaultOrderBy;
+      optimized.orderBy =
+        (query.orderBy as Record<string, 'asc' | 'desc'>) || defaultOrderBy;
     }
 
     // 优化分页
@@ -102,8 +105,13 @@ export class QueryOptimizer {
   /**
    * 构建 select 字段
    */
-  private buildSelect(fields: string[]): Record<string, boolean | { select: Record<string, boolean> }> {
-    const select: Record<string, boolean | { select: Record<string, boolean> }> = {};
+  private buildSelect(
+    fields: string[]
+  ): Record<string, boolean | { select: Record<string, boolean> }> {
+    const select: Record<
+      string,
+      boolean | { select: Record<string, boolean> }
+    > = {};
     fields.forEach(field => {
       if (field.includes('.')) {
         // 处理嵌套字段
@@ -111,7 +119,9 @@ export class QueryOptimizer {
         if (!select[relation]) {
           select[relation] = { select: {} };
         }
-        (select[relation] as { select: Record<string, boolean> }).select[nestedField] = true;
+        (select[relation] as { select: Record<string, boolean> }).select[
+          nestedField
+        ] = true;
       } else {
         select[field] = true;
       }
@@ -122,8 +132,13 @@ export class QueryOptimizer {
   /**
    * 构建 include 关系
    */
-  private buildInclude(relations: string[]): Record<string, boolean | { include: Record<string, boolean> }> {
-    const include: Record<string, boolean | { include: Record<string, boolean> }> = {};
+  private buildInclude(
+    relations: string[]
+  ): Record<string, boolean | { include: Record<string, boolean> }> {
+    const include: Record<
+      string,
+      boolean | { include: Record<string, boolean> }
+    > = {};
     relations.forEach(relation => {
       if (relation.includes('.')) {
         // 处理嵌套关系
@@ -131,7 +146,9 @@ export class QueryOptimizer {
         if (!include[parent]) {
           include[parent] = { include: {} };
         }
-        (include[parent] as { include: Record<string, boolean> }).include[child] = true;
+        (include[parent] as { include: Record<string, boolean> }).include[
+          child
+        ] = true;
       } else {
         include[relation] = true;
       }
@@ -142,7 +159,9 @@ export class QueryOptimizer {
   /**
    * 优化 where 条件
    */
-  private optimizeWhere(where: Record<string, unknown>): Record<string, unknown> {
+  private optimizeWhere(
+    where: Record<string, unknown>
+  ): Record<string, unknown> {
     if (!where) return where;
 
     const optimized: Record<string, unknown> = {};
@@ -152,11 +171,16 @@ export class QueryOptimizer {
       if (key === 'OR' || key === 'AND' || key === 'NOT') {
         // 递归处理逻辑操作符
         optimized[key] = Array.isArray(where[key])
-          ? (where[key] as Record<string, unknown>[]).map((condition: Record<string, unknown>) => this.optimizeWhere(condition))
+          ? (where[key] as Record<string, unknown>[]).map(
+              (condition: Record<string, unknown>) =>
+                this.optimizeWhere(condition)
+            )
           : this.optimizeWhere(where[key] as Record<string, unknown>);
       } else if (typeof where[key] === 'object' && where[key] !== null) {
         // 处理对象条件
-        optimized[key] = this.optimizeFieldCondition(where[key] as Record<string, unknown>);
+        optimized[key] = this.optimizeFieldCondition(
+          where[key] as Record<string, unknown>
+        );
       } else {
         // 处理简单值
         optimized[key] = where[key];
@@ -169,7 +193,9 @@ export class QueryOptimizer {
   /**
    * 优化字段条件
    */
-  private optimizeFieldCondition(condition: Record<string, unknown>): Record<string, unknown> {
+  private optimizeFieldCondition(
+    condition: Record<string, unknown>
+  ): Record<string, unknown> {
     if (!condition || typeof condition !== 'object') return condition;
 
     const optimized: Record<string, unknown> = {};
@@ -256,7 +282,9 @@ export class QueryOptimizer {
    * 执行优化后的计数查询
    */
   async executeOptimizedCount(
-    model: { count: (query: { where?: Record<string, unknown> }) => Promise<number> },
+    model: {
+      count: (query: { where?: Record<string, unknown> }) => Promise<number>;
+    },
     where?: Record<string, unknown>,
     cacheKey?: string
   ): Promise<number> {
@@ -344,7 +372,10 @@ export class QueryBuilder {
    * 添加 where 条件
    */
   where(condition: Record<string, unknown>): QueryBuilder {
-    this.query.where = { ...(this.query.where as Record<string, unknown>), ...condition };
+    this.query.where = {
+      ...(this.query.where as Record<string, unknown>),
+      ...condition,
+    };
     return this;
   }
 
@@ -373,7 +404,9 @@ export class QueryBuilder {
   /**
    * 添加排序
    */
-  orderBy(orderBy: Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[]): QueryBuilder {
+  orderBy(
+    orderBy: Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[]
+  ): QueryBuilder {
     this.query.orderBy = orderBy;
     return this;
   }

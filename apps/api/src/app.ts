@@ -2,7 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-import './config/env.js'; // 加载环境变量配置
+import { appConfig } from './config/env.js'; // 导入统一配置
 import { userRoutes } from './routes/user.route.js';
 import { authRoutes } from './routes/auth.route.js';
 import { roleRoutes } from './routes/role.route.js';
@@ -28,8 +28,10 @@ declare module 'fastify' {
   }
 }
 
+import { logging } from './config/env.js';
+
 export const app = Fastify({
-  logger: { level: process.env.LOG_LEVEL || 'info' },
+  logger: { level: logging.level },
   bodyLimit: 1048576, // 1MB
 });
 
@@ -51,7 +53,7 @@ app.register(swagger, {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 8001}`,
+        url: `http://${appConfig.host}:${appConfig.port}`,
         description: '开发环境',
       },
     ],
@@ -151,8 +153,10 @@ app.addContentTypeParser(
   }
 );
 
+// 注册CORS中间件
 app.register(cors, {
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  // 限制CORS来源
+  origin: appConfig.cors.origin,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -161,6 +165,7 @@ app.register(cors, {
 app.setErrorHandler(errorHandler);
 app.setNotFoundHandler(notFoundHandler);
 
+// 注册路由
 app.register(authRoutes, { prefix: '/api/auth' });
 app.register(userRoutes, { prefix: '/api/users' });
 app.register(roleRoutes, { prefix: '/api/roles' });
@@ -169,6 +174,7 @@ app.register(auditRoutes, { prefix: '/api/audit' });
 app.register(llmSimpleRoutes, { prefix: '/api/llm' });
 app.register(aiConversationRoutes, { prefix: '/api/ai' });
 
+// 注册健康检查端点
 app.get(
   '/',
   {

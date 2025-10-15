@@ -34,7 +34,7 @@ git clone <repository-url>
 cd fastify-react-app-enhance
 
 # 2. 配置环境变量
-cp config/env-templates/root.env .env
+cp config/env-templates/production.env .env
 # 编辑 .env 文件，设置生产环境配置
 
 # 3. 启动所有服务
@@ -42,6 +42,11 @@ docker-compose -f infrastructure/docker/docker-compose.yml up -d --build
 
 # 4. 查看服务状态
 docker-compose -f infrastructure/docker/docker-compose.yml ps
+
+# 5. 使用项目脚本管理服务
+pnpm run start    # 启动所有服务
+pnpm run stop     # 停止所有服务
+pnpm run restart  # 重启所有服务
 ```
 
 ### 单独构建镜像
@@ -91,11 +96,16 @@ pnpm install
 pnpm run build
 
 # 4. 配置环境变量
-cp config/env-templates/root.env .env
-# 编辑 .env 文件
+cp config/env-templates/production.env .env
+# 编辑 .env 文件，设置生产环境配置
 
 # 5. 设置数据库
 pnpm run setup:db
+
+# 6. 使用项目脚本管理服务
+pnpm run start    # 启动所有服务
+pnpm run stop     # 停止所有服务
+pnpm run restart  # 重启所有服务
 ```
 
 ### 3. 启动服务
@@ -274,6 +284,11 @@ jobs:
 # 使用自动化脚本
 pnpm run check:all        # 运行所有检查
 pnpm run maintenance      # 系统维护
+
+# 服务管理
+pnpm run start           # 启动所有服务
+pnpm run stop            # 停止所有服务
+pnpm run restart         # 重启所有服务
 
 # 或手动部署
 pnpm run test

@@ -73,7 +73,7 @@ export class BaseApiClient {
    * 获取认证头
    */
   protected getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
   }
 

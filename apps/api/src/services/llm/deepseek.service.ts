@@ -58,7 +58,8 @@ export class DeepSeekService extends BaseLLMService {
         }),
       });
 
-      const result: LLMChatResponse = await response.json() as LLMChatResponse;
+      const result: LLMChatResponse =
+        (await response.json()) as LLMChatResponse;
       this.logResponse(result, 'chat');
       return result;
     }, 'chat');
@@ -131,7 +132,7 @@ export class DeepSeekService extends BaseLLMService {
         headers: this.getHeaders(),
       });
 
-      const result = await response.json() as LLMModel[];
+      const result = (await response.json()) as LLMModel[];
       return result || [];
     }, 'listModels');
   }
@@ -143,7 +144,7 @@ export class DeepSeekService extends BaseLLMService {
         headers: this.getHeaders(),
       });
 
-      return await response.json() as LLMModel;
+      return (await response.json()) as LLMModel;
     }, 'getModel');
   }
 
@@ -184,7 +185,7 @@ export class DeepSeekService extends BaseLLMService {
 
         const error = new Error(
           errorData.error?.message ||
-          `HTTP ${response.status}: ${response.statusText}`
+            `HTTP ${response.status}: ${response.statusText}`
         );
         (error as any).status = response.status;
         (error as any).type = 'http_error';

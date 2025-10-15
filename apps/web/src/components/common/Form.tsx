@@ -24,15 +24,15 @@ export interface FormField {
   name: string;
   label: string;
   type:
-  | 'text'
-  | 'email'
-  | 'password'
-  | 'number'
-  | 'textarea'
-  | 'select'
-  | 'checkbox'
-  | 'date'
-  | 'datetime-local';
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'number'
+    | 'textarea'
+    | 'select'
+    | 'checkbox'
+    | 'date'
+    | 'datetime-local';
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
@@ -428,10 +428,11 @@ export function FormSteps({
         {steps.map((step, index) => (
           <div key={step.id} className="flex items-center">
             <div
-              className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${index <= currentStep
+              className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${
+                index <= currentStep
                   ? 'bg-blue-600 border-blue-600 text-white'
                   : 'bg-white border-gray-300 text-gray-500'
-                }`}
+              }`}
             >
               {index < currentStep ? (
                 <CheckCircle className="h-5 w-5" />
@@ -442,8 +443,9 @@ export function FormSteps({
 
             <div className="ml-3">
               <p
-                className={`text-sm font-medium ${index <= currentStep ? 'text-blue-600' : 'text-gray-500'
-                  }`}
+                className={`text-sm font-medium ${
+                  index <= currentStep ? 'text-blue-600' : 'text-gray-500'
+                }`}
               >
                 {step.title}
               </p>
@@ -454,8 +456,9 @@ export function FormSteps({
 
             {index < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-4 ${index < currentStep ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
+                className={`flex-1 h-0.5 mx-4 ${
+                  index < currentStep ? 'bg-blue-600' : 'bg-gray-300'
+                }`}
               />
             )}
           </div>

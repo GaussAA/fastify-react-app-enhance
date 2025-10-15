@@ -66,7 +66,9 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001';
+const API_BASE_URL = import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  `http://${import.meta.env.VITE_API_HOST || 'localhost'}:${import.meta.env.VITE_API_PORT || '10000'}`;
 
 class AISessionApiClient {
   private baseURL: string;
@@ -77,7 +79,7 @@ class AISessionApiClient {
 
   // 获取认证头
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     return {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -86,7 +88,7 @@ class AISessionApiClient {
 
   // 获取认证头（不包含Content-Type，用于DELETE等请求）
   private getAuthHeadersWithoutContentType(): Record<string, string> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     return {
       ...(token && { Authorization: `Bearer ${token}` }),
     };

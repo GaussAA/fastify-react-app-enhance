@@ -67,7 +67,7 @@ export const useAuthStore = create<AuthStore>()(
             refreshToken: null,
             isAuthenticated: false,
             isLoading: false,
-            error: error.message || '登录失败',
+            error: error.message || '登录失败' || 'Unknown error',
           });
           throw error;
         }
@@ -107,7 +107,7 @@ export const useAuthStore = create<AuthStore>()(
             refreshToken: null,
             isAuthenticated: false,
             isLoading: false,
-            error: error.message || '注册失败',
+            error: error.message || '注册失败' || 'Unknown error',
           });
           throw error;
         }
@@ -120,7 +120,7 @@ export const useAuthStore = create<AuthStore>()(
           await apiClient.logout();
         } catch (error) {
           // 即使API调用失败，也要清除本地状态
-          console.warn('Logout API call failed:', error);
+          console.warn('Logout API call failed:', error || 'Unknown error');
         } finally {
           // 清除本地存储
           localStorage.removeItem('accessToken');
@@ -144,7 +144,7 @@ export const useAuthStore = create<AuthStore>()(
         try {
           await apiClient.logoutAllDevices();
         } catch (error) {
-          console.warn('Logout all devices API call failed:', error);
+          console.warn('Logout all devices API call failed:', error || 'Unknown error');
         } finally {
           // 清除本地存储
           localStorage.removeItem('accessToken');
@@ -182,7 +182,7 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error: any) {
-          console.error('Token刷新失败:', error);
+          console.error('Token刷新失败:', error || 'Unknown error');
 
           // 刷新失败，清除所有认证信息
           localStorage.removeItem('accessToken');
@@ -194,7 +194,7 @@ export const useAuthStore = create<AuthStore>()(
             accessToken: null,
             refreshToken: null,
             isAuthenticated: false,
-            error: error.message || 'Token刷新失败',
+            error: error.message || 'Token刷新失败' || 'Unknown error',
           });
           throw error;
         }
@@ -217,7 +217,7 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error: any) {
-          console.error('获取用户信息失败:', error);
+          console.error('获取用户信息失败:', error || 'Unknown error');
 
           // 清除本地存储
           localStorage.removeItem('accessToken');
@@ -228,7 +228,7 @@ export const useAuthStore = create<AuthStore>()(
             user: null,
             isAuthenticated: false,
             isLoading: false,
-            error: error.message || '获取用户信息失败',
+            error: error.message || '获取用户信息失败' || 'Unknown error',
           });
           throw error;
         }

@@ -183,22 +183,28 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
                 <div className="flex items-center space-x-2">
                   <Badge
                     variant={user.isActive ? 'default' : 'secondary'}
-                    className={`text-xs px-3 py-1 ${user.isActive
-                      ? 'bg-green-100 text-green-800 border-green-200'
-                      : 'bg-orange-100 text-orange-800 border-orange-200'
-                      }`}
+                    className={`text-xs px-3 py-1 ${
+                      user.isActive
+                        ? 'bg-green-100 text-green-800 border-green-200'
+                        : 'bg-orange-100 text-orange-800 border-orange-200'
+                    }`}
                   >
-                    <div className={`w-2 h-2 rounded-full mr-1 ${user.isActive ? 'bg-green-500' : 'bg-orange-500'}`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full mr-1 ${user.isActive ? 'bg-green-500' : 'bg-orange-500'}`}
+                    ></div>
                     {user.isActive ? '活跃' : '非活跃'}
                   </Badge>
                   <Badge
                     variant={user.isVerified ? 'default' : 'outline'}
-                    className={`text-xs px-3 py-1 ${user.isVerified
-                      ? 'bg-green-100 text-green-800 border-green-200'
-                      : 'bg-red-100 text-red-800 border-red-200'
-                      }`}
+                    className={`text-xs px-3 py-1 ${
+                      user.isVerified
+                        ? 'bg-green-100 text-green-800 border-green-200'
+                        : 'bg-red-100 text-red-800 border-red-200'
+                    }`}
                   >
-                    <div className={`w-2 h-2 rounded-full mr-1 ${user.isVerified ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full mr-1 ${user.isVerified ? 'bg-green-500' : 'bg-red-500'}`}
+                    ></div>
                     {user.isVerified ? '已验证' : '未验证'}
                   </Badge>
                 </div>
@@ -394,7 +400,6 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
             </div>
           </div>
 
-
           {/* 角色和权限 */}
           <div className="space-y-6">
             <div>
@@ -423,11 +428,11 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
                     {role.displayName}
                   </Badge>
                 )) || (
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                      <span>暂无角色</span>
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    <span>暂无角色</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -457,11 +462,11 @@ export function UserProfile({ onUpdate }: UserProfileProps) {
                     {permission.resource}:{permission.action}
                   </Badge>
                 )) || (
-                    <div className="flex items-center space-x-2 text-sm text-gray-500">
-                      <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                      <span>暂无权限</span>
-                    </div>
-                  )}
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    <span>暂无权限</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

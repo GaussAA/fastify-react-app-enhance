@@ -9,6 +9,7 @@ import { getSessionManager } from '../services/session.service.js';
 import { getDialogueManager } from '../services/dialogue.service.js';
 import { getAICoreService } from '../services/ai-core.service.js';
 import { prisma } from '../prisma-client.js';
+import { authenticateToken } from '../middlewares/auth.middleware.js';
 
 export async function aiConversationRoutes(fastify: FastifyInstance) {
   const aiIntegrationService = getAIIntegrationService(prisma);
@@ -19,16 +20,19 @@ export async function aiConversationRoutes(fastify: FastifyInstance) {
   // 处理对话请求
   fastify.post(
     '/conversation',
+    { preHandler: authenticateToken },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = request.body as any;
+        const user = (request as any).user;
 
-        // 验证必需参数
-        if (!body.userId) {
-          return reply.status(400).send({
+        // 从认证中间件获取用户ID
+        const userId = user?.id?.toString();
+        if (!userId) {
+          return reply.status(401).send({
             success: false,
-            error: 'userId is required',
-            message: '用户ID不能为空',
+            error: 'Unauthorized',
+            message: '用户未认证',
           });
         }
 
@@ -44,15 +48,15 @@ export async function aiConversationRoutes(fastify: FastifyInstance) {
         let sessionId = body.sessionId;
         if (!sessionId) {
           const session = await sessionManager.createSession(
-            body.userId,
-            body.options
+            userId,
+            body.options || {}
           );
           sessionId = session.id;
         }
 
         const conversationRequest = {
           sessionId,
-          userId: body.userId,
+          userId: userId,
           message: body.message,
           options: body.options,
         };
@@ -95,12 +99,25 @@ export async function aiConversationRoutes(fastify: FastifyInstance) {
   // 创建新会话
   fastify.post(
     '/session',
+    { preHandler: authenticateToken },
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const body = request.body as any;
+        const user = (request as any).user;
+
+        // 从认证中间件获取用户ID
+        const userId = user?.id?.toString();
+        if (!userId) {
+          return reply.status(401).send({
+            success: false,
+            error: 'Unauthorized',
+            message: '用户未认证',
+          });
+        }
+
         const session = await sessionManager.createSession(
-          body.userId,
-          body.options
+          userId,
+          body.options || {}
         );
 
         return {
@@ -115,6 +132,7 @@ export async function aiConversationRoutes(fastify: FastifyInstance) {
         };
       } catch (error: any) {
         fastify.log.error('Session creation error:', error);
+        fastify.log.error('Error stack:', error.stack);
         return reply.status(500).send({
           success: false,
           error: error.message || '会话创建失败',

@@ -6,63 +6,63 @@
 import { useState, useCallback } from 'react';
 
 interface LoginSuccessState {
-    isVisible: boolean;
-    isAnimating: boolean;
-    hasCompleted: boolean;
+  isVisible: boolean;
+  isAnimating: boolean;
+  hasCompleted: boolean;
 }
 
 interface LoginSuccessActions {
-    show: () => void;
-    hide: () => void;
-    onAnimationComplete: () => void;
-    reset: () => void;
+  show: () => void;
+  hide: () => void;
+  onAnimationComplete: () => void;
+  reset: () => void;
 }
 
 export function useLoginSuccess(): LoginSuccessState & LoginSuccessActions {
-    const [state, setState] = useState<LoginSuccessState>({
-        isVisible: false,
-        isAnimating: false,
-        hasCompleted: false,
+  const [state, setState] = useState<LoginSuccessState>({
+    isVisible: false,
+    isAnimating: false,
+    hasCompleted: false,
+  });
+
+  const show = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      isVisible: true,
+      isAnimating: true,
+      hasCompleted: false,
+    }));
+  }, []);
+
+  const hide = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      isVisible: false,
+      isAnimating: false,
+    }));
+  }, []);
+
+  const onAnimationComplete = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      isAnimating: false,
+      hasCompleted: true,
+    }));
+  }, []);
+
+  const reset = useCallback(() => {
+    setState({
+      isVisible: false,
+      isAnimating: false,
+      hasCompleted: false,
     });
+  }, []);
 
-    const show = useCallback(() => {
-        setState(prev => ({
-            ...prev,
-            isVisible: true,
-            isAnimating: true,
-            hasCompleted: false,
-        }));
-    }, []);
-
-    const hide = useCallback(() => {
-        setState(prev => ({
-            ...prev,
-            isVisible: false,
-            isAnimating: false,
-        }));
-    }, []);
-
-    const onAnimationComplete = useCallback(() => {
-        setState(prev => ({
-            ...prev,
-            isAnimating: false,
-            hasCompleted: true,
-        }));
-    }, []);
-
-    const reset = useCallback(() => {
-        setState({
-            isVisible: false,
-            isAnimating: false,
-            hasCompleted: false,
-        });
-    }, []);
-
-    return {
-        ...state,
-        show,
-        hide,
-        onAnimationComplete,
-        reset,
-    };
+  return {
+    ...state,
+    show,
+    hide,
+    onAnimationComplete,
+    reset,
+  };
 }

@@ -329,7 +329,10 @@ export const authService = {
       };
     } catch (error) {
       logger.error('用户登录失败:', error as any);
-      logger.error('登录数据:', { email: loginData.email, hasPassword: !!loginData.password } as any);
+      logger.error('登录数据:', {
+        email: loginData.email,
+        hasPassword: !!loginData.password,
+      } as any);
       logger.error('错误堆栈:', (error as any).stack);
       return {
         success: false,

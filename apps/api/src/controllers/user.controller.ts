@@ -17,7 +17,7 @@ export async function getAllUsers(req: FastifyRequest, reply: FastifyReply) {
       message: '获取用户列表成功',
     });
   } catch (error) {
-    logger.error('获取用户列表失败:', error as Error);
+    logger.error('获取用户列表失败:', error as any);
     return reply.status(500).send({
       success: false,
       message: '获取用户列表失败',
@@ -45,7 +45,7 @@ export async function createUser(req: FastifyRequest, reply: FastifyReply) {
       message: '用户创建成功',
     });
   } catch (error) {
-    logger.error('创建用户失败:', error as Error);
+    logger.error('创建用户失败:', error as any);
     return reply.status(500).send({
       success: false,
       message: '创建用户失败',

@@ -183,7 +183,7 @@ export async function authRoutes(app: FastifyInstance) {
         password,
         ipAddress: request.ip,
         userAgent: request.headers['user-agent'],
-        deviceInfo: request.headers['user-agent']
+        deviceInfo: request.headers['user-agent'],
       });
 
       if (result.success) {
@@ -232,13 +232,23 @@ export async function authRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const user = (request as any).user;
 
+      if (!user) {
+        return reply.status(401).send({
+          success: false,
+          message: '用户信息未找到',
+        });
+      }
+
       return reply.send({
         success: true,
         data: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          createdAt: user.createdAt,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            roles: user.roles || [],
+            permissions: user.permissions || [],
+          },
         },
       });
     }

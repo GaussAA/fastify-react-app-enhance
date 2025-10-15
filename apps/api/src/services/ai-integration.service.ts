@@ -389,7 +389,10 @@ export class AIIntegrationService extends EventEmitter {
   /**
    * 调整响应风格
    */
-  private adjustResponseStyle(response: string, intent: string | undefined): string {
+  private adjustResponseStyle(
+    response: string,
+    intent: string | undefined
+  ): string {
     if (!intent) {
       return response;
     }
@@ -475,7 +478,7 @@ export class AIIntegrationService extends EventEmitter {
       health.metrics.errorRate =
         this.performanceMetrics.totalRequests > 0
           ? this.performanceMetrics.failedRequests /
-          this.performanceMetrics.totalRequests
+            this.performanceMetrics.totalRequests
           : 0;
 
       // 获取内存使用情况

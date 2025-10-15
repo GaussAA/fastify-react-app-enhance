@@ -21,8 +21,13 @@ class ApiClient {
 
   constructor() {
     // 确保API基础URL包含/api路径
-    const envBaseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
-    this.baseURL = envBaseURL.endsWith('/api') ? envBaseURL : `${envBaseURL}/api`;
+    const envBaseURL =
+      import.meta.env.VITE_API_BASE_URL ||
+      import.meta.env.VITE_API_URL ||
+      `http://${import.meta.env.VITE_API_HOST || 'localhost'}:${import.meta.env.VITE_API_PORT || '10000'}`;
+    this.baseURL = envBaseURL.endsWith('/api')
+      ? envBaseURL
+      : `${envBaseURL}/api`;
 
     this.client = axios.create({
       baseURL: this.baseURL,
